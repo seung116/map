@@ -1,0 +1,174 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import adminMapImage from '../assets/korea-admin-map.png';
+import { detailLayouts, detailPlaces, districtCells, provinceGroups, regions } from '../data/travelData';
+import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor } from '../utils/travelUtils';
+
+export default function MapExplorer({ records }) {
+  const navigate = useNavigate();
+  const visitedIds = new Set(records.map((record) => record.regionId));
+  const [selectedProvince, setSelectedProvince] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const province = provinceGroups.find((group) => group.id === selectedProvince);
+  const detailLayout = province ? detailLayouts[province.id] : null;
+  const provinceCrop = province?.crop;
+  const provinceRegion = province
+    ? regions.find((region) => province.regionIds.includes(region.id) && region.type.includes('도'))
+      || regions.find((region) => province.regionIds.includes(region.id))
+    : null;
+  const provinceCities = provinceRegion ? cityPlacesFor(provinceRegion.id) : [];
+  const provinceCityUnit = provinceRegion ? cityUnitLabel(provinceRegion.id) : '시';
+  const currentRegion = regions.find((region) => region.id === selectedRegion);
+  const currentRegionShape = currentRegion ? detailShapeFor(currentRegion.id) : null;
+
+  return (
+    <div className="map-shell staged-map-shell" aria-label="단계별 한국 여행 지도">
+      <div className="map-toolbar">
+        <button type="button" onClick={() => { setSelectedProvince(null); setSelectedRegion(null); }}>
+          전국 도 단위
+        </button>
+        {province && (
+          <button type="button" onClick={() => setSelectedRegion(null)}>
+            {province.name}
+          </button>
+        )}
+        {currentRegion && <span>{currentRegion.name} 세부 지역</span>}
+      </div>
+
+      <div className={`staged-map ${province ? 'has-detail-panel' : ''}`}>
+        {!province && (
+          <div className="province-image-map" role="img" aria-label="전국 도 단위로 나뉜 한국 행정 지도">
+            <img src={adminMapImage} alt="" aria-hidden="true" />
+            <div className="province-click-layer">
+              {provinceGroups.map((group) => {
+                const visited = group.regionIds.some((id) => visitedIds.has(id));
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    className={`province-hotspot ${visited ? 'visited' : ''}`}
+                    style={{ clipPath: `polygon(${group.imagePolygon})` }}
+                    onClick={() => setSelectedProvince(group.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') setSelectedProvince(group.id);
+                    }}
+                    aria-label={`${group.name} ${visited ? '방문 기록 있음' : '미방문'}`}
+                    title={group.name}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {province && !currentRegion && (
+          <div className="province-detail-stage">
+            <div
+              className="province-crop-map"
+              role="img"
+              aria-label={`${province.name} 지도`}
+              style={{ aspectRatio: `${provinceCrop.width} / ${provinceCrop.height}` }}
+            >
+              <img
+                src={adminMapImage}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  width: `${(740 / provinceCrop.width) * 100}%`,
+                  left: `-${(provinceCrop.x / provinceCrop.width) * 100}%`,
+                  top: `-${(provinceCrop.y / provinceCrop.height) * 100}%`,
+                }}
+              />
+            </div>
+            <div className="drill-panel">
+              <div>
+                <p>선택한 지역</p>
+                <h3>{province.name}</h3>
+                <span>{provinceCities.length}개의 {provinceCityUnit} 지역을 표시합니다. 지역을 선택하면 이 도의 여행 기록이 열립니다.</span>
+              </div>
+              <div className="detail-region-grid">
+                {provinceCities.map((city) => (
+                  <button
+                    key={city}
+                    type="button"
+                    className={visitedIds.has(provinceRegion.id) ? 'visited' : ''}
+                    onClick={() => navigate(`/region/${provinceRegion.id}`)}
+                  >
+                    <strong>{city}</strong>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentRegion && (
+          <div className="province-detail-stage">
+            <svg viewBox="0 0 100 104" role="img" className="province-map detail-map">
+              <title>{currentRegion.name} 세부 지역 지도</title>
+              {detailLayout?.coast && <path className="map-coastline" d={detailLayout.coast} />}
+              {detailLayout?.islands?.map((island) => (
+                <circle key={`${island.cx}-${island.cy}`} className="map-island" cx={island.cx} cy={island.cy} r={island.r} />
+              ))}
+              <g className="detail-shape visited active">
+                <polygon points={currentRegionShape?.points ?? `${currentRegion.x},${currentRegion.y} ${currentRegion.x + currentRegion.w},${currentRegion.y} ${currentRegion.x + currentRegion.w},${currentRegion.y + currentRegion.h} ${currentRegion.x},${currentRegion.y + currentRegion.h}`} />
+                <text x={currentRegionShape?.labelX ?? currentRegion.x + currentRegion.w / 2} y={currentRegionShape?.labelY ?? currentRegion.y + currentRegion.h / 2 + 1.8}>{currentRegion.name}</text>
+              </g>
+              {(detailPlaces[currentRegion.id] || []).map((place, index) => {
+                const cell = districtCellFor(districtCells, index);
+                return (
+                  <g
+                    key={place}
+                    className="district-shape"
+                    onClick={() => navigate(`/region/${currentRegion.id}`)}
+                    role="button"
+                    tabIndex="0"
+                  >
+                    <polygon points={cell.points} />
+                    <text x={cell.labelX} y={cell.labelY}>{place}</text>
+                  </g>
+                );
+              })}
+            </svg>
+            <div className="drill-panel district-panel">
+              <div>
+                <p>{currentRegion.type}</p>
+                <h3>{currentRegion.name}</h3>
+                <span>시·군·구 단위로 둘러본 뒤 이 지역 기록을 열 수 있습니다.</span>
+              </div>
+              <div className="district-grid">
+                {(detailPlaces[currentRegion.id] || []).map((place) => (
+                  <button key={place} type="button" onClick={() => navigate(`/region/${currentRegion.id}`)}>
+                    {place}
+                  </button>
+                ))}
+              </div>
+              <button className="open-region-button" type="button" onClick={() => navigate(`/region/${currentRegion.id}`)}>
+                {currentRegion.name} 여행 기록 열기
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {!province && (
+        <div className="province-list">
+          {provinceGroups.map((group) => {
+            const visited = group.regionIds.some((id) => visitedIds.has(id));
+            return (
+              <button key={group.id} type="button" className={visited ? 'visited' : ''} onClick={() => setSelectedProvince(group.id)}>
+                <strong>{group.name}</strong>
+                <span>{group.note}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="map-legend">
+        <span><i className="legend-dot visited-dot" />방문한 지역</span>
+        <span><i className="legend-dot empty-dot" />아직 남은 지역</span>
+      </div>
+    </div>
+  );
+}
