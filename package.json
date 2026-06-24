@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "firebase": "^12.15.0",
     "flatpickr": "^4.6.13",
     "react": "^19.2.0",
     "react-datepicker": "^9.1.0",

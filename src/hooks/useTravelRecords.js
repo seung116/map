@@ -1,16 +1,58 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { starterRecords } from '../data/travelData';
+import { firebaseEnabled } from '../lib/firebase';
+import { loadRemoteRecords, saveRemoteRecords } from '../services/recordStore';
 
 export function useTravelRecords() {
-  const [records, setRecords] = useState(() => {
-    const saved = localStorage.getItem('korea-travel-records');
-    return saved ? JSON.parse(saved) : starterRecords;
-  });
+  const [records, setRecordsState] = useState([]);
+  const [ready, setReady] = useState(false);
 
-  const persist = (nextRecords) => {
-    setRecords(nextRecords);
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      if (firebaseEnabled) {
+        try {
+          const remoteRecords = await loadRemoteRecords();
+          if (active) {
+            setRecordsState(remoteRecords || []);
+            setReady(true);
+          }
+          return;
+        } catch (error) {
+          console.error('Firebase records load failed:', error);
+        }
+      }
+
+      const saved = localStorage.getItem('korea-travel-records');
+      const nextRecords = saved ? JSON.parse(saved) : starterRecords;
+      if (active) {
+        setRecordsState(nextRecords);
+        setReady(true);
+      }
+    };
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const persist = async (nextRecords) => {
+    setRecordsState(nextRecords);
+
+    if (firebaseEnabled) {
+      try {
+        await saveRemoteRecords(nextRecords);
+        return;
+      } catch (error) {
+        console.error('Firebase records save failed:', error);
+      }
+    }
+
     localStorage.setItem('korea-travel-records', JSON.stringify(nextRecords));
   };
 
-  return { records, setRecords: persist };
+  return { records, setRecords: persist, ready };
 }

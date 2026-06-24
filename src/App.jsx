@@ -9,28 +9,29 @@ import RegionPage from './pages/RegionPage';
 import StatsPage from './pages/StatsPage';
 import './App.css';
 
-function AppRoutes() {
-  const { records, setRecords } = useTravelRecords();
-  const routeProps = { records, setRecords };
-
-  return (
-    <Routes>
-      <Route path="/" element={<Dashboard records={records} />} />
-      <Route path="/region/:regionId" element={<RegionPage {...routeProps} />} />
-      <Route path="/write" element={<RecordFormPage {...routeProps} />} />
-      <Route path="/write/:recordId" element={<RecordFormPage {...routeProps} />} />
-      <Route path="/album" element={<AlbumPage records={records} />} />
-      <Route path="/stats" element={<StatsPage records={records} />} />
-      <Route path="/boards" element={<BoardsPage records={records} />} />
-      <Route path="/mypage" element={<MyPage {...routeProps} />} />
-    </Routes>
-  );
-}
-
 export default function App() {
+  const { records, setRecords, ready } = useTravelRecords();
+
+  if (!ready) {
+    return (
+      <div className="page" style={{ paddingTop: '20vh', textAlign: 'center' }}>
+        기록을 불러오는 중...
+      </div>
+    );
+  }
+
   return (
     <HashRouter>
-      <AppRoutes />
+      <Routes>
+        <Route path="/" element={<Dashboard records={records} />} />
+        <Route path="/region/:regionId" element={<RegionPage records={records} setRecords={setRecords} />} />
+        <Route path="/write" element={<RecordFormPage records={records} setRecords={setRecords} />} />
+        <Route path="/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} />} />
+        <Route path="/album" element={<AlbumPage records={records} />} />
+        <Route path="/stats" element={<StatsPage records={records} />} />
+        <Route path="/boards" element={<BoardsPage records={records} />} />
+        <Route path="/mypage" element={<MyPage records={records} setRecords={setRecords} />} />
+      </Routes>
     </HashRouter>
   );
 }
