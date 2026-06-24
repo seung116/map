@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { useTravelRecords } from './hooks/useTravelRecords';
 import AlbumPage from './pages/AlbumPage';
 import BoardsPage from './pages/BoardsPage';
@@ -29,8 +29,8 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppRoutes />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
