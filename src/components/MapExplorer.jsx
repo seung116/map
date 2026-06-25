@@ -39,6 +39,7 @@ export default function MapExplorer({ records, onSelectionChange }) {
   const province = provinceGroups.find((group) => group.id === selectedProvince);
   const detailLayout = province ? detailLayouts[province.id] : null;
   const provinceImage = province ? provinceImages[province.id] : null;
+  const provinceCrop = province?.crop;
   const provinceRegion = province
     ? regions.find((region) => province.regionIds.includes(region.id) && region.type.includes('도'))
       || regions.find((region) => province.regionIds.includes(region.id))
@@ -86,7 +87,10 @@ export default function MapExplorer({ records, onSelectionChange }) {
                     key={group.id}
                     type="button"
                     className={`province-hotspot ${visited ? 'visited' : ''}`}
-                    style={{ clipPath: `polygon(${group.imagePolygon})` }}
+                    style={{
+                      clipPath: `polygon(${group.imagePolygon})`,
+                      zIndex: group.id === 'seoul-si' ? 2 : 1,
+                    }}
                     onClick={() => selectProvince(group.id)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter') selectProvince(group.id);
@@ -103,15 +107,29 @@ export default function MapExplorer({ records, onSelectionChange }) {
         {province && !currentRegion && (
           <div className="province-detail-stage">
             <div
-              className="province-crop-map province-asset-map"
+              className={`province-crop-map ${provinceImage ? 'province-asset-map' : ''}`}
               role="img"
               aria-label={`${province.name} 지도`}
+              style={provinceImage || !provinceCrop ? undefined : { aspectRatio: `${provinceCrop.width} / ${provinceCrop.height}` }}
             >
-              <img
-                src={provinceImage}
-                alt=""
-                aria-hidden="true"
-              />
+              {provinceImage ? (
+                <img
+                  src={provinceImage}
+                  alt=""
+                  aria-hidden="true"
+                />
+              ) : (
+                <img
+                  src={adminMapImage}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    width: `${(740 / provinceCrop.width) * 100}%`,
+                    left: `-${(provinceCrop.x / provinceCrop.width) * 100}%`,
+                    top: `-${(provinceCrop.y / provinceCrop.height) * 100}%`,
+                  }}
+                />
+              )}
             </div>
             <div className="drill-panel">
               <div>

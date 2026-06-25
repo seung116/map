@@ -22,9 +22,20 @@ export const regions = [
 
 export const provinceGroups = [
   {
+    id: 'seoul-si',
+    name: '서울특별시',
+    regionIds: ['seoul'],
+    note: '서울 구 목록',
+    points: '43,37 53,34 61,41 58,51 47,53 39,45',
+    labelX: 50,
+    labelY: 45,
+    imagePolygon: '41% 20%, 47% 20%, 49% 25%, 45% 30%, 39% 28%, 38% 23%',
+    crop: { x: 255, y: 145, width: 95, height: 95 },
+  },
+  {
     id: 'gyeonggi-do',
     name: '경기도',
-    regionIds: ['seoul', 'incheon', 'gyeonggi'],
+    regionIds: ['gyeonggi'],
     note: '경기도 시 목록',
     points: '25,23 36,7 50,6 58,18 55,30 43,35 31,31',
     labelX: 42,
@@ -221,7 +232,12 @@ export const detailLayouts = {
 };
 
 export const detailPlaces = {
-  seoul: ['종로구', '중구', '마포구', '용산구', '성동구', '강남구'],
+  seoul: [
+    '종로구', '중구', '용산구', '성동구', '광진구', '동대문구', '중랑구', '성북구',
+    '강북구', '도봉구', '노원구', '은평구', '서대문구', '마포구', '양천구', '강서구',
+    '구로구', '금천구', '영등포구', '동작구', '관악구', '서초구', '강남구', '송파구',
+    '강동구',
+  ],
   incheon: ['중구', '연수구', '강화군', '옹진군', '부평구'],
   gyeonggi: [
     '수원시', '성남시', '의정부시', '안양시', '부천시', '광명시', '동두천시',

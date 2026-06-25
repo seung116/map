@@ -37,11 +37,16 @@ export function districtCellFor(cells, index) {
 }
 
 export function cityPlacesFor(regionId) {
+  if (regionId === 'seoul') {
+    return detailPlaces.seoul || [];
+  }
+
   const places = (detailPlaces[regionId] || []).filter((place) => place.endsWith('시'));
-  return regionId === 'gyeonggi' ? ['서울', ...places] : places;
+  return places;
 }
 
 export function cityUnitLabel(regionId) {
+  if (regionId === 'seoul') return '구';
   return regionId === 'jeju' ? '행정시' : '시';
 }
 
