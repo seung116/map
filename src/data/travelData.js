@@ -267,6 +267,7 @@ export const starterRecords = [
   {
     id: 1,
     regionId: 'jeju',
+    cityName: '제주시',
     startDate: '2026-04-14',
     endDate: '2026-04-16',
     title: '바람 많은 제주 산책',
@@ -280,6 +281,7 @@ export const starterRecords = [
   {
     id: 2,
     regionId: 'seoul',
+    cityName: '종로구',
     startDate: '2026-05-02',
     endDate: '2026-05-02',
     title: '궁 옆 골목 카페',
@@ -293,6 +295,7 @@ export const starterRecords = [
   {
     id: 3,
     regionId: 'busan',
+    cityName: '해운대구',
     startDate: '2026-05-21',
     endDate: '2026-05-22',
     title: '해운대 밤바다',
@@ -307,6 +310,7 @@ export const starterRecords = [
 
 export const emptyForm = {
   regionId: 'seoul',
+  cityName: '',
   startDate: '',
   endDate: '',
   title: '',

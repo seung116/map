@@ -44,7 +44,13 @@ export default function MapExplorer({ records, onSelectionChange }) {
     ? regions.find((region) => province.regionIds.includes(region.id) && region.type.includes('도'))
       || regions.find((region) => province.regionIds.includes(region.id))
     : null;
-  const provinceCities = provinceRegion ? cityPlacesFor(provinceRegion.id) : [];
+  const allProvinceCities = provinceRegion ? cityPlacesFor(provinceRegion.id) : [];
+  const recordedCityNames = new Set(
+    records
+      .filter((record) => record.regionId === provinceRegion?.id && record.cityName)
+      .map((record) => record.cityName),
+  );
+  const provinceCities = allProvinceCities.filter((city) => recordedCityNames.has(city));
   const provinceCityUnit = provinceRegion ? cityUnitLabel(provinceRegion.id) : '시';
   const currentRegion = regions.find((region) => region.id === selectedRegion);
   const currentRegionShape = currentRegion ? detailShapeFor(currentRegion.id) : null;
@@ -135,19 +141,23 @@ export default function MapExplorer({ records, onSelectionChange }) {
               <div>
                 <p>선택한 지역</p>
                 <h3>{province.name}</h3>
-                <span>{provinceCities.length}개의 {provinceCityUnit} 지역을 표시합니다. 지역을 선택하면 이 도의 여행 기록이 열립니다.</span>
+                <span>{provinceCities.length ? `기록이 있는 ${provinceCityUnit} 지역만 표시합니다.` : `아직 ${provinceCityUnit} 단위로 저장된 기록이 없습니다.`}</span>
               </div>
               <div className="detail-region-grid">
-                {provinceCities.map((city) => (
-                  <button
-                    key={city}
-                    type="button"
-                    className={visitedIds.has(provinceRegion.id) ? 'visited' : ''}
-                    onClick={() => navigate(`/region/${provinceRegion.id}`)}
-                  >
-                    <strong>{city}</strong>
-                  </button>
-                ))}
+                {provinceCities.length > 0 ? (
+                  provinceCities.map((city) => (
+                    <button
+                      key={city}
+                      type="button"
+                      className="visited"
+                      onClick={() => navigate(`/region/${provinceRegion.id}?city=${encodeURIComponent(city)}`)}
+                    >
+                      <strong>{city}</strong>
+                    </button>
+                  ))
+                ) : (
+                  <p className="drill-empty">새 기록을 작성할 때 {provinceCityUnit}를 선택하면 여기에 나타납니다.</p>
+                )}
               </div>
             </div>
           </div>

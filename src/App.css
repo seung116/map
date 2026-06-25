@@ -880,6 +880,19 @@ main {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.drill-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  border: 1px dashed rgba(95, 140, 117, 0.26);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.78);
+  color: var(--muted);
+  padding: 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .district-grid button {
   text-align: center;
   font-weight: 800;

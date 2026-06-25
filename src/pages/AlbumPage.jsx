@@ -63,6 +63,7 @@ export default function AlbumPage({ records }) {
         recordId: record.id,
         recordTitle: record.title,
         regionId: record.regionId,
+        cityName: record.cityName || '',
         dateRange: recordDateRange(record),
         startDate,
         endDate,
@@ -118,7 +119,7 @@ export default function AlbumPage({ records }) {
                           </span>
                           <span className="album-caption">
                             <strong>{photo.caption}</strong>
-                            <small>{regionName(photo.regionId)} · {photo.dateRange}</small>
+                            <small>{photo.cityName ? `${regionName(photo.regionId)} · ${photo.cityName}` : regionName(photo.regionId)} · {photo.dateRange}</small>
                           </span>
                         </button>
                       ))}
@@ -144,7 +145,7 @@ export default function AlbumPage({ records }) {
               <img src={selected.src || heroImage} alt={selected.caption} />
               <div className="lightbox-details">
                 <div className="card-meta">
-                  <span>{regionName(selected.regionId)}</span>
+                  <span>{selected.cityName ? `${regionName(selected.regionId)} · ${selected.cityName}` : regionName(selected.regionId)}</span>
                   <span>{selected.dateRange}</span>
                 </div>
                 <h2>{selected.caption}</h2>
@@ -154,6 +155,10 @@ export default function AlbumPage({ records }) {
                   <div>
                     <dt>지역</dt>
                     <dd>{regionName(selected.regionId)}</dd>
+                  </div>
+                  <div>
+                    <dt>시·구</dt>
+                    <dd>{selected.cityName || '미지정'}</dd>
                   </div>
                   <div>
                     <dt>함께 간 사람</dt>

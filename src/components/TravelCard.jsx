@@ -10,7 +10,7 @@ export default function TravelCard({ record, onDelete }) {
       </Link>
       <div className="travel-card-body">
         <div className="card-meta">
-          <span>{regionName(record.regionId)}</span>
+          <span>{record.cityName ? `${regionName(record.regionId)} · ${record.cityName}` : regionName(record.regionId)}</span>
           <span>{recordDateRange(record)}</span>
         </div>
         <h3>{record.title}</h3>

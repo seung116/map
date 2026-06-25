@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import { emptyForm, regions } from '../data/travelData';
 import { getLastRecordSaveError } from '../services/recordStore';
-import { normalizeRecordDates, toPhotoFiles } from '../utils/travelUtils';
+import { cityPlacesFor, cityUnitLabel, normalizeRecordDates, toPhotoFiles } from '../utils/travelUtils';
 
 function saveFailureMessage() {
   const error = getLastRecordSaveError();
@@ -32,15 +32,35 @@ export default function RecordFormPage({ records, setRecords }) {
   const navigate = useNavigate();
   const params = useParams();
   const queryRegion = new URLSearchParams(window.location.search).get('region');
+  const queryCity = new URLSearchParams(window.location.search).get('city');
   const editing = records.find((record) => String(record.id) === params.recordId);
-  const [form, setForm] = useState(() =>
-    editing ? normalizeRecordDates(editing) : { ...emptyForm, regionId: queryRegion || emptyForm.regionId },
-  );
+  const [form, setForm] = useState(() => {
+    const baseForm = editing
+      ? normalizeRecordDates(editing)
+      : { ...emptyForm, regionId: queryRegion || emptyForm.regionId };
+    const cityOptionsForRegion = cityPlacesFor(baseForm.regionId);
+    const cityName = cityOptionsForRegion.includes(queryCity)
+      ? queryCity
+      : cityOptionsForRegion.includes(baseForm.cityName)
+        ? baseForm.cityName
+        : cityOptionsForRegion[0] || '';
+
+    return { ...baseForm, cityName };
+  });
+  const cityOptions = cityPlacesFor(form.regionId);
+  const cityLabel = cityUnitLabel(form.regionId);
 
   const update = (key, value) => setForm((current) => {
     if (key === 'startDate' && current.endDate && current.endDate < value) {
       return { ...current, startDate: value, endDate: value };
     }
+
+    if (key === 'regionId') {
+      const nextCityOptions = cityPlacesFor(value);
+      const cityName = nextCityOptions.includes(current.cityName) ? current.cityName : nextCityOptions[0] || '';
+      return { ...current, regionId: value, cityName };
+    }
+
     return { ...current, [key]: value };
   });
 
@@ -108,10 +128,19 @@ export default function RecordFormPage({ records, setRecords }) {
 
         <form className="record-form" onSubmit={saveRecord}>
           <label className="form-field">
-            여행 지역
+            여행 도/광역시
             <select value={form.regionId} onChange={(event) => update('regionId', event.target.value)}>
               {regions.map((region) => (
                 <option key={region.id} value={region.id}>{region.name}</option>
+              ))}
+            </select>
+          </label>
+          <label className="form-field">
+            여행 {cityLabel}
+            <select required value={form.cityName || ''} onChange={(event) => update('cityName', event.target.value)}>
+              <option value="" disabled>{cityLabel} 선택</option>
+              {cityOptions.map((city) => (
+                <option key={city} value={city}>{city}</option>
               ))}
             </select>
           </label>
