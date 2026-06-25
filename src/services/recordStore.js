@@ -2,6 +2,40 @@ import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, write
 import { firestore, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
+const MAX_FIRESTORE_RECORD_BYTES = 850_000;
+const MAX_PHOTO_SRC_CHARS = 180_000;
+
+function byteSize(value) {
+  return new Blob([JSON.stringify(value)]).size;
+}
+
+function compactPhoto(photo) {
+  const src = typeof photo.src === 'string' && photo.src.length <= MAX_PHOTO_SRC_CHARS ? photo.src : '';
+  return {
+    id: photo.id,
+    caption: photo.caption || '여행 사진',
+    src,
+  };
+}
+
+function compactRecord(record) {
+  const compacted = {
+    ...record,
+    photos: (record.photos || []).slice(0, 3).map(compactPhoto),
+  };
+
+  if (byteSize(compacted) <= MAX_FIRESTORE_RECORD_BYTES) {
+    return compacted;
+  }
+
+  return {
+    ...compacted,
+    photos: compacted.photos.map((photo) => ({
+      ...photo,
+      src: '',
+    })),
+  };
+}
 
 export async function loadRemoteRecords() {
   if (!firebaseEnabled || !firestore) {
@@ -39,10 +73,10 @@ export async function saveRemoteRecords(nextRecords, previousRecords = []) {
     const previous = previousById.get(String(record.id));
     const changed = !previous || JSON.stringify({ ...previous, updatedAt: undefined }) !== JSON.stringify({ ...record, updatedAt: undefined });
     if (!changed) continue;
+    const sharedRecord = compactRecord(record);
 
     batch.set(doc(firestore, RECORDS_COLLECTION, String(record.id)), {
-      ...record,
-      photos: record.photos || [],
+      ...sharedRecord,
       updatedAt: serverTimestamp(),
     });
   }

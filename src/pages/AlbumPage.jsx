@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
 import { recordDateRange, recordEndDate, recordStartDate, regionName } from '../utils/travelUtils';
 
@@ -30,7 +31,7 @@ export default function AlbumPage({ records }) {
         <div className="album-grid">
           {photos.map((photo) => (
             <button key={`${photo.id}-${photo.recordTitle}`} className="album-item" type="button" onClick={() => setSelected(photo)}>
-              <img src={photo.src} alt={photo.caption} />
+              <img src={photo.src || heroImage} alt={photo.caption} />
               <span>{regionName(photo.regionId)} · {photo.caption}</span>
             </button>
           ))}
@@ -41,7 +42,7 @@ export default function AlbumPage({ records }) {
           <div className="lightbox-card" onClick={(event) => event.stopPropagation()}>
             <button type="button" onClick={() => setSelected(null)} aria-label="닫기">×</button>
             <div className="lightbox-layout">
-              <img src={selected.src} alt={selected.caption} />
+              <img src={selected.src || heroImage} alt={selected.caption} />
               <div className="lightbox-details">
                 <div className="card-meta">
                   <span>{regionName(selected.regionId)}</span>
