@@ -1,13 +1,19 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { logoutUser } from '../services/authStore';
 
 export default function Header() {
   const auth = useAuth();
+  const navigate = useNavigate();
+
+  const goHome = (event) => {
+    event.preventDefault();
+    navigate('/', { state: { homeReset: Date.now() } });
+  };
 
   return (
     <header className="app-header">
-      <Link to="/" className="brand" aria-label="홈으로 이동">
+      <Link to="/" className="brand" aria-label="홈으로 이동" onClick={goHome}>
         <span className="brand-mark">KR</span>
         <span>
           <strong>여행지도</strong>

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
 import MapExplorer from '../components/MapExplorer';
@@ -8,10 +8,16 @@ import { regions } from '../data/travelData';
 import { recordStartDate } from '../utils/travelUtils';
 
 export default function Dashboard({ records }) {
+  const location = useLocation();
   const [mapSelectionActive, setMapSelectionActive] = useState(false);
+  const homeReset = location.state?.homeReset || 0;
   const visitedCount = new Set(records.map((record) => record.regionId)).size;
   const completion = Math.round((visitedCount / regions.length) * 100);
   const latest = [...records].sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a))).slice(0, 3);
+
+  useEffect(() => {
+    setMapSelectionActive(false);
+  }, [homeReset]);
 
   return (
     <AppShell>
@@ -36,7 +42,7 @@ export default function Dashboard({ records }) {
               <p>Travel Map</p>
               <h2>한국 지도 위에 표시되는 나의 여행 발자국</h2>
             </div>
-            <MapExplorer records={records} onSelectionChange={setMapSelectionActive} />
+            <MapExplorer key={homeReset} records={records} onSelectionChange={setMapSelectionActive} />
           </div>
 
           <aside className="summary-panel">
