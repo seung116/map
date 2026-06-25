@@ -66,20 +66,22 @@ export default function Dashboard({ records }) {
           </aside>
         </section>
 
-        <section className="content-section">
-          <div className="section-heading inline">
-            <div>
-              <p>Recent Memories</p>
-              <h2>최근 여행 기록</h2>
+        {!mapSelectionActive && (
+          <section className="content-section">
+            <div className="section-heading inline">
+              <div>
+                <p>Recent Memories</p>
+                <h2>최근 여행 기록</h2>
+              </div>
+              <Link to="/write">새 기록 추가</Link>
             </div>
-            <Link to="/write">새 기록 추가</Link>
-          </div>
-          <div className="record-grid">
-            {latest.map((record) => (
-              <TravelCard key={record.id} record={record} />
-            ))}
-          </div>
-        </section>
+            <div className="record-grid">
+              {latest.map((record) => (
+                <TravelCard key={record.id} record={record} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </AppShell>
   );
