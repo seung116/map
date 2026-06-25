@@ -308,6 +308,11 @@ main {
   font-size: 0.9rem;
 }
 
+.form-message {
+  color: #3d7a55;
+  font-size: 0.9rem;
+}
+
 .uid-box {
   overflow-wrap: anywhere;
   border: 1px solid var(--line);
@@ -320,7 +325,17 @@ main {
 }
 
 .admin-panel {
-  padding: 0;
+  padding: 0 0 34px;
+}
+
+.admin-subheading {
+  margin: 30px 0 12px;
+}
+
+.admin-subheading strong {
+  border-radius: 999px;
+  background: rgba(184, 217, 194, 0.45);
+  padding: 7px 12px;
 }
 
 .admin-table {
@@ -351,6 +366,14 @@ main {
   font-size: 0.9rem;
 }
 
+.admin-row code {
+  display: block;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  color: #7d867b;
+  font-size: 0.72rem;
+}
+
 .admin-row button {
   min-height: 38px;
   border: 1px solid var(--line);
@@ -358,6 +381,13 @@ main {
   background: #fff;
   color: var(--ink);
   font-weight: 800;
+}
+
+.admin-empty {
+  margin: 0;
+  background: var(--paper);
+  color: var(--muted);
+  padding: 18px;
 }
 
 .content-grid,

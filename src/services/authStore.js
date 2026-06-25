@@ -103,6 +103,16 @@ export async function listUsers() {
   return snapshot.docs.map((item) => ({ uid: item.id, ...item.data() }));
 }
 
+export function subscribeUsers(onUsers, onError) {
+  return onSnapshot(
+    collection(firestore, USERS_COLLECTION),
+    (snapshot) => {
+      onUsers(snapshot.docs.map((item) => ({ uid: item.id, ...item.data() })));
+    },
+    onError,
+  );
+}
+
 export async function setUserApproval(uid, approved) {
   await updateDoc(doc(firestore, USERS_COLLECTION, uid), {
     approved,

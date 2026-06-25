@@ -5,16 +5,19 @@ export default function AuthPage() {
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ email: '', password: '', displayName: '' });
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
 
   const submit = async (event) => {
     event.preventDefault();
     setError('');
+    setMessage('');
 
     try {
       if (mode === 'signup') {
         await registerUser(form);
+        setMessage('가입 신청이 접수되었습니다. 관리자가 승인하면 사용할 수 있습니다.');
         return;
       }
 
@@ -47,6 +50,7 @@ export default function AuthPage() {
         </label>
 
         {error && <strong className="form-error">{error}</strong>}
+        {message && <strong className="form-message">{message}</strong>}
 
         <button type="submit">{mode === 'signup' ? '가입 신청' : '로그인'}</button>
         <button className="secondary-login" type="button" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>

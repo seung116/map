@@ -1,42 +1,59 @@
 import { useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
-import { listUsers, setUserApproval, setUserRole } from '../services/authStore';
+import { setUserApproval, setUserRole, subscribeUsers } from '../services/authStore';
 
 export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const pendingUsers = users.filter((user) => user.role !== 'admin' && !user.approved);
+  const approvedUsers = users.filter((user) => user.role === 'admin' || user.approved);
 
-  const refresh = async () => {
-    setLoading(true);
-    setUsers(await listUsers());
-    setLoading(false);
-  };
+  const sortUsers = (items) =>
+    [...items].sort((a, b) => {
+      if (a.role === 'admin' && b.role !== 'admin') return -1;
+      if (a.role !== 'admin' && b.role === 'admin') return 1;
+      return (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '');
+    });
 
   useEffect(() => {
-    let active = true;
+    const unsubscribe = subscribeUsers(
+      (nextUsers) => {
+        setUsers(sortUsers(nextUsers));
+        setLoading(false);
+      },
+      (error) => {
+        console.error('User list subscribe failed:', error);
+        setLoading(false);
+      },
+    );
 
-    listUsers()
-      .then((nextUsers) => {
-        if (active) setUsers(nextUsers);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
+    return unsubscribe;
   }, []);
 
   const updateApproval = async (uid, approved) => {
     await setUserApproval(uid, approved);
-    await refresh();
   };
 
   const updateRole = async (uid, role) => {
     await setUserRole(uid, role);
-    await refresh();
   };
+
+  const renderUserRow = (user) => (
+    <div className="admin-row" key={user.uid}>
+      <div>
+        <strong>{user.displayName || '이름 없음'}</strong>
+        <span>{user.email}</span>
+        <code>{user.uid}</code>
+      </div>
+      <span>{user.role === 'admin' ? '관리자' : user.approved ? '승인됨' : '대기'}</span>
+      <button type="button" onClick={() => updateApproval(user.uid, !user.approved)}>
+        {user.approved ? '승인 해제' : '승인'}
+      </button>
+      <button type="button" onClick={() => updateRole(user.uid, user.role === 'admin' ? 'member' : 'admin')}>
+        {user.role === 'admin' ? '관리자 해제' : '관리자 지정'}
+      </button>
+    </div>
+  );
 
   return (
     <AppShell>
@@ -50,23 +67,29 @@ export default function AdminPage() {
           {loading ? (
             <p>회원 정보를 불러오는 중...</p>
           ) : (
-            <div className="admin-table">
-              {users.map((user) => (
-                <div className="admin-row" key={user.uid}>
-                  <div>
-                    <strong>{user.displayName || '이름 없음'}</strong>
-                    <span>{user.email}</span>
-                  </div>
-                  <span>{user.role === 'admin' ? '관리자' : user.approved ? '승인됨' : '대기'}</span>
-                  <button type="button" onClick={() => updateApproval(user.uid, !user.approved)}>
-                    {user.approved ? '승인 해제' : '승인'}
-                  </button>
-                  <button type="button" onClick={() => updateRole(user.uid, user.role === 'admin' ? 'member' : 'admin')}>
-                    {user.role === 'admin' ? '관리자 해제' : '관리자 지정'}
-                  </button>
+            <>
+              <div className="section-heading inline admin-subheading">
+                <div>
+                  <p>Pending</p>
+                  <h2>가입 신청</h2>
                 </div>
-              ))}
-            </div>
+                <strong>{pendingUsers.length}명</strong>
+              </div>
+              <div className="admin-table">
+                {pendingUsers.length ? pendingUsers.map(renderUserRow) : <p className="admin-empty">대기 중인 가입 신청이 없습니다.</p>}
+              </div>
+
+              <div className="section-heading inline admin-subheading">
+                <div>
+                  <p>Members</p>
+                  <h2>승인된 회원</h2>
+                </div>
+                <strong>{approvedUsers.length}명</strong>
+              </div>
+              <div className="admin-table">
+                {approvedUsers.length ? approvedUsers.map(renderUserRow) : <p className="admin-empty">승인된 회원이 없습니다.</p>}
+              </div>
+            </>
           )}
         </section>
       </main>
