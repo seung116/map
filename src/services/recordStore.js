@@ -2,13 +2,11 @@ import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, write
 import { firestore, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
-const PHOTOS_COLLECTION = 'travelRecordPhotos';
-const MAX_PHOTO_SRC_CHARS = 70_000;
+const MAX_PHOTO_SRC_CHARS = 55_000;
 
-function sharedPhoto(recordId, photo) {
+function sharedPhoto(photo) {
   const src = typeof photo.src === 'string' && photo.src.length <= MAX_PHOTO_SRC_CHARS ? photo.src : '';
   return {
-    recordId: String(recordId),
     id: photo.id,
     caption: photo.caption || '여행 사진',
     src,
@@ -18,22 +16,8 @@ function sharedPhoto(recordId, photo) {
 function sharedRecord(record) {
   return {
     ...record,
-    photos: [],
+    photos: (record.photos || []).slice(0, 1).map(sharedPhoto),
   };
-}
-
-function mergeRecordsAndPhotos(records, photos) {
-  const photosByRecord = photos.reduce((groups, photo) => {
-    const recordPhotos = groups.get(photo.recordId) || [];
-    recordPhotos.push(photo);
-    groups.set(photo.recordId, recordPhotos);
-    return groups;
-  }, new Map());
-
-  return records.map((record) => ({
-    ...record,
-    photos: photosByRecord.get(String(record.id)) || [],
-  }));
 }
 
 async function commitRecordBatch(nextRecords, previousRecords) {
@@ -50,14 +34,6 @@ async function commitRecordBatch(nextRecords, previousRecords) {
       ...sharedRecord(record),
       updatedAt: serverTimestamp(),
     });
-
-    for (const photo of (record.photos || []).slice(0, 1)) {
-      const photoId = `${record.id}_${photo.id}`;
-      batch.set(doc(firestore, PHOTOS_COLLECTION, photoId), {
-        ...sharedPhoto(record.id, photo),
-        updatedAt: serverTimestamp(),
-      });
-    }
   }
 
   for (const id of previousById.keys()) {
@@ -74,11 +50,8 @@ export async function loadRemoteRecords() {
     return null;
   }
 
-  const recordsSnapshot = await getDocs(collection(firestore, RECORDS_COLLECTION));
-  const photosSnapshot = await getDocs(collection(firestore, PHOTOS_COLLECTION));
-  const records = recordsSnapshot.docs.map((item) => item.data());
-  const photos = photosSnapshot.docs.map((item) => item.data());
-  return mergeRecordsAndPhotos(records, photos);
+  const snapshot = await getDocs(collection(firestore, RECORDS_COLLECTION));
+  return snapshot.docs.map((item) => item.data());
 }
 
 export function subscribeRemoteRecords(onRecords, onError) {
@@ -86,41 +59,13 @@ export function subscribeRemoteRecords(onRecords, onError) {
     return null;
   }
 
-  let records = [];
-  let photos = [];
-  let recordsReady = false;
-  let photosReady = false;
-
-  const emit = () => {
-    if (recordsReady && photosReady) {
-      onRecords(mergeRecordsAndPhotos(records, photos));
-    }
-  };
-
-  const unsubscribeRecords = onSnapshot(
+  return onSnapshot(
     collection(firestore, RECORDS_COLLECTION),
     (snapshot) => {
-      records = snapshot.docs.map((item) => item.data());
-      recordsReady = true;
-      emit();
+      onRecords(snapshot.docs.map((item) => item.data()));
     },
     onError,
   );
-
-  const unsubscribePhotos = onSnapshot(
-    collection(firestore, PHOTOS_COLLECTION),
-    (snapshot) => {
-      photos = snapshot.docs.map((item) => item.data());
-      photosReady = true;
-      emit();
-    },
-    onError,
-  );
-
-  return () => {
-    unsubscribeRecords();
-    unsubscribePhotos();
-  };
 }
 
 export async function saveRemoteRecords(nextRecords, previousRecords = []) {
