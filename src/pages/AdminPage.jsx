@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
 import { setUserApproval, setUserRole, subscribeUsers } from '../services/authStore';
 
+function adminErrorMessage(error) {
+  if (error?.code === 'permission-denied') {
+    return '회원가입 신청 목록을 읽을 권한이 없습니다. Firestore Rules에서 관리자가 users 컬렉션을 읽고 수정할 수 있게 허용해야 합니다. (permission-denied)';
+  }
+
+  return error?.message || '회원 목록을 불러오지 못했습니다.';
+}
+
 export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +33,7 @@ export default function AdminPage() {
       },
       (subscribeError) => {
         console.error('User list subscribe failed:', subscribeError);
-        setError(subscribeError.message || '회원 목록을 불러오지 못했습니다.');
+        setError(adminErrorMessage(subscribeError));
         setLoading(false);
       },
     );

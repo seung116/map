@@ -60,6 +60,11 @@ Use these Firestore rules:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function bootstrapAdmin() {
+      return request.auth != null
+        && request.auth.uid == "KHOQ7B536lZC7BFq39AnA459mry1";
+    }
+
     function signedIn() {
       return request.auth != null;
     }
@@ -73,7 +78,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn() && userDoc().data.role == "admin";
+      return bootstrapAdmin() || (signedIn() && userDoc().data.role == "admin");
     }
 
     match /users/{userId} {
