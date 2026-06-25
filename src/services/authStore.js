@@ -27,6 +27,16 @@ function profileForUser(user, snapshot) {
   return user.uid === BOOTSTRAP_ADMIN_UID ? bootstrapAdminProfile(user, profile || {}) : profile;
 }
 
+async function ensurePendingProfile(user) {
+  if (user.uid === BOOTSTRAP_ADMIN_UID) return;
+
+  try {
+    await requestApproval(user, user.displayName || user.email);
+  } catch (error) {
+    console.warn('Pending user profile sync failed:', error);
+  }
+}
+
 async function ensureBootstrapAdmin(user) {
   if (user.uid !== BOOTSTRAP_ADMIN_UID) return;
 
@@ -60,7 +70,12 @@ export function subscribeAuthState(onChange) {
     unsubscribeProfile = onSnapshot(
       doc(firestore, USERS_COLLECTION, user.uid),
       (snapshot) => {
-        ensureBootstrapAdmin(user);
+        if (user.uid === BOOTSTRAP_ADMIN_UID) {
+          ensureBootstrapAdmin(user);
+        } else if (!snapshot.exists()) {
+          ensurePendingProfile(user);
+        }
+
         onChange({
           user,
           profile: profileForUser(user, snapshot),
