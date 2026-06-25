@@ -2,7 +2,31 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import { emptyForm, regions } from '../data/travelData';
+import { getLastRecordSaveError } from '../services/recordStore';
 import { normalizeRecordDates, toPhotoFiles } from '../utils/travelUtils';
+
+function saveFailureMessage() {
+  const error = getLastRecordSaveError();
+  const code = error?.code || '';
+
+  if (code === 'storage/unauthorized') {
+    return '사진 저장 권한이 막혀 있습니다. Firebase Storage Rules와 계정 승인 상태를 확인해주세요. (storage/unauthorized)';
+  }
+
+  if (code === 'storage/bucket-not-found') {
+    return 'Firebase Storage 버킷을 찾지 못했습니다. Storage 생성 여부와 VITE_FIREBASE_STORAGE_BUCKET 값을 확인해주세요. (storage/bucket-not-found)';
+  }
+
+  if (code === 'storage/quota-exceeded') {
+    return 'Firebase Storage 무료 사용량 또는 업로드 한도에 걸렸습니다. 사진 크기를 줄이거나 Firebase 사용량을 확인해주세요. (storage/quota-exceeded)';
+  }
+
+  if (code) {
+    return `기록 저장에 실패했습니다. Firebase 오류: ${code}`;
+  }
+
+  return '기록 저장에 실패했습니다. 사진을 줄이거나 잠시 후 다시 시도해주세요.';
+}
 
 export default function RecordFormPage({ records, setRecords }) {
   const navigate = useNavigate();
@@ -61,7 +85,7 @@ export default function RecordFormPage({ records, setRecords }) {
       return;
     }
 
-    window.alert('기록 저장에 실패했습니다. 사진을 줄이거나 잠시 후 다시 시도해주세요.');
+    window.alert(saveFailureMessage());
   };
 
   const deleteRecord = () => {
@@ -113,7 +137,7 @@ export default function RecordFormPage({ records, setRecords }) {
           <label className="upload-box span-2">
             <input type="file" multiple accept="image/*" onChange={addPhotos} />
             <strong>사진 업로드</strong>
-            <span>선택한 사진은 공유용 썸네일로 저장되어 앨범에 표시됩니다.</span>
+            <span>선택한 사진은 Firebase Storage에 저장되어 앨범에 표시됩니다.</span>
           </label>
 
           {form.photos.length > 0 && (

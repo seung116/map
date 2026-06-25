@@ -3,6 +3,11 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { firestore, storage, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
+let lastRecordSaveError = null;
+
+export function getLastRecordSaveError() {
+  return lastRecordSaveError;
+}
 
 function userRecordsCollection(userId) {
   return collection(firestore, 'users', userId, RECORDS_COLLECTION);
@@ -102,7 +107,14 @@ export async function saveRemoteRecords(nextRecords, previousRecords = [], userI
     return false;
   }
 
-  await commitRecordBatch(nextRecords, previousRecords, userId);
+  try {
+    await commitRecordBatch(nextRecords, previousRecords, userId);
+    lastRecordSaveError = null;
+  } catch (error) {
+    lastRecordSaveError = error;
+    throw error;
+  }
+
   return true;
 }
 
