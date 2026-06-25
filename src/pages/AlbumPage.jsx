@@ -29,10 +29,21 @@ export default function AlbumPage({ records }) {
           <h1>전체 여행 사진</h1>
         </section>
         <div className="album-grid">
-          {photos.map((photo) => (
-            <button key={`${photo.id}-${photo.recordTitle}`} className="album-item" type="button" onClick={() => setSelected(photo)}>
-              <img src={photo.src || heroImage} alt={photo.caption} />
-              <span>{regionName(photo.regionId)} · {photo.caption}</span>
+          {photos.map((photo, index) => (
+            <button
+              key={`${photo.id}-${photo.recordTitle}`}
+              className="album-item"
+              type="button"
+              style={{ '--delay': `${Math.min(index, 8) * 24}ms` }}
+              onClick={() => setSelected(photo)}
+            >
+              <span className="album-photo">
+                <img src={photo.src || heroImage} alt={photo.caption} />
+              </span>
+              <span className="album-caption">
+                <strong>{photo.caption}</strong>
+                <small>{regionName(photo.regionId)} · {photo.dateRange}</small>
+              </span>
             </button>
           ))}
         </div>
