@@ -1,6 +1,8 @@
 import {
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  setPersistence,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -10,6 +12,17 @@ import { auth, firestore, firebaseEnabled } from '../lib/firebase';
 
 const USERS_COLLECTION = 'users';
 const BOOTSTRAP_ADMIN_UID = import.meta.env.VITE_BOOTSTRAP_ADMIN_UID || '';
+let authPersistencePromise = null;
+
+function ensureAuthPersistence() {
+  if (!auth) return Promise.resolve();
+
+  if (!authPersistencePromise) {
+    authPersistencePromise = setPersistence(auth, browserLocalPersistence);
+  }
+
+  return authPersistencePromise;
+}
 
 function bootstrapAdminProfile(user, profile = {}) {
   return {
@@ -57,6 +70,8 @@ export function subscribeAuthState(onChange) {
     return () => {};
   }
 
+  ensureAuthPersistence();
+
   let unsubscribeProfile = null;
 
   return onAuthStateChanged(auth, (user) => {
@@ -93,12 +108,14 @@ export function subscribeAuthState(onChange) {
 }
 
 export async function registerUser({ email, password, displayName }) {
+  await ensureAuthPersistence();
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(credential.user, { displayName });
   await requestApproval(credential.user, displayName);
 }
 
-export function loginUser({ email, password }) {
+export async function loginUser({ email, password }) {
+  await ensureAuthPersistence();
   return signInWithEmailAndPassword(auth, email, password);
 }
 
