@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import adminMapImage from '../assets/korea-admin-map.png';
+import adminMapImage from '../assets/korea-province-map.png';
 import provinceGangwon from '../assets/province-gangwon.png';
 import provinceGyeonggi from '../assets/province-gyeonggi.png';
 import provinceGyeongbuk from '../assets/province-gyeongbuk.png';

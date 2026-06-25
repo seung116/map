@@ -29,7 +29,7 @@ export const provinceGroups = [
     points: '43,37 53,34 61,41 58,51 47,53 39,45',
     labelX: 50,
     labelY: 45,
-    imagePolygon: '41% 20%, 47% 20%, 49% 25%, 45% 30%, 39% 28%, 38% 23%',
+    imagePolygon: '28% 21%, 36% 20%, 39% 23%, 37% 27%, 30% 28%, 27% 24%',
     crop: { x: 255, y: 145, width: 95, height: 95 },
   },
   {
@@ -40,7 +40,7 @@ export const provinceGroups = [
     points: '25,23 36,7 50,6 58,18 55,30 43,35 31,31',
     labelX: 42,
     labelY: 22,
-    imagePolygon: '30% 8%, 50% 8%, 58% 19%, 52% 35%, 32% 37%, 22% 28%, 23% 16%',
+    imagePolygon: '27% 18%, 34% 8%, 50% 9%, 55% 24%, 50% 35%, 36% 37%, 23% 29%, 23% 20%',
     crop: { x: 150, y: 55, width: 270, height: 275 },
   },
   {
@@ -51,7 +51,7 @@ export const provinceGroups = [
     points: '50,6 68,9 85,21 88,36 76,39 65,37 55,30 58,18',
     labelX: 70,
     labelY: 24,
-    imagePolygon: '50% 8%, 63% 7%, 69% 2%, 76% 12%, 84% 33%, 74% 39%, 60% 35%, 54% 25%',
+    imagePolygon: '47% 8%, 62% 7%, 66% 2%, 77% 12%, 86% 33%, 79% 43%, 66% 43%, 50% 36%, 54% 24%',
     crop: { x: 365, y: 12, width: 255, height: 335 },
   },
   {
@@ -62,7 +62,7 @@ export const provinceGroups = [
     points: '43,35 55,30 65,37 66,51 57,57 48,52 41,44',
     labelX: 54,
     labelY: 44,
-    imagePolygon: '42% 36%, 56% 34%, 64% 44%, 58% 56%, 43% 53%, 38% 44%',
+    imagePolygon: '43% 34%, 61% 34%, 68% 46%, 61% 58%, 44% 56%, 39% 47%',
     crop: { x: 285, y: 285, width: 205, height: 215 },
   },
   {
@@ -73,7 +73,7 @@ export const provinceGroups = [
     points: '18,36 31,31 43,35 41,44 48,52 40,60 27,57 18,51',
     labelX: 32,
     labelY: 46,
-    imagePolygon: '20% 36%, 39% 36%, 45% 47%, 36% 60%, 19% 54%, 14% 45%',
+    imagePolygon: '18% 37%, 40% 36%, 44% 47%, 39% 56%, 22% 55%, 16% 48%',
     crop: { x: 88, y: 305, width: 290, height: 250 },
   },
   {
@@ -84,7 +84,7 @@ export const provinceGroups = [
     points: '27,57 40,60 48,52 57,57 62,65 55,75 41,75 29,68',
     labelX: 44,
     labelY: 66,
-    imagePolygon: '25% 55%, 45% 54%, 52% 65%, 45% 74%, 29% 72%, 21% 64%',
+    imagePolygon: '23% 55%, 48% 56%, 53% 66%, 43% 72%, 25% 68%, 20% 62%',
     crop: { x: 145, y: 465, width: 270, height: 220 },
   },
   {
@@ -95,7 +95,7 @@ export const provinceGroups = [
     points: '29,68 41,75 55,75 59,84 52,89 42,96 28,91 17,82 23,67',
     labelX: 39,
     labelY: 82,
-    imagePolygon: '19% 68%, 43% 70%, 48% 84%, 34% 93%, 13% 89%, 8% 77%',
+    imagePolygon: '12% 69%, 34% 70%, 49% 77%, 42% 88%, 27% 91%, 15% 85%, 7% 77%',
     crop: { x: 35, y: 560, width: 355, height: 295 },
   },
   {
@@ -106,7 +106,7 @@ export const provinceGroups = [
     points: '65,37 76,39 88,36 91,54 84,70 72,68 62,65 57,57 66,51',
     labelX: 74,
     labelY: 53,
-    imagePolygon: '56% 38%, 76% 38%, 84% 50%, 80% 68%, 62% 67%, 52% 56%',
+    imagePolygon: '62% 35%, 84% 35%, 89% 55%, 82% 67%, 64% 63%, 55% 51%',
     crop: { x: 380, y: 295, width: 285, height: 325 },
   },
   {
@@ -117,7 +117,7 @@ export const provinceGroups = [
     points: '62,65 72,68 84,70 80,82 67,91 59,84 55,75',
     labelX: 69,
     labelY: 77,
-    imagePolygon: '48% 65%, 72% 65%, 82% 76%, 72% 86%, 51% 82%, 43% 73%',
+    imagePolygon: '48% 60%, 78% 61%, 85% 70%, 76% 80%, 55% 82%, 48% 70%',
     crop: { x: 310, y: 555, width: 340, height: 245 },
   },
   {
@@ -128,7 +128,7 @@ export const provinceGroups = [
     points: '33,100 40,97 52,98 62,101 55,104 42,104',
     labelX: 48,
     labelY: 101.5,
-    imagePolygon: '72% 83%, 94% 83%, 94% 98%, 72% 98%',
+    imagePolygon: '17% 92%, 34% 91%, 35% 98%, 18% 99%',
     crop: { x: 525, y: 730, width: 205, height: 145 },
   },
 ];
