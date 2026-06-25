@@ -2,10 +2,10 @@ import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, write
 import { firestore, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
-const MAX_PHOTO_SRC_CHARS = 55_000;
+const MAX_PHOTO_SRC_CHARS = 120_000;
 
 function sharedPhoto(photo) {
-  const src = typeof photo.src === 'string' && photo.src.length <= MAX_PHOTO_SRC_CHARS ? photo.src : '';
+  const src = typeof photo.src === 'string' ? photo.src.slice(0, MAX_PHOTO_SRC_CHARS) : '';
   return {
     id: photo.id,
     caption: photo.caption || '여행 사진',
@@ -16,7 +16,7 @@ function sharedPhoto(photo) {
 function sharedRecord(record) {
   return {
     ...record,
-    photos: (record.photos || []).slice(0, 1).map(sharedPhoto),
+    photos: (record.photos || []).filter((photo) => photo.src).slice(0, 1).map(sharedPhoto),
   };
 }
 

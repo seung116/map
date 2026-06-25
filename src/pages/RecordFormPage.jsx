@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
 import { emptyForm, regions } from '../data/travelData';
 import { normalizeRecordDates, toPhotoFiles } from '../utils/travelUtils';
@@ -49,7 +48,7 @@ export default function RecordFormPage({ records, setRecords }) {
     const nextRecord = {
       ...normalizeRecordDates(form),
       id: editing?.id || Date.now(),
-      photos: form.photos.length ? form.photos : [{ id: Date.now() + 1, src: heroImage, caption: '여행 대표 사진' }],
+      photos: form.photos,
     };
 
     const nextRecords = editing
