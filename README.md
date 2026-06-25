@@ -40,7 +40,7 @@ This app uses Firebase Authentication, Firestore, and Firebase Storage.
 
 Recommended no-cost guardrails:
 
-- Enable only the sign-in providers you use, such as Email/Password and Google.
+- Use Email/Password Authentication only.
 - Keep Firestore reads under 50K/day, writes under 20K/day, deletes under 20K/day, and stored data under 1 GiB.
 - Store photos in Firebase Storage under `users/{uid}/travel-records/...`.
 - Add a Google Cloud budget alert for the billing account.
