@@ -23,4 +23,4 @@ This repository is set up for GitHub Pages.
 
 ## Shared storage
 
-If you want records to sync across phones, create a Firebase project on the free Spark plan and set the values from `.env.example` in a local `.env` file.
+If you want records to sync across phones, create a Firebase project on the free Spark plan, enable Firestore, and set the values from `.env.example` in a local `.env` file.
