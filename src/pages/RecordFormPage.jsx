@@ -23,13 +23,13 @@ export default function RecordFormPage({ records, setRecords }) {
 
   const addPhotos = async (event) => {
     const selectedFiles = Array.from(event.target.files);
-    const remainingSlots = Math.max(0, 3 - form.photos.length);
+    const remainingSlots = Math.max(0, 1 - form.photos.length);
     const nextPhotos = await toPhotoFiles(selectedFiles.slice(0, remainingSlots));
     update('photos', [...form.photos, ...nextPhotos]);
     event.target.value = '';
 
     if (selectedFiles.length > remainingSlots) {
-      window.alert('공유 저장 안정성을 위해 사진은 기록당 최대 3장까지 저장됩니다.');
+      window.alert('공유 저장 안정성을 위해 사진은 기록당 1장만 저장됩니다.');
     }
   };
 
@@ -113,8 +113,8 @@ export default function RecordFormPage({ records, setRecords }) {
           </label>
           <label className="upload-box span-2">
             <input type="file" multiple accept="image/*" onChange={addPhotos} />
-            <strong>사진 여러 장 업로드</strong>
-            <span>선택한 사진은 브라우저 안에 저장되어 앨범에 바로 표시됩니다.</span>
+            <strong>사진 업로드</strong>
+            <span>선택한 사진은 공유용 썸네일로 저장되어 앨범에 표시됩니다.</span>
           </label>
 
           {form.photos.length > 0 && (
