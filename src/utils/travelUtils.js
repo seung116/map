@@ -56,7 +56,7 @@ export function topItem(counts) {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
 }
 
-function compressImage(file, index, maxWidth = 180, quality = 0.42) {
+function compressImage(file, index, maxWidth = 96, quality = 0.28) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     const image = new Image();

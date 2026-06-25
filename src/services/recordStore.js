@@ -2,8 +2,8 @@ import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, write
 import { firestore, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
-const MAX_PHOTO_SRC_CHARS = 90_000;
-const MAX_RECORD_BYTES = 250_000;
+const MAX_PHOTO_SRC_CHARS = 35_000;
+const MAX_RECORD_BYTES = 120_000;
 
 function byteSize(value) {
   return new Blob([JSON.stringify(value)]).size;
@@ -29,6 +29,43 @@ function prepareSharedRecord(record) {
   }
 
   return { ...compacted, photos: [] };
+}
+
+function stripRecordPhotos(record) {
+  return {
+    ...record,
+    photos: [],
+  };
+}
+
+function hasPhotoData(record) {
+  return (record.photos || []).some((photo) => photo.src);
+}
+
+async function commitRecordBatch(nextRecords, previousRecords, prepareRecord) {
+  const previousById = new Map(previousRecords.map((record) => [String(record.id), record]));
+  const nextIds = new Set(nextRecords.map((record) => String(record.id)));
+  const batch = writeBatch(firestore);
+
+  for (const record of nextRecords) {
+    const previous = previousById.get(String(record.id));
+    const changed = !previous || JSON.stringify({ ...previous, updatedAt: undefined }) !== JSON.stringify({ ...record, updatedAt: undefined });
+    if (!changed) continue;
+    const sharedRecord = prepareRecord(record);
+
+    batch.set(doc(firestore, RECORDS_COLLECTION, String(record.id)), {
+      ...sharedRecord,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  for (const id of previousById.keys()) {
+    if (!nextIds.has(id)) {
+      batch.delete(doc(firestore, RECORDS_COLLECTION, id));
+    }
+  }
+
+  await batch.commit();
 }
 
 export async function loadRemoteRecords() {
@@ -59,30 +96,18 @@ export async function saveRemoteRecords(nextRecords, previousRecords = []) {
     return false;
   }
 
-  const previousById = new Map(previousRecords.map((record) => [String(record.id), record]));
-  const nextIds = new Set(nextRecords.map((record) => String(record.id)));
-  const batch = writeBatch(firestore);
-
-  for (const record of nextRecords) {
-    const previous = previousById.get(String(record.id));
-    const changed = !previous || JSON.stringify({ ...previous, updatedAt: undefined }) !== JSON.stringify({ ...record, updatedAt: undefined });
-    if (!changed) continue;
-    const sharedRecord = prepareSharedRecord(record);
-
-    batch.set(doc(firestore, RECORDS_COLLECTION, String(record.id)), {
-      ...sharedRecord,
-      updatedAt: serverTimestamp(),
-    });
-  }
-
-  for (const id of previousById.keys()) {
-    if (!nextIds.has(id)) {
-      batch.delete(doc(firestore, RECORDS_COLLECTION, id));
+  try {
+    await commitRecordBatch(nextRecords, previousRecords, prepareSharedRecord);
+    return true;
+  } catch (error) {
+    if (!nextRecords.some(hasPhotoData)) {
+      throw error;
     }
-  }
 
-  await batch.commit();
-  return true;
+    console.warn('Photo data save failed. Retrying record save without photos.', error);
+    await commitRecordBatch(nextRecords, previousRecords, stripRecordPhotos);
+    return true;
+  }
 }
 
 export async function deleteRemoteRecord(recordId) {
