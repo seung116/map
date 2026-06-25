@@ -25,6 +25,12 @@ const provinceImages = {
   'jeju-do': provinceJeju,
 };
 
+function scrollToPageTop() {
+  window.requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
 export default function MapExplorer({ records, onSelectionChange }) {
   const navigate = useNavigate();
   const visitedIds = new Set(records.map((record) => record.regionId));
@@ -45,6 +51,7 @@ export default function MapExplorer({ records, onSelectionChange }) {
     setSelectedProvince(provinceId);
     setSelectedRegion(null);
     onSelectionChange?.(true);
+    scrollToPageTop();
   };
 
   const resetProvince = () => {
