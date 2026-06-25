@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, getDocs, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { firestore, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
@@ -10,6 +10,20 @@ export async function loadRemoteRecords() {
 
   const snapshot = await getDocs(collection(firestore, RECORDS_COLLECTION));
   return snapshot.docs.map((item) => item.data());
+}
+
+export function subscribeRemoteRecords(onRecords, onError) {
+  if (!firebaseEnabled || !firestore) {
+    return null;
+  }
+
+  return onSnapshot(
+    collection(firestore, RECORDS_COLLECTION),
+    (snapshot) => {
+      onRecords(snapshot.docs.map((item) => item.data()));
+    },
+    onError,
+  );
 }
 
 export async function saveRemoteRecords(nextRecords, previousRecords = []) {

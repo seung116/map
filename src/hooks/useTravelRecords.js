@@ -1,38 +1,41 @@
 import { useEffect, useState } from 'react';
 import { starterRecords } from '../data/travelData';
 import { firebaseEnabled } from '../lib/firebase';
-import { loadRemoteRecords, saveRemoteRecords } from '../services/recordStore';
+import { saveRemoteRecords, subscribeRemoteRecords } from '../services/recordStore';
 
 export function useTravelRecords() {
-  const [records, setRecordsState] = useState([]);
-  const [ready, setReady] = useState(false);
+  const [records, setRecordsState] = useState(() => {
+    if (firebaseEnabled) return [];
+
+    const saved = localStorage.getItem('korea-travel-records');
+    return saved ? JSON.parse(saved) : starterRecords;
+  });
+  const [ready, setReady] = useState(!firebaseEnabled);
 
   useEffect(() => {
     let active = true;
 
-    const load = async () => {
-      if (firebaseEnabled) {
-        try {
-          const remoteRecords = await loadRemoteRecords();
-          if (active) {
-            setRecordsState(remoteRecords || []);
-            setReady(true);
-          }
-          return;
-        } catch (error) {
-          console.error('Firebase records load failed:', error);
-        }
-      }
+    if (firebaseEnabled) {
+      const unsubscribe = subscribeRemoteRecords(
+        (remoteRecords) => {
+          if (!active) return;
+          setRecordsState(remoteRecords);
+          setReady(true);
+        },
+        (error) => {
+          console.error('Firebase records subscribe failed:', error);
+          if (!active) return;
+          const saved = localStorage.getItem('korea-travel-records');
+          setRecordsState(saved ? JSON.parse(saved) : starterRecords);
+          setReady(true);
+        },
+      );
 
-      const saved = localStorage.getItem('korea-travel-records');
-      const nextRecords = saved ? JSON.parse(saved) : starterRecords;
-      if (active) {
-        setRecordsState(nextRecords);
-        setReady(true);
-      }
-    };
-
-    load();
+      return () => {
+        active = false;
+        unsubscribe?.();
+      };
+    }
 
     return () => {
       active = false;
