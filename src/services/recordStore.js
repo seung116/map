@@ -12,17 +12,20 @@ export async function loadRemoteRecords() {
   return snapshot.docs.map((item) => item.data());
 }
 
-export async function saveRemoteRecords(records) {
+export async function saveRemoteRecords(nextRecords, previousRecords = []) {
   if (!firebaseEnabled || !firestore) {
     return false;
   }
 
-  const existing = await getDocs(collection(firestore, RECORDS_COLLECTION));
-  const existingIds = new Set(existing.docs.map((item) => item.id));
-  const nextIds = new Set(records.map((record) => String(record.id)));
+  const previousById = new Map(previousRecords.map((record) => [String(record.id), record]));
+  const nextIds = new Set(nextRecords.map((record) => String(record.id)));
   const batch = writeBatch(firestore);
 
-  for (const record of records) {
+  for (const record of nextRecords) {
+    const previous = previousById.get(String(record.id));
+    const changed = !previous || JSON.stringify({ ...previous, updatedAt: undefined }) !== JSON.stringify({ ...record, updatedAt: undefined });
+    if (!changed) continue;
+
     batch.set(doc(firestore, RECORDS_COLLECTION, String(record.id)), {
       ...record,
       photos: record.photos || [],
@@ -30,7 +33,7 @@ export async function saveRemoteRecords(records) {
     });
   }
 
-  for (const id of existingIds) {
+  for (const id of previousById.keys()) {
     if (!nextIds.has(id)) {
       batch.delete(doc(firestore, RECORDS_COLLECTION, id));
     }

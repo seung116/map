@@ -40,11 +40,12 @@ export function useTravelRecords() {
   }, []);
 
   const persist = async (nextRecords) => {
+    const previousRecords = records;
     setRecordsState(nextRecords);
 
     if (firebaseEnabled) {
       try {
-        await saveRemoteRecords(nextRecords);
+        await saveRemoteRecords(nextRecords, previousRecords);
         return;
       } catch (error) {
         console.error('Firebase records save failed:', error);
