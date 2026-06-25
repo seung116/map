@@ -49,13 +49,16 @@ export function useTravelRecords() {
     if (firebaseEnabled) {
       try {
         await saveRemoteRecords(nextRecords, previousRecords);
-        return;
+        return true;
       } catch (error) {
         console.error('Firebase records save failed:', error);
+        setRecordsState(previousRecords);
+        return false;
       }
     }
 
     localStorage.setItem('korea-travel-records', JSON.stringify(nextRecords));
+    return true;
   };
 
   return { records, setRecords: persist, ready };

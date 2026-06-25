@@ -22,8 +22,15 @@ export default function RecordFormPage({ records, setRecords }) {
   });
 
   const addPhotos = async (event) => {
-    const nextPhotos = await toPhotoFiles(event.target.files);
+    const selectedFiles = Array.from(event.target.files);
+    const remainingSlots = Math.max(0, 4 - form.photos.length);
+    const nextPhotos = await toPhotoFiles(selectedFiles.slice(0, remainingSlots));
     update('photos', [...form.photos, ...nextPhotos]);
+    event.target.value = '';
+
+    if (selectedFiles.length > remainingSlots) {
+      window.alert('공유 저장 안정성을 위해 사진은 기록당 최대 4장까지 저장됩니다.');
+    }
   };
 
   const updateCaption = (photoId, caption) => {
@@ -37,7 +44,7 @@ export default function RecordFormPage({ records, setRecords }) {
     update('photos', form.photos.filter((photo) => photo.id !== photoId));
   };
 
-  const saveRecord = (event) => {
+  const saveRecord = async (event) => {
     event.preventDefault();
     const nextRecord = {
       ...normalizeRecordDates(form),
@@ -49,8 +56,13 @@ export default function RecordFormPage({ records, setRecords }) {
       ? records.map((record) => (record.id === editing.id ? nextRecord : record))
       : [nextRecord, ...records];
 
-    setRecords(nextRecords);
-    navigate(`/region/${nextRecord.regionId}`);
+    const saved = await setRecords(nextRecords);
+    if (saved) {
+      navigate(`/region/${nextRecord.regionId}`);
+      return;
+    }
+
+    window.alert('기록 저장에 실패했습니다. 사진을 줄이거나 잠시 후 다시 시도해주세요.');
   };
 
   const deleteRecord = () => {

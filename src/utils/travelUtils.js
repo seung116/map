@@ -56,20 +56,42 @@ export function topItem(counts) {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
 }
 
+function compressImage(file, index, maxWidth = 640, quality = 0.62) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const image = new Image();
+
+    reader.onerror = reject;
+    image.onerror = reject;
+
+    image.onload = () => {
+      const scale = Math.min(1, maxWidth / image.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      resolve({
+        id: Date.now() + index,
+        src: canvas.toDataURL('image/jpeg', quality),
+        caption: file.name.replace(/\.[^/.]+$/, ''),
+      });
+    };
+
+    reader.onload = () => {
+      image.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
 export function toPhotoFiles(files) {
   return Promise.all(
-    Array.from(files).map(
-      (file, index) =>
-        new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () =>
-            resolve({
-              id: Date.now() + index,
-              src: reader.result,
-              caption: file.name.replace(/\.[^/.]+$/, ''),
-            });
-          reader.readAsDataURL(file);
-        }),
-    ),
+    Array.from(files)
+      .slice(0, 4)
+      .map((file, index) => compressImage(file, index)),
   );
 }
