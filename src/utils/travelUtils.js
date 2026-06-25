@@ -45,9 +45,33 @@ export function cityPlacesFor(regionId) {
   return places;
 }
 
+export function recordPlaceOptionsFor(regionId) {
+  const places = detailPlaces[regionId] || [];
+  const cityPlaces = cityPlacesFor(regionId);
+  return cityPlaces.length ? cityPlaces : places;
+}
+
+export function recordRegionId(record) {
+  if (!record?.cityName) return record?.regionId;
+
+  const savedRegionPlaces = recordPlaceOptionsFor(record.regionId);
+  if (savedRegionPlaces.includes(record.cityName)) return record.regionId;
+
+  return regions.find((region) => recordPlaceOptionsFor(region.id).includes(record.cityName))?.id || record.regionId;
+}
+
+export function recordMatchesRegion(record, regionId) {
+  return recordRegionId(record) === regionId;
+}
+
 export function cityUnitLabel(regionId) {
   if (regionId === 'seoul') return '구';
-  return regionId === 'jeju' ? '행정시' : '시';
+  if (regionId === 'jeju') return '행정시';
+
+  const places = recordPlaceOptionsFor(regionId);
+  if (places.length > 0 && places.every((place) => !place.endsWith('시'))) return '구·군';
+
+  return '시';
 }
 
 export function countBy(items) {

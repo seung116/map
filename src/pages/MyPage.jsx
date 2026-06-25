@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import StatCard from '../components/StatCard';
 import TravelCard from '../components/TravelCard';
-import { recordStartDate } from '../utils/travelUtils';
+import { recordRegionId, recordStartDate } from '../utils/travelUtils';
 
 export default function MyPage({ records, setRecords }) {
   const sortedRecords = [...records].sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a)));
-  const visitedCount = new Set(records.map((record) => record.regionId)).size;
+  const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
   const photoCount = records.reduce((sum, record) => sum + record.photos.length, 0);
 
   const deleteRecord = (recordId) => {

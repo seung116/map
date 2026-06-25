@@ -1,12 +1,12 @@
 import AppShell from '../components/AppShell';
 import StatCard from '../components/StatCard';
 import { regions } from '../data/travelData';
-import { countBy, recordStartDate, regionName, topItem } from '../utils/travelUtils';
+import { countBy, recordRegionId, recordStartDate, regionName, topItem } from '../utils/travelUtils';
 
 export default function StatsPage({ records }) {
-  const visitedCount = new Set(records.map((record) => record.regionId)).size;
+  const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
   const completion = Math.round((visitedCount / regions.length) * 100);
-  const regionCounts = countBy(records.map((record) => regionName(record.regionId)));
+  const regionCounts = countBy(records.map((record) => regionName(recordRegionId(record))));
   const companionCounts = countBy(records.flatMap((record) => record.companions.split(',').map((name) => name.trim()).filter(Boolean)));
   const monthCounts = countBy(records.map((record) => recordStartDate(record).slice(5, 7) || '미정'));
   const mostRegion = topItem(regionCounts);

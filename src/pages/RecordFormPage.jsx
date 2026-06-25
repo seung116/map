@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import { emptyForm, regions } from '../data/travelData';
 import { getLastRecordSaveError } from '../services/recordStore';
-import { cityPlacesFor, cityUnitLabel, normalizeRecordDates, toPhotoFiles } from '../utils/travelUtils';
+import { cityUnitLabel, normalizeRecordDates, recordPlaceOptionsFor, toPhotoFiles } from '../utils/travelUtils';
 
 function saveFailureMessage() {
   const error = getLastRecordSaveError();
@@ -38,7 +38,7 @@ export default function RecordFormPage({ records, setRecords }) {
     const baseForm = editing
       ? normalizeRecordDates(editing)
       : { ...emptyForm, regionId: queryRegion || emptyForm.regionId };
-    const cityOptionsForRegion = cityPlacesFor(baseForm.regionId);
+    const cityOptionsForRegion = recordPlaceOptionsFor(baseForm.regionId);
     const cityName = cityOptionsForRegion.includes(queryCity)
       ? queryCity
       : cityOptionsForRegion.includes(baseForm.cityName)
@@ -47,7 +47,7 @@ export default function RecordFormPage({ records, setRecords }) {
 
     return { ...baseForm, cityName };
   });
-  const cityOptions = cityPlacesFor(form.regionId);
+  const cityOptions = recordPlaceOptionsFor(form.regionId);
   const cityLabel = cityUnitLabel(form.regionId);
 
   const update = (key, value) => setForm((current) => {
@@ -56,7 +56,7 @@ export default function RecordFormPage({ records, setRecords }) {
     }
 
     if (key === 'regionId') {
-      const nextCityOptions = cityPlacesFor(value);
+      const nextCityOptions = recordPlaceOptionsFor(value);
       const cityName = nextCityOptions.includes(current.cityName) ? current.cityName : nextCityOptions[0] || '';
       return { ...current, regionId: value, cityName };
     }

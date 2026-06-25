@@ -11,7 +11,7 @@ import provinceJeonnam from '../assets/province-jeonnam.png';
 import provinceChungbuk from '../assets/province-chungbuk.png';
 import provinceChungnam from '../assets/province-chungnam.png';
 import { detailLayouts, detailPlaces, districtCells, provinceGroups, regions } from '../data/travelData';
-import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor } from '../utils/travelUtils';
+import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor, recordMatchesRegion, recordRegionId } from '../utils/travelUtils';
 
 const provinceImages = {
   'gyeonggi-do': provinceGyeonggi,
@@ -33,7 +33,7 @@ function scrollToPageTop() {
 
 export default function MapExplorer({ records, onSelectionChange }) {
   const navigate = useNavigate();
-  const visitedIds = new Set(records.map((record) => record.regionId));
+  const visitedIds = new Set(records.map((record) => recordRegionId(record)));
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState(null);
   const province = provinceGroups.find((group) => group.id === selectedProvince);
@@ -47,7 +47,7 @@ export default function MapExplorer({ records, onSelectionChange }) {
   const allProvinceCities = provinceRegion ? cityPlacesFor(provinceRegion.id) : [];
   const recordedCityNames = new Set(
     records
-      .filter((record) => record.regionId === provinceRegion?.id && record.cityName)
+      .filter((record) => recordMatchesRegion(record, provinceRegion?.id) && record.cityName)
       .map((record) => record.cityName),
   );
   const provinceCities = allProvinceCities.filter((city) => recordedCityNames.has(city));

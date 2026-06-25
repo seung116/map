@@ -2,7 +2,7 @@ import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import TravelCard from '../components/TravelCard';
 import { regions } from '../data/travelData';
-import { cityUnitLabel } from '../utils/travelUtils';
+import { cityUnitLabel, recordMatchesRegion } from '../utils/travelUtils';
 
 export default function RegionPage({ records, setRecords }) {
   const { regionId } = useParams();
@@ -10,7 +10,7 @@ export default function RegionPage({ records, setRecords }) {
   const selectedCity = searchParams.get('city') || '';
   const region = regions.find((item) => item.id === regionId);
   const regionRecords = records.filter((record) => (
-    record.regionId === regionId && (!selectedCity || record.cityName === selectedCity)
+    recordMatchesRegion(record, regionId) && (!selectedCity || record.cityName === selectedCity)
   ));
 
   if (!region) return <Navigate to="/" replace />;

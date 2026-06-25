@@ -1,16 +1,18 @@
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
-import { recordDateRange, regionName } from '../utils/travelUtils';
+import { recordDateRange, recordRegionId, regionName } from '../utils/travelUtils';
 
 export default function TravelCard({ record, onDelete }) {
+  const displayRegionId = recordRegionId(record);
+
   return (
     <article className="travel-card">
-      <Link to={`/region/${record.regionId}`} className="travel-photo">
+      <Link to={`/region/${displayRegionId}`} className="travel-photo">
         <img src={record.photos[0]?.src || heroImage} alt={record.photos[0]?.caption || record.title} />
       </Link>
       <div className="travel-card-body">
         <div className="card-meta">
-          <span>{record.cityName ? `${regionName(record.regionId)} · ${record.cityName}` : regionName(record.regionId)}</span>
+          <span>{record.cityName ? `${regionName(displayRegionId)} · ${record.cityName}` : regionName(displayRegionId)}</span>
           <span>{recordDateRange(record)}</span>
         </div>
         <h3>{record.title}</h3>

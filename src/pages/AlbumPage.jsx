@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
-import { recordDateRange, recordEndDate, recordStartDate, regionName } from '../utils/travelUtils';
+import { recordDateRange, recordEndDate, recordRegionId, recordStartDate, regionName } from '../utils/travelUtils';
 
 const monthFormatter = new Intl.DateTimeFormat('ko-KR', { month: 'long' });
 
@@ -57,12 +57,13 @@ export default function AlbumPage({ records }) {
       const startDate = recordStartDate(record);
       const endDate = recordEndDate(record);
       const sortDate = endDate || startDate;
+      const displayRegionId = recordRegionId(record);
       return {
         ...photo,
         ...albumDateParts(sortDate),
         recordId: record.id,
         recordTitle: record.title,
-        regionId: record.regionId,
+        regionId: displayRegionId,
         cityName: record.cityName || '',
         dateRange: recordDateRange(record),
         startDate,

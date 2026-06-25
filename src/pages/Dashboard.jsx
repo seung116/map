@@ -5,13 +5,13 @@ import AppShell from '../components/AppShell';
 import MapExplorer from '../components/MapExplorer';
 import TravelCard from '../components/TravelCard';
 import { regions } from '../data/travelData';
-import { recordStartDate } from '../utils/travelUtils';
+import { recordRegionId, recordStartDate } from '../utils/travelUtils';
 
 export default function Dashboard({ records }) {
   const location = useLocation();
   const [mapSelectionActive, setMapSelectionActive] = useState(false);
   const homeReset = location.state?.homeReset || 0;
-  const visitedCount = new Set(records.map((record) => record.regionId)).size;
+  const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
   const completion = Math.round((visitedCount / regions.length) * 100);
   const latest = [...records].sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a))).slice(0, 3);
 
