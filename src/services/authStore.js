@@ -80,14 +80,7 @@ export function subscribeAuthState(onChange) {
 export async function registerUser({ email, password, displayName }) {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(credential.user, { displayName });
-  await setDoc(doc(firestore, USERS_COLLECTION, credential.user.uid), {
-    uid: credential.user.uid,
-    email,
-    displayName,
-    approved: false,
-    role: 'member',
-    createdAt: serverTimestamp(),
-  });
+  await requestApproval(credential.user, displayName);
 }
 
 export function loginUser({ email, password }) {
@@ -96,6 +89,23 @@ export function loginUser({ email, password }) {
 
 export function logoutUser() {
   return signOut(auth);
+}
+
+export async function requestApproval(user = auth.currentUser, displayName = auth.currentUser?.displayName || '') {
+  if (!user) throw new Error('로그인이 필요합니다.');
+
+  await setDoc(
+    doc(firestore, USERS_COLLECTION, user.uid),
+    {
+      uid: user.uid,
+      email: user.email,
+      displayName: displayName || user.displayName || user.email,
+      approved: false,
+      role: 'member',
+      createdAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
 }
 
 export async function listUsers() {

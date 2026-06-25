@@ -5,6 +5,7 @@ import { setUserApproval, setUserRole, subscribeUsers } from '../services/authSt
 export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const pendingUsers = users.filter((user) => user.role !== 'admin' && !user.approved);
   const approvedUsers = users.filter((user) => user.role === 'admin' || user.approved);
 
@@ -18,11 +19,13 @@ export default function AdminPage() {
   useEffect(() => {
     const unsubscribe = subscribeUsers(
       (nextUsers) => {
+        setError('');
         setUsers(sortUsers(nextUsers));
         setLoading(false);
       },
-      (error) => {
-        console.error('User list subscribe failed:', error);
+      (subscribeError) => {
+        console.error('User list subscribe failed:', subscribeError);
+        setError(subscribeError.message || '회원 목록을 불러오지 못했습니다.');
         setLoading(false);
       },
     );
@@ -66,6 +69,8 @@ export default function AdminPage() {
         <section className="content-section admin-panel">
           {loading ? (
             <p>회원 정보를 불러오는 중...</p>
+          ) : error ? (
+            <p className="admin-empty">{error}</p>
           ) : (
             <>
               <div className="section-heading inline admin-subheading">
