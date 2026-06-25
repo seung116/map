@@ -3,7 +3,7 @@ import { starterRecords } from '../data/travelData';
 import { firebaseEnabled } from '../lib/firebase';
 import { saveRemoteRecords, subscribeRemoteRecords } from '../services/recordStore';
 
-export function useTravelRecords(enabled = true) {
+export function useTravelRecords(enabled = true, userId = null) {
   const [records, setRecordsState] = useState(() => {
     if (firebaseEnabled || !enabled) return [];
 
@@ -23,6 +23,7 @@ export function useTravelRecords(enabled = true) {
 
     if (firebaseEnabled) {
       const unsubscribe = subscribeRemoteRecords(
+        userId,
         (remoteRecords) => {
           if (!active) return;
           setRecordsState(remoteRecords);
@@ -46,7 +47,7 @@ export function useTravelRecords(enabled = true) {
     return () => {
       active = false;
     };
-  }, [enabled]);
+  }, [enabled, userId]);
 
   const persist = async (nextRecords) => {
     const previousRecords = records;
@@ -54,7 +55,7 @@ export function useTravelRecords(enabled = true) {
 
     if (firebaseEnabled) {
       try {
-        await saveRemoteRecords(nextRecords, previousRecords);
+        await saveRemoteRecords(nextRecords, previousRecords, userId);
         return true;
       } catch (error) {
         console.error('Firebase records save failed:', error);

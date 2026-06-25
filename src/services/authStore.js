@@ -1,7 +1,9 @@
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
 } from 'firebase/auth';
@@ -9,7 +11,7 @@ import { collection, doc, getDoc, getDocs, onSnapshot, serverTimestamp, setDoc, 
 import { auth, firestore, firebaseEnabled } from '../lib/firebase';
 
 const USERS_COLLECTION = 'users';
-const BOOTSTRAP_ADMIN_UID = 'KHOQ7B536lZC7BFq39AnA459mry1';
+const BOOTSTRAP_ADMIN_UID = import.meta.env.VITE_BOOTSTRAP_ADMIN_UID || '';
 
 function bootstrapAdminProfile(user, profile = {}) {
   return {
@@ -87,15 +89,27 @@ export function loginUser({ email, password }) {
   return signInWithEmailAndPassword(auth, email, password);
 }
 
+export async function loginWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  const credential = await signInWithPopup(auth, provider);
+  await requestApproval(credential.user, credential.user.displayName || credential.user.email);
+}
+
 export function logoutUser() {
   return signOut(auth);
 }
 
 export async function requestApproval(user = auth.currentUser, displayName = auth.currentUser?.displayName || '') {
   if (!user) throw new Error('로그인이 필요합니다.');
+  const profileRef = doc(firestore, USERS_COLLECTION, user.uid);
+  const profile = await getDoc(profileRef);
+
+  if (profile.exists()) {
+    return;
+  }
 
   await setDoc(
-    doc(firestore, USERS_COLLECTION, user.uid),
+    profileRef,
     {
       uid: user.uid,
       email: user.email,

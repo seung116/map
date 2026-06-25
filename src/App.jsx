@@ -17,7 +17,7 @@ import './App.css';
 export default function App() {
   const auth = useAuthState();
   const canUseRecords = Boolean(auth.user && auth.isApproved);
-  const { records, setRecords, ready } = useTravelRecords(canUseRecords);
+  const { records, setRecords, ready } = useTravelRecords(canUseRecords, auth.user?.uid);
 
   if (auth.loading) {
     return (

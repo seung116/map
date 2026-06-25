@@ -56,7 +56,7 @@ export function topItem(counts) {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
 }
 
-function compressImage(file, index, maxWidth = 72, quality = 0.2) {
+function compressImage(file, index, maxWidth = 1200, quality = 0.78) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     const image = new Image();
@@ -91,7 +91,7 @@ function compressImage(file, index, maxWidth = 72, quality = 0.2) {
 export function toPhotoFiles(files) {
   return Promise.all(
     Array.from(files)
-      .slice(0, 1)
+      .slice(0, 3)
       .map((file, index) => compressImage(file, index)),
   );
 }

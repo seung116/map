@@ -22,13 +22,13 @@ export default function RecordFormPage({ records, setRecords }) {
 
   const addPhotos = async (event) => {
     const selectedFiles = Array.from(event.target.files);
-    const remainingSlots = Math.max(0, 1 - form.photos.length);
+    const remainingSlots = Math.max(0, 3 - form.photos.length);
     const nextPhotos = await toPhotoFiles(selectedFiles.slice(0, remainingSlots));
     update('photos', [...form.photos, ...nextPhotos]);
     event.target.value = '';
 
     if (selectedFiles.length > remainingSlots) {
-      window.alert('공유 저장 안정성을 위해 사진은 기록당 1장만 저장됩니다.');
+      window.alert('무료 사용량 관리를 위해 사진은 기록당 최대 3장까지 저장됩니다.');
     }
   };
 

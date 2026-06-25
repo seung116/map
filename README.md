@@ -23,17 +23,26 @@ This repository is set up for GitHub Pages.
 
 ## Shared storage
 
-If you want records to sync across phones, create a Firebase project on the free Spark plan, enable Firestore, and set the values from `.env.example` in a local `.env` file.
+If you want records to sync across phones, create a Firebase project on the free Spark plan, enable Authentication, Firestore, and Storage, then set the values from `.env.example` in a local `.env` file.
+
+For GitHub Pages deployment, add the same values as repository secrets:
+
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_APP_ID`
+- `VITE_BOOTSTRAP_ADMIN_UID` if you need one first admin account to be auto-promoted
 
 ## Firebase limits and access control
 
-This app uses Firebase Authentication and Firestore.
+This app uses Firebase Authentication, Firestore, and Firebase Storage.
 
 Recommended no-cost guardrails:
 
-- Use Email/Password Authentication only.
+- Enable only the sign-in providers you use, such as Email/Password and Google.
 - Keep Firestore reads under 50K/day, writes under 20K/day, deletes under 20K/day, and stored data under 1 GiB.
-- Keep Cloud Storage disabled unless you intentionally move photos there.
+- Store photos in Firebase Storage under `users/{uid}/travel-records/...`.
 - Add a Google Cloud budget alert for the billing account.
 
 After the first admin account signs up, set that user's Firestore document in `users/{uid}` to:
@@ -76,14 +85,38 @@ service cloud.firestore {
         && request.resource.data.role == "member";
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
       allow update, delete: if isAdmin();
+
+      match /travelRecords/{recordId} {
+        allow read, delete: if isApproved() && request.auth.uid == userId;
+        allow create, update: if isApproved()
+          && request.auth.uid == userId
+          && request.resource.data.userId == request.auth.uid;
+      }
+    }
+  }
+}
+```
+
+Use these Storage rules:
+
+```js
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
     }
 
-    match /travelRecords/{document} {
-      allow read, write: if isApproved();
+    function userDoc() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid));
     }
 
-    match /travelRecordPhotos/{document} {
-      allow read, write: if isApproved();
+    function isApproved() {
+      return signedIn() && userDoc().data.approved == true;
+    }
+
+    match /users/{userId}/travel-records/{allPaths=**} {
+      allow read, write: if isApproved() && request.auth.uid == userId;
     }
   }
 }

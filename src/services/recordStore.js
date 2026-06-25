@@ -1,11 +1,39 @@
 import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, writeBatch } from 'firebase/firestore';
-import { firestore, firebaseEnabled } from '../lib/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { firestore, storage, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
-const MAX_PHOTO_SRC_CHARS = 120_000;
 
-function sharedPhoto(photo) {
-  const src = typeof photo.src === 'string' ? photo.src.slice(0, MAX_PHOTO_SRC_CHARS) : '';
+function userRecordsCollection(userId) {
+  return collection(firestore, 'users', userId, RECORDS_COLLECTION);
+}
+
+function userRecordDoc(userId, recordId) {
+  return doc(firestore, 'users', userId, RECORDS_COLLECTION, String(recordId));
+}
+
+function isDataUrl(src) {
+  return typeof src === 'string' && src.startsWith('data:');
+}
+
+async function dataUrlToBlob(dataUrl) {
+  return (await fetch(dataUrl)).blob();
+}
+
+async function uploadPhoto(userId, recordId, photo) {
+  if (!isDataUrl(photo.src)) {
+    return {
+      id: photo.id,
+      caption: photo.caption || '여행 사진',
+      src: photo.src || '',
+    };
+  }
+
+  const blob = await dataUrlToBlob(photo.src);
+  const photoRef = ref(storage, `users/${userId}/travel-records/${recordId}/${photo.id}.jpg`);
+  await uploadBytes(photoRef, blob, { contentType: blob.type || 'image/jpeg' });
+  const src = await getDownloadURL(photoRef);
+
   return {
     id: photo.id,
     caption: photo.caption || '여행 사진',
@@ -13,14 +41,15 @@ function sharedPhoto(photo) {
   };
 }
 
-function sharedRecord(record) {
+async function sharedRecord(userId, record) {
   return {
     ...record,
-    photos: (record.photos || []).filter((photo) => photo.src).slice(0, 1).map(sharedPhoto),
+    userId,
+    photos: await Promise.all((record.photos || []).filter((photo) => photo.src).slice(0, 3).map((photo) => uploadPhoto(userId, record.id, photo))),
   };
 }
 
-async function commitRecordBatch(nextRecords, previousRecords) {
+async function commitRecordBatch(nextRecords, previousRecords, userId) {
   const previousById = new Map(previousRecords.map((record) => [String(record.id), record]));
   const nextIds = new Set(nextRecords.map((record) => String(record.id)));
   const batch = writeBatch(firestore);
@@ -30,37 +59,37 @@ async function commitRecordBatch(nextRecords, previousRecords) {
     const changed = !previous || JSON.stringify({ ...previous, updatedAt: undefined }) !== JSON.stringify({ ...record, updatedAt: undefined });
     if (!changed) continue;
 
-    batch.set(doc(firestore, RECORDS_COLLECTION, String(record.id)), {
-      ...sharedRecord(record),
+    batch.set(userRecordDoc(userId, record.id), {
+      ...(await sharedRecord(userId, record)),
       updatedAt: serverTimestamp(),
     });
   }
 
   for (const id of previousById.keys()) {
     if (!nextIds.has(id)) {
-      batch.delete(doc(firestore, RECORDS_COLLECTION, id));
+      batch.delete(userRecordDoc(userId, id));
     }
   }
 
   await batch.commit();
 }
 
-export async function loadRemoteRecords() {
-  if (!firebaseEnabled || !firestore) {
+export async function loadRemoteRecords(userId) {
+  if (!firebaseEnabled || !firestore || !userId) {
     return null;
   }
 
-  const snapshot = await getDocs(collection(firestore, RECORDS_COLLECTION));
+  const snapshot = await getDocs(userRecordsCollection(userId));
   return snapshot.docs.map((item) => item.data());
 }
 
-export function subscribeRemoteRecords(onRecords, onError) {
-  if (!firebaseEnabled || !firestore) {
+export function subscribeRemoteRecords(userId, onRecords, onError) {
+  if (!firebaseEnabled || !firestore || !userId) {
     return null;
   }
 
   return onSnapshot(
-    collection(firestore, RECORDS_COLLECTION),
+    userRecordsCollection(userId),
     (snapshot) => {
       onRecords(snapshot.docs.map((item) => item.data()));
     },
@@ -68,20 +97,20 @@ export function subscribeRemoteRecords(onRecords, onError) {
   );
 }
 
-export async function saveRemoteRecords(nextRecords, previousRecords = []) {
-  if (!firebaseEnabled || !firestore) {
+export async function saveRemoteRecords(nextRecords, previousRecords = [], userId) {
+  if (!firebaseEnabled || !firestore || !storage || !userId) {
     return false;
   }
 
-  await commitRecordBatch(nextRecords, previousRecords);
+  await commitRecordBatch(nextRecords, previousRecords, userId);
   return true;
 }
 
-export async function deleteRemoteRecord(recordId) {
-  if (!firebaseEnabled || !firestore) {
+export async function deleteRemoteRecord(recordId, userId) {
+  if (!firebaseEnabled || !firestore || !userId) {
     return false;
   }
 
-  await deleteDoc(doc(firestore, RECORDS_COLLECTION, String(recordId)));
+  await deleteDoc(userRecordDoc(userId, recordId));
   return true;
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { loginUser, registerUser } from '../services/authStore';
+import { loginUser, loginWithGoogle, registerUser } from '../services/authStore';
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login');
@@ -53,6 +53,21 @@ export default function AuthPage() {
         {message && <strong className="form-message">{message}</strong>}
 
         <button type="submit">{mode === 'signup' ? '가입 신청' : '로그인'}</button>
+        <button
+          className="secondary-login"
+          type="button"
+          onClick={async () => {
+            setError('');
+            setMessage('');
+            try {
+              await loginWithGoogle();
+            } catch (authError) {
+              setError(authError.message || 'Google 로그인에 실패했습니다.');
+            }
+          }}
+        >
+          Google로 계속하기
+        </button>
         <button className="secondary-login" type="button" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>
           {mode === 'signup' ? '로그인으로 돌아가기' : '회원가입 신청'}
         </button>
