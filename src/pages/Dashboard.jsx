@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
@@ -7,6 +8,7 @@ import { regions } from '../data/travelData';
 import { recordStartDate } from '../utils/travelUtils';
 
 export default function Dashboard({ records }) {
+  const [mapSelectionActive, setMapSelectionActive] = useState(false);
   const visitedCount = new Set(records.map((record) => record.regionId)).size;
   const completion = Math.round((visitedCount / regions.length) * 100);
   const latest = [...records].sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a))).slice(0, 3);
@@ -14,17 +16,19 @@ export default function Dashboard({ records }) {
   return (
     <AppShell>
       <main>
-        <section className="hero">
-          <img src={heroImage} alt="한국 여행 사진과 엽서가 놓인 따뜻한 테이블" />
-          <div className="hero-copy">
-            <p>한국 아카이브</p>
-            <h1>여은솔 멍청이 지도</h1>
-            <div className="hero-actions">
-              <Link className="primary-button" to="/write">여행 기록하기</Link>
-              <Link className="secondary-button" to="/album">사진 모아보기</Link>
+        {!mapSelectionActive && (
+          <section className="hero">
+            <img src={heroImage} alt="한국 여행 사진과 엽서가 놓인 따뜻한 테이블" />
+            <div className="hero-copy">
+              <p>한국 아카이브</p>
+              <h1>여은솔 멍청이 지도</h1>
+              <div className="hero-actions">
+                <Link className="primary-button" to="/write">여행 기록하기</Link>
+                <Link className="secondary-button" to="/album">사진 모아보기</Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="content-grid map-section">
           <div>
@@ -32,7 +36,7 @@ export default function Dashboard({ records }) {
               <p>Travel Map</p>
               <h2>한국 지도 위에 표시되는 나의 여행 발자국</h2>
             </div>
-            <MapExplorer records={records} />
+            <MapExplorer records={records} onSelectionChange={setMapSelectionActive} />
           </div>
 
           <aside className="summary-panel">

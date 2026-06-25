@@ -25,7 +25,7 @@ const provinceImages = {
   'jeju-do': provinceJeju,
 };
 
-export default function MapExplorer({ records }) {
+export default function MapExplorer({ records, onSelectionChange }) {
   const navigate = useNavigate();
   const visitedIds = new Set(records.map((record) => record.regionId));
   const [selectedProvince, setSelectedProvince] = useState(null);
@@ -41,11 +41,22 @@ export default function MapExplorer({ records }) {
   const provinceCityUnit = provinceRegion ? cityUnitLabel(provinceRegion.id) : '시';
   const currentRegion = regions.find((region) => region.id === selectedRegion);
   const currentRegionShape = currentRegion ? detailShapeFor(currentRegion.id) : null;
+  const selectProvince = (provinceId) => {
+    setSelectedProvince(provinceId);
+    setSelectedRegion(null);
+    onSelectionChange?.(true);
+  };
+
+  const resetProvince = () => {
+    setSelectedProvince(null);
+    setSelectedRegion(null);
+    onSelectionChange?.(false);
+  };
 
   return (
     <div className="map-shell staged-map-shell" aria-label="단계별 한국 여행 지도">
       <div className="map-toolbar">
-        <button type="button" onClick={() => { setSelectedProvince(null); setSelectedRegion(null); }}>
+        <button type="button" onClick={resetProvince}>
           전국 도 단위
         </button>
         {province && (
@@ -69,9 +80,9 @@ export default function MapExplorer({ records }) {
                     type="button"
                     className={`province-hotspot ${visited ? 'visited' : ''}`}
                     style={{ clipPath: `polygon(${group.imagePolygon})` }}
-                    onClick={() => setSelectedProvince(group.id)}
+                    onClick={() => selectProvince(group.id)}
                     onKeyDown={(event) => {
-                      if (event.key === 'Enter') setSelectedProvince(group.id);
+                      if (event.key === 'Enter') selectProvince(group.id);
                     }}
                     aria-label={`${group.name} ${visited ? '방문 기록 있음' : '미방문'}`}
                     title={group.name}
@@ -171,7 +182,7 @@ export default function MapExplorer({ records }) {
           {provinceGroups.map((group) => {
             const visited = group.regionIds.some((id) => visitedIds.has(id));
             return (
-              <button key={group.id} type="button" className={visited ? 'visited' : ''} onClick={() => setSelectedProvince(group.id)}>
+              <button key={group.id} type="button" className={visited ? 'visited' : ''} onClick={() => selectProvince(group.id)}>
                 <strong>{group.name}</strong>
                 <span>{group.note}</span>
               </button>
