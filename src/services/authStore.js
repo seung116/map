@@ -9,6 +9,37 @@ import { collection, doc, getDoc, getDocs, onSnapshot, serverTimestamp, setDoc, 
 import { auth, firestore, firebaseEnabled } from '../lib/firebase';
 
 const USERS_COLLECTION = 'users';
+const BOOTSTRAP_ADMIN_UID = 'KHOQ7B536lZC7BFq39AnA459mry1';
+
+function bootstrapAdminProfile(user, profile = {}) {
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName || '관리자',
+    ...profile,
+    approved: true,
+    role: 'admin',
+  };
+}
+
+function profileForUser(user, snapshot) {
+  const profile = snapshot.exists() ? { uid: user.uid, ...snapshot.data() } : null;
+  return user.uid === BOOTSTRAP_ADMIN_UID ? bootstrapAdminProfile(user, profile || {}) : profile;
+}
+
+async function ensureBootstrapAdmin(user) {
+  if (user.uid !== BOOTSTRAP_ADMIN_UID) return;
+
+  try {
+    await setDoc(
+      doc(firestore, USERS_COLLECTION, user.uid),
+      bootstrapAdminProfile(user),
+      { merge: true },
+    );
+  } catch (error) {
+    console.warn('Bootstrap admin profile sync failed:', error);
+  }
+}
 
 export function subscribeAuthState(onChange) {
   if (!firebaseEnabled || !auth || !firestore) {
@@ -29,14 +60,18 @@ export function subscribeAuthState(onChange) {
     unsubscribeProfile = onSnapshot(
       doc(firestore, USERS_COLLECTION, user.uid),
       (snapshot) => {
+        ensureBootstrapAdmin(user);
         onChange({
           user,
-          profile: snapshot.exists() ? { uid: user.uid, ...snapshot.data() } : null,
+          profile: profileForUser(user, snapshot),
         });
       },
       (error) => {
         console.error('User profile subscribe failed:', error);
-        onChange({ user, profile: null });
+        onChange({
+          user,
+          profile: user.uid === BOOTSTRAP_ADMIN_UID ? bootstrapAdminProfile(user) : null,
+        });
       },
     );
   });
