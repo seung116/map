@@ -1,39 +1,47 @@
 import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, writeBatch } from 'firebase/firestore';
-import { firestore, firebaseEnabled } from '../lib/firebase';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import { firestore, storage, firebaseEnabled } from '../lib/firebase';
 
 const RECORDS_COLLECTION = 'travelRecords';
-const MAX_FIRESTORE_RECORD_BYTES = 850_000;
-const MAX_PHOTO_SRC_CHARS = 180_000;
 
-function byteSize(value) {
-  return new Blob([JSON.stringify(value)]).size;
+function isDataUrl(src) {
+  return typeof src === 'string' && src.startsWith('data:');
 }
 
-function compactPhoto(photo) {
-  const src = typeof photo.src === 'string' && photo.src.length <= MAX_PHOTO_SRC_CHARS ? photo.src : '';
-  return {
-    id: photo.id,
-    caption: photo.caption || '여행 사진',
-    src,
-  };
-}
-
-function compactRecord(record) {
-  const compacted = {
-    ...record,
-    photos: (record.photos || []).slice(0, 3).map(compactPhoto),
-  };
-
-  if (byteSize(compacted) <= MAX_FIRESTORE_RECORD_BYTES) {
-    return compacted;
+async function uploadPhoto(recordId, photo) {
+  if (!storage || !isDataUrl(photo.src)) {
+    return {
+      id: photo.id,
+      caption: photo.caption || '여행 사진',
+      src: photo.src || '',
+    };
   }
 
-  return {
-    ...compacted,
-    photos: compacted.photos.map((photo) => ({
-      ...photo,
+  try {
+    const photoRef = ref(storage, `travel-records/${recordId}/${photo.id}.jpg`);
+    await uploadString(photoRef, photo.src, 'data_url');
+    const src = await getDownloadURL(photoRef);
+    return {
+      id: photo.id,
+      caption: photo.caption || '여행 사진',
+      src,
+    };
+  } catch (error) {
+    console.error('Firebase photo upload failed:', error);
+    return {
+      id: photo.id,
+      caption: photo.caption || '여행 사진',
       src: '',
-    })),
+    };
+  }
+}
+
+async function prepareSharedRecord(record) {
+  const photos = await Promise.all((record.photos || []).slice(0, 3).map((photo) => uploadPhoto(record.id, photo)));
+
+  return {
+    ...record,
+    photos,
   };
 }
 
@@ -73,7 +81,7 @@ export async function saveRemoteRecords(nextRecords, previousRecords = []) {
     const previous = previousById.get(String(record.id));
     const changed = !previous || JSON.stringify({ ...previous, updatedAt: undefined }) !== JSON.stringify({ ...record, updatedAt: undefined });
     if (!changed) continue;
-    const sharedRecord = compactRecord(record);
+    const sharedRecord = await prepareSharedRecord(record);
 
     batch.set(doc(firestore, RECORDS_COLLECTION, String(record.id)), {
       ...sharedRecord,
