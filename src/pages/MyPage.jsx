@@ -25,7 +25,7 @@ export default function MyPage({ records, setRecords }) {
           <div className="avatar">나</div>
           <div>
             <p>여행자 프로필</p>
-            <h1>나의 한국 여행 지도</h1>
+            <h1>나의 여행 발자국</h1>
             <span>{records.length}개의 기록이 저장되어 있습니다.</span>
           </div>
         </section>

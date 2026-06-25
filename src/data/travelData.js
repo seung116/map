@@ -261,7 +261,7 @@ export const detailPlaces = {
   jeju: ['제주시', '서귀포시'],
 };
 
-export const boards = ['내 한국 여행 지도', '커플 여행 지도', '친구 여행 지도', '가족 여행 지도'];
+export const boards = ['나의 여행 발자국', '둘만의 여행 발자국', '친구와 남긴 발자국', '가족 여행 발자국'];
 
 export const starterRecords = [
   {
@@ -273,7 +273,7 @@ export const starterRecords = [
     title: '바람 많은 제주 산책',
     companions: '엄마, 아빠',
     memo: '협재 바다 앞에서 오래 앉아 있었고, 저녁에는 작은 식당에서 갈치구이를 먹었다.',
-    board: '가족 여행 지도',
+    board: '가족 여행 발자국',
     photos: [
       { id: 101, src: heroImage, caption: '햇빛이 들어오던 여행 노트' },
     ],
@@ -287,7 +287,7 @@ export const starterRecords = [
     title: '궁 옆 골목 카페',
     companions: '지민',
     memo: '걸어서 만난 오래된 골목과 하늘색 문이 마음에 남았다.',
-    board: '친구 여행 지도',
+    board: '친구와 남긴 발자국',
     photos: [
       { id: 201, src: heroImage, caption: '서울에서 모은 장면들' },
     ],
@@ -301,7 +301,7 @@ export const starterRecords = [
     title: '해운대 밤바다',
     companions: '현우',
     memo: '파도 소리를 들으면서 다음 여행지를 같이 골랐다.',
-    board: '커플 여행 지도',
+    board: '둘만의 여행 발자국',
     photos: [
       { id: 301, src: heroImage, caption: '바다 여행 엽서' },
     ],
