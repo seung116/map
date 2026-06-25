@@ -1,8 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import adminMapImage from '../assets/korea-admin-map.png';
+import provinceGangwon from '../assets/province-gangwon.png';
+import provinceGyeonggi from '../assets/province-gyeonggi.png';
+import provinceGyeongbuk from '../assets/province-gyeongbuk.png';
+import provinceGyeongnam from '../assets/province-gyeongnam.png';
+import provinceJeju from '../assets/province-jeju.png';
+import provinceJeonbuk from '../assets/province-jeonbuk.png';
+import provinceJeonnam from '../assets/province-jeonnam.png';
+import provinceChungbuk from '../assets/province-chungbuk.png';
+import provinceChungnam from '../assets/province-chungnam.png';
 import { detailLayouts, detailPlaces, districtCells, provinceGroups, regions } from '../data/travelData';
 import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor } from '../utils/travelUtils';
+
+const provinceImages = {
+  'gyeonggi-do': provinceGyeonggi,
+  'gangwon-do': provinceGangwon,
+  'chungbuk-do': provinceChungbuk,
+  'chungnam-do': provinceChungnam,
+  'jeonbuk-do': provinceJeonbuk,
+  'jeonnam-do': provinceJeonnam,
+  'gyeongbuk-do': provinceGyeongbuk,
+  'gyeongnam-do': provinceGyeongnam,
+  'jeju-do': provinceJeju,
+};
 
 export default function MapExplorer({ records }) {
   const navigate = useNavigate();
@@ -11,7 +32,7 @@ export default function MapExplorer({ records }) {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const province = provinceGroups.find((group) => group.id === selectedProvince);
   const detailLayout = province ? detailLayouts[province.id] : null;
-  const provinceCrop = province?.crop;
+  const provinceImage = province ? provinceImages[province.id] : null;
   const provinceRegion = province
     ? regions.find((region) => province.regionIds.includes(region.id) && region.type.includes('도'))
       || regions.find((region) => province.regionIds.includes(region.id))
@@ -64,20 +85,14 @@ export default function MapExplorer({ records }) {
         {province && !currentRegion && (
           <div className="province-detail-stage">
             <div
-              className="province-crop-map"
+              className="province-crop-map province-asset-map"
               role="img"
               aria-label={`${province.name} 지도`}
-              style={{ aspectRatio: `${provinceCrop.width} / ${provinceCrop.height}` }}
             >
               <img
-                src={adminMapImage}
+                src={provinceImage}
                 alt=""
                 aria-hidden="true"
-                style={{
-                  width: `${(740 / provinceCrop.width) * 100}%`,
-                  left: `-${(provinceCrop.x / provinceCrop.width) * 100}%`,
-                  top: `-${(provinceCrop.y / provinceCrop.height) * 100}%`,
-                }}
               />
             </div>
             <div className="drill-panel">
