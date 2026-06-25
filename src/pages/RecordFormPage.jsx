@@ -103,10 +103,11 @@ export default function RecordFormPage({ records, setRecords }) {
         <section className="section-heading">
           <p>Travel Note</p>
           <h1>{editing ? '여행 기록 수정' : '새 여행 기록 작성'}</h1>
+          <span className="form-intro">오늘 남기고 싶은 장면을 사진과 문장으로 천천히 채워보세요.</span>
         </section>
 
         <form className="record-form" onSubmit={saveRecord}>
-          <label>
+          <label className="form-field">
             여행 지역
             <select value={form.regionId} onChange={(event) => update('regionId', event.target.value)}>
               {regions.map((region) => (
@@ -114,23 +115,23 @@ export default function RecordFormPage({ records, setRecords }) {
               ))}
             </select>
           </label>
-          <label>
+          <label className="form-field">
             여행 시작일
             <input required type="date" value={form.startDate} onChange={(event) => update('startDate', event.target.value)} />
           </label>
-          <label>
+          <label className="form-field">
             여행 종료일
             <input required type="date" min={form.startDate} value={form.endDate} onChange={(event) => update('endDate', event.target.value)} />
           </label>
-          <label className="span-2">
+          <label className="form-field span-2">
             여행 제목
             <input required value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="예: 봄비가 그친 전주 한옥마을" />
           </label>
-          <label>
+          <label className="form-field">
             함께 간 사람
             <input value={form.companions} onChange={(event) => update('companions', event.target.value)} placeholder="쉼표로 구분해 입력" />
           </label>
-          <label className="span-2">
+          <label className="form-field span-2">
             여행 메모
             <textarea value={form.memo} onChange={(event) => update('memo', event.target.value)} placeholder="사진 속 장면과 같이 기억하고 싶은 문장을 적어보세요." />
           </label>

@@ -1134,21 +1134,56 @@ main {
 }
 
 .form-page {
-  width: min(920px, calc(100% - 36px));
+  width: min(960px, calc(100% - 36px));
+}
+
+.form-intro {
+  display: block;
+  max-width: 520px;
+  margin-top: 12px;
+  color: #6f766e;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.55;
 }
 
 .record-form {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  padding: 24px;
+  gap: 18px;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 242, 0.98), rgba(245, 251, 240, 0.92) 54%, rgba(255, 241, 229, 0.9));
+  padding: clamp(22px, 4vw, 34px);
+}
+
+.record-form::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.38), transparent 40%),
+    repeating-linear-gradient(135deg, rgba(95, 140, 117, 0.045) 0 1px, transparent 1px 18px);
 }
 
 .record-form label {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 8px;
   color: #536153;
   font-weight: 800;
+}
+
+.record-form .form-field {
+  border: 1px solid rgba(91, 105, 81, 0.13);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 14px;
+  box-shadow: 0 10px 26px rgba(62, 72, 58, 0.07);
 }
 
 .record-form input,
@@ -1157,11 +1192,22 @@ main {
 .photo-edit-card input {
   width: 100%;
   min-height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid rgba(91, 105, 81, 0.18);
+  border-radius: 16px;
   background: #fffdf8;
   color: var(--ink);
   padding: 12px;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.record-form input:focus,
+.record-form select:focus,
+.record-form textarea:focus,
+.photo-edit-card input:focus {
+  border-color: rgba(95, 140, 117, 0.62);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(184, 217, 194, 0.28);
 }
 
 .record-form textarea {
@@ -1174,11 +1220,15 @@ main {
 }
 
 .upload-box {
-  border: 1px dashed rgba(73, 107, 78, 0.34);
-  border-radius: 8px;
-  background: #f4f9ef;
-  padding: 20px;
+  position: relative;
+  z-index: 1;
+  border: 1px dashed rgba(73, 107, 78, 0.42);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(244, 249, 239, 0.92), rgba(255, 240, 223, 0.86));
+  padding: 24px;
   text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.52);
 }
 
 .upload-box input {
@@ -1195,6 +1245,8 @@ main {
 }
 
 .photo-editor {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
@@ -1203,20 +1255,97 @@ main {
 .photo-edit-card {
   display: grid;
   gap: 8px;
+  border: 1px solid rgba(91, 105, 81, 0.13);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.64);
+  padding: 12px;
+  box-shadow: 0 10px 24px rgba(62, 72, 58, 0.08);
 }
 
 .photo-edit-card img {
   aspect-ratio: 1;
-  border-radius: 8px;
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
 }
 
 .photo-edit-card button {
   min-height: 38px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 14px;
   background: #fde5dc;
   color: #9c4939;
   font-weight: 800;
+}
+
+.record-form .form-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.record-form .submit-button,
+.record-form .delete-record-button {
+  border-radius: 999px;
+}
+
+.album-timeline {
+  display: grid;
+  gap: 34px;
+}
+
+.album-year {
+  display: grid;
+  gap: 22px;
+}
+
+.album-year-heading,
+.album-month-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.album-year-heading p {
+  margin: 0 0 8px;
+  color: #5f8c75;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.album-year-heading h2,
+.album-month-heading h3 {
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: 0;
+}
+
+.album-year-heading h2 {
+  font-size: clamp(1.65rem, 3vw, 2.4rem);
+}
+
+.album-year-heading strong,
+.album-month-heading span {
+  min-width: max-content;
+  border-radius: 999px;
+  background: rgba(184, 217, 194, 0.42);
+  color: #4d654a;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.album-month {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid rgba(91, 105, 81, 0.13);
+  padding-top: 18px;
+}
+
+.album-month-heading h3 {
+  font-size: 1.18rem;
 }
 
 .album-grid {
@@ -1662,6 +1791,24 @@ main {
   .record-form,
   .photo-editor {
     grid-template-columns: 1fr;
+  }
+
+  .record-form {
+    border-radius: 22px;
+    gap: 14px;
+  }
+
+  .record-form .form-field,
+  .upload-box,
+  .photo-edit-card {
+    border-radius: 18px;
+  }
+
+  .album-year-heading,
+  .album-month-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .album-grid {
