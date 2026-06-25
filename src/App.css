@@ -119,8 +119,17 @@ img {
   padding: 8px 12px;
 }
 
-.top-nav a:hover {
+.top-nav a:hover,
+.nav-button:hover {
   background: rgba(184, 217, 194, 0.42);
+}
+
+.nav-button {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  padding: 8px 12px;
 }
 
 main {
@@ -245,6 +254,99 @@ main {
 .auth-card .secondary-login {
   background: rgba(255, 250, 242, 0.9);
   color: #2f352f;
+}
+
+.auth-screen {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.auth-card {
+  display: grid;
+  width: min(420px, 100%);
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  padding: 28px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.auth-card h1,
+.auth-card p {
+  margin: 0;
+}
+
+.auth-card p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.auth-card label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.auth-card input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  padding: 12px;
+}
+
+.form-error {
+  color: #9c4939;
+  font-size: 0.9rem;
+}
+
+.admin-panel {
+  padding: 0;
+}
+
+.admin-table {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--line);
+}
+
+.admin-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px 104px 120px;
+  gap: 12px;
+  align-items: center;
+  background: var(--paper);
+  padding: 14px;
+}
+
+.admin-row strong,
+.admin-row span {
+  display: block;
+}
+
+.admin-row span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.admin-row button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
 }
 
 .content-grid,

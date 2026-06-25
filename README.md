@@ -24,3 +24,67 @@ This repository is set up for GitHub Pages.
 ## Shared storage
 
 If you want records to sync across phones, create a Firebase project on the free Spark plan, enable Firestore, and set the values from `.env.example` in a local `.env` file.
+
+## Firebase limits and access control
+
+This app uses Firebase Authentication and Firestore.
+
+Recommended no-cost guardrails:
+
+- Use Email/Password Authentication only.
+- Keep Firestore reads under 50K/day, writes under 20K/day, deletes under 20K/day, and stored data under 1 GiB.
+- Keep Cloud Storage disabled unless you intentionally move photos there.
+- Add a Google Cloud budget alert for the billing account.
+
+After the first admin account signs up, set that user's Firestore document in `users/{uid}` to:
+
+```json
+{
+  "approved": true,
+  "role": "admin"
+}
+```
+
+Use these Firestore rules:
+
+```js
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isApproved() {
+      return signedIn() && userDoc().data.approved == true;
+    }
+
+    function isAdmin() {
+      return signedIn() && userDoc().data.role == "admin";
+    }
+
+    match /users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.approved == false
+        && request.resource.data.role == "member";
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    match /travelRecords/{document} {
+      allow read, write: if isApproved();
+    }
+
+    match /travelRecordPhotos/{document} {
+      allow read, write: if isApproved();
+    }
+  }
+}
+```

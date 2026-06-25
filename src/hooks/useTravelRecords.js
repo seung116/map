@@ -3,17 +3,23 @@ import { starterRecords } from '../data/travelData';
 import { firebaseEnabled } from '../lib/firebase';
 import { saveRemoteRecords, subscribeRemoteRecords } from '../services/recordStore';
 
-export function useTravelRecords() {
+export function useTravelRecords(enabled = true) {
   const [records, setRecordsState] = useState(() => {
-    if (firebaseEnabled) return [];
+    if (firebaseEnabled || !enabled) return [];
 
     const saved = localStorage.getItem('korea-travel-records');
     return saved ? JSON.parse(saved) : starterRecords;
   });
-  const [ready, setReady] = useState(!firebaseEnabled);
+  const [ready, setReady] = useState(!firebaseEnabled || !enabled);
 
   useEffect(() => {
     let active = true;
+
+    if (!enabled) {
+      return () => {
+        active = false;
+      };
+    }
 
     if (firebaseEnabled) {
       const unsubscribe = subscribeRemoteRecords(
@@ -40,7 +46,7 @@ export function useTravelRecords() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [enabled]);
 
   const persist = async (nextRecords) => {
     const previousRecords = records;

@@ -1,0 +1,58 @@
+import { useState } from 'react';
+import { loginUser, registerUser } from '../services/authStore';
+
+export default function AuthPage() {
+  const [mode, setMode] = useState('login');
+  const [form, setForm] = useState({ email: '', password: '', displayName: '' });
+  const [error, setError] = useState('');
+
+  const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setError('');
+
+    try {
+      if (mode === 'signup') {
+        await registerUser(form);
+        return;
+      }
+
+      await loginUser(form);
+    } catch (authError) {
+      setError(authError.message || '로그인 처리에 실패했습니다.');
+    }
+  };
+
+  return (
+    <main className="auth-screen">
+      <form className="auth-card" onSubmit={submit}>
+        <span className="brand-mark large">KR</span>
+        <h1>{mode === 'signup' ? '회원가입' : '로그인'}</h1>
+        <p>승인된 회원만 여행 기록을 볼 수 있습니다.</p>
+
+        {mode === 'signup' && (
+          <label>
+            이름
+            <input required value={form.displayName} onChange={(event) => update('displayName', event.target.value)} />
+          </label>
+        )}
+        <label>
+          이메일
+          <input required type="email" value={form.email} onChange={(event) => update('email', event.target.value)} />
+        </label>
+        <label>
+          비밀번호
+          <input required minLength={6} type="password" value={form.password} onChange={(event) => update('password', event.target.value)} />
+        </label>
+
+        {error && <strong className="form-error">{error}</strong>}
+
+        <button type="submit">{mode === 'signup' ? '가입 신청' : '로그인'}</button>
+        <button className="secondary-login" type="button" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>
+          {mode === 'signup' ? '로그인으로 돌아가기' : '회원가입 신청'}
+        </button>
+      </form>
+    </main>
+  );
+}

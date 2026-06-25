@@ -1,4 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const defaultFirebaseConfig = {
@@ -24,3 +25,4 @@ export const firebaseApp = firebaseEnabled
   : null;
 
 export const firestore = firebaseApp ? getFirestore(firebaseApp) : null;
+export const auth = firebaseApp ? getAuth(firebaseApp) : null;
