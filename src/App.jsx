@@ -32,7 +32,7 @@ export default function App() {
   }
 
   if (!auth.isApproved) {
-    return <PendingApprovalPage profile={auth.profile} />;
+    return <PendingApprovalPage profile={auth.profile} user={auth.user} />;
   }
 
   if (!ready) {

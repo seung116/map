@@ -26,12 +26,19 @@ export function subscribeAuthState(onChange) {
       return;
     }
 
-    unsubscribeProfile = onSnapshot(doc(firestore, USERS_COLLECTION, user.uid), (snapshot) => {
-      onChange({
-        user,
-        profile: snapshot.exists() ? { uid: user.uid, ...snapshot.data() } : null,
-      });
-    });
+    unsubscribeProfile = onSnapshot(
+      doc(firestore, USERS_COLLECTION, user.uid),
+      (snapshot) => {
+        onChange({
+          user,
+          profile: snapshot.exists() ? { uid: user.uid, ...snapshot.data() } : null,
+        });
+      },
+      (error) => {
+        console.error('User profile subscribe failed:', error);
+        onChange({ user, profile: null });
+      },
+    );
   });
 }
 

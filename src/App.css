@@ -308,6 +308,17 @@ main {
   font-size: 0.9rem;
 }
 
+.uid-box {
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  padding: 10px;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
 .admin-panel {
   padding: 0;
 }
