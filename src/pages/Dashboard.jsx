@@ -3,14 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
 import MapExplorer from '../components/MapExplorer';
-import { regions } from '../data/travelData';
-import { recordRegionId } from '../utils/travelUtils';
 
 export default function Dashboard({ records }) {
   const location = useLocation();
   const [mapSelectionActive, setMapSelectionActive] = useState(false);
   const homeReset = location.state?.homeReset || 0;
-  const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
 
   useEffect(() => {
     setMapSelectionActive(false);
@@ -41,22 +38,6 @@ export default function Dashboard({ records }) {
             </div>
             <MapExplorer key={homeReset} records={records} onSelectionChange={setMapSelectionActive} />
           </div>
-
-          <aside className="summary-panel">
-            <div className="stat-row">
-              <span>방문 지역</span>
-              <strong>{visitedCount} / {regions.length}</strong>
-            </div>
-            <div className="stat-row">
-              <span>저장된 기록</span>
-              <strong>{records.length}개</strong>
-            </div>
-            <div className="stat-row">
-              <span>사진</span>
-              <strong>{records.reduce((sum, record) => sum + record.photos.length, 0)}장</strong>
-            </div>
-            <Link className="wide-button" to="/stats">통계 자세히 보기</Link>
-          </aside>
         </section>
       </main>
     </AppShell>

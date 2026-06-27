@@ -13,6 +13,7 @@ export default function StatsPage({ records }) {
   const mostCompanion = topItem(companionCounts);
   const currentYear = String(new Date().getFullYear());
   const thisYear = records.filter((record) => recordStartDate(record).startsWith(currentYear)).length;
+  const photoCount = records.reduce((sum, record) => sum + record.photos.length, 0);
 
   return (
     <AppShell>
@@ -34,6 +35,8 @@ export default function StatsPage({ records }) {
         </section>
         <div className="stats-grid">
           <StatCard label="방문한 지역 수" value={`${visitedCount}곳`} />
+          <StatCard label="저장된 기록" value={`${records.length}개`} />
+          <StatCard label="저장 사진" value={`${photoCount}장`} />
           <StatCard label="가장 많이 간 지역" value={mostRegion || '-'} />
           <StatCard label="함께 여행을 가장 많이 간 사람" value={mostCompanion || '-'} />
           <StatCard label="올해 여행 기록" value={`${thisYear}개`} />
