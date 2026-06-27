@@ -8,12 +8,14 @@ import provinceGyeongnam from '../assets/province-gyeongnam.png';
 import provinceJeju from '../assets/province-jeju.png';
 import provinceJeonbuk from '../assets/province-jeonbuk.png';
 import provinceJeonnam from '../assets/province-jeonnam.png';
+import provinceSeoul from '../assets/province-seoul.png';
 import provinceChungbuk from '../assets/province-chungbuk.png';
 import provinceChungnam from '../assets/province-chungnam.png';
 import { detailLayouts, detailPlaces, districtCells, provinceGroups, regions } from '../data/travelData';
 import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor, recordMatchesRegion, recordRegionId } from '../utils/travelUtils';
 
 const provinceImages = {
+  'seoul-si': provinceSeoul,
   'gyeonggi-do': provinceGyeonggi,
   'gangwon-do': provinceGangwon,
   'chungbuk-do': provinceChungbuk,
