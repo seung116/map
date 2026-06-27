@@ -195,15 +195,6 @@ main {
   letter-spacing: 0;
 }
 
-.hero-actions-only {
-  justify-content: flex-end;
-  padding-bottom: clamp(48px, 9vw, 112px);
-}
-
-.hero-actions-only .hero-actions {
-  margin-top: 0;
-}
-
 .hero-actions,
 .card-actions,
 .form-actions {
