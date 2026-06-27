@@ -11,7 +11,6 @@ export default function Dashboard({ records }) {
   const [mapSelectionActive, setMapSelectionActive] = useState(false);
   const homeReset = location.state?.homeReset || 0;
   const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
-  const completion = Math.round((visitedCount / regions.length) * 100);
 
   useEffect(() => {
     setMapSelectionActive(false);
@@ -44,10 +43,6 @@ export default function Dashboard({ records }) {
           </div>
 
           <aside className="summary-panel">
-            <div className="progress-ring" style={{ '--progress': `${completion}%` }}>
-              <strong>{completion}%</strong>
-              <span>완성률</span>
-            </div>
             <div className="stat-row">
               <span>방문 지역</span>
               <strong>{visitedCount} / {regions.length}</strong>

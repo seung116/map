@@ -21,9 +21,19 @@ export default function StatsPage({ records }) {
           <p>Travel Stats</p>
           <h1>내 여행 통계</h1>
         </section>
+        <section className="stats-progress-panel">
+          <div className="progress-ring" style={{ '--progress': `${completion}%` }}>
+            <strong>{completion}%</strong>
+            <span>완성률</span>
+          </div>
+          <div>
+            <p>Map Completion</p>
+            <h2>한국 지도 완성률</h2>
+            <span>{regions.length}개 지역 중 {visitedCount}곳에 여행 발자국이 남아 있습니다.</span>
+          </div>
+        </section>
         <div className="stats-grid">
           <StatCard label="방문한 지역 수" value={`${visitedCount}곳`} />
-          <StatCard label="한국 지도 완성률" value={`${completion}%`} />
           <StatCard label="가장 많이 간 지역" value={mostRegion || '-'} />
           <StatCard label="함께 여행을 가장 많이 간 사람" value={mostCompanion || '-'} />
           <StatCard label="올해 여행 기록" value={`${thisYear}개`} />

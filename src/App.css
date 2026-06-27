@@ -979,6 +979,7 @@ main {
 }
 
 .progress-ring {
+  position: relative;
   display: grid;
   width: 172px;
   height: 172px;
@@ -1545,6 +1546,45 @@ main {
   margin-bottom: 22px;
 }
 
+.stats-progress-panel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.86);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.stats-progress-panel .progress-ring {
+  margin: 0;
+}
+
+.stats-progress-panel p {
+  margin: 0 0 8px;
+  color: #5f8c75;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stats-progress-panel h2 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 3vw, 2.35rem);
+  letter-spacing: 0;
+}
+
+.stats-progress-panel span {
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.55;
+}
+
 .stat-card {
   min-height: 150px;
   padding: 22px;
@@ -1685,7 +1725,7 @@ main {
     gap: 8px 20px;
   }
 
-  .progress-ring {
+  .summary-panel .progress-ring {
     grid-row: span 4;
     margin-bottom: 0;
   }
@@ -1789,6 +1829,12 @@ main {
 
   .summary-panel {
     display: block;
+  }
+
+  .stats-progress-panel {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
   }
 
   .section-heading.inline,
