@@ -25,6 +25,21 @@ const provinceImages = {
   'jeju-do': provinceJeju,
 };
 
+function polygonPointsFromPercent(polygon) {
+  return polygon
+    .split(',')
+    .map((point) => point.trim().replace(/%/g, '').replace(/\s+/, ','))
+    .join(' ');
+}
+
+function provinceRenderOrder(groups) {
+  return [...groups].sort((a, b) => {
+    if (a.id === 'seoul-si') return 1;
+    if (b.id === 'seoul-si') return -1;
+    return 0;
+  });
+}
+
 function scrollToPageTop() {
   window.requestAnimationFrame(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -83,30 +98,33 @@ export default function MapExplorer({ records, onSelectionChange }) {
 
       <div className={`staged-map ${province ? 'has-detail-panel' : ''}`}>
         {!province && (
-          <div className="province-image-map" role="img" aria-label="전국 도 단위로 나뉜 한국 행정 지도">
-            <img src={adminMapImage} alt="" aria-hidden="true" />
-            <div className="province-click-layer">
-              {provinceGroups.map((group) => {
+          <div className="province-image-map" aria-label="전국 도 단위로 나뉜 한국 행정 지도">
+            <svg className="province-outline-map" viewBox="0 0 100 100" role="img">
+              <title>전국 도 단위로 나뉜 한국 행정 지도</title>
+              {provinceRenderOrder(provinceGroups).map((group) => {
                 const visited = group.regionIds.some((id) => visitedIds.has(id));
                 return (
-                  <button
+                  <g
                     key={group.id}
-                    type="button"
                     className={`province-hotspot ${visited ? 'visited' : ''}`}
-                    style={{
-                      clipPath: `polygon(${group.imagePolygon})`,
-                      zIndex: group.id === 'seoul-si' ? 2 : 1,
-                    }}
+                    role="button"
+                    tabIndex="0"
                     onClick={() => selectProvince(group.id)}
                     onKeyDown={(event) => {
-                      if (event.key === 'Enter') selectProvince(group.id);
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        selectProvince(group.id);
+                      }
                     }}
                     aria-label={`${group.name} ${visited ? '방문 기록 있음' : '미방문'}`}
-                    title={group.name}
-                  />
+                  >
+                    <title>{group.name}</title>
+                    <polygon points={polygonPointsFromPercent(group.imagePolygon)} />
+                    <text x={group.mapLabelX} y={group.mapLabelY}>{group.mapLabel ?? group.name}</text>
+                  </g>
                 );
               })}
-            </div>
+            </svg>
           </div>
         )}
 
