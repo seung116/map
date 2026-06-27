@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import heroImage from '../assets/korea-travel-memories.png';
+import heroImage from '../assets/hero-travel-archive.png';
 import AppShell from '../components/AppShell';
 import MapExplorer from '../components/MapExplorer';
 
