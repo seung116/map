@@ -3,9 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
 import MapExplorer from '../components/MapExplorer';
-import TravelCard from '../components/TravelCard';
 import { regions } from '../data/travelData';
-import { recordRegionId, recordStartDate } from '../utils/travelUtils';
+import { recordRegionId } from '../utils/travelUtils';
 
 export default function Dashboard({ records }) {
   const location = useLocation();
@@ -13,7 +12,6 @@ export default function Dashboard({ records }) {
   const homeReset = location.state?.homeReset || 0;
   const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
   const completion = Math.round((visitedCount / regions.length) * 100);
-  const latest = [...records].sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a))).slice(0, 3);
 
   useEffect(() => {
     setMapSelectionActive(false);
@@ -65,23 +63,6 @@ export default function Dashboard({ records }) {
             <Link className="wide-button" to="/stats">통계 자세히 보기</Link>
           </aside>
         </section>
-
-        {!mapSelectionActive && (
-          <section className="content-section">
-            <div className="section-heading inline">
-              <div>
-                <p>Recent Memories</p>
-                <h2>최근 여행 기록</h2>
-              </div>
-              <Link to="/write">새 기록 추가</Link>
-            </div>
-            <div className="record-grid">
-              {latest.map((record) => (
-                <TravelCard key={record.id} record={record} />
-              ))}
-            </div>
-          </section>
-        )}
       </main>
     </AppShell>
   );
