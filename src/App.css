@@ -1798,6 +1798,10 @@ main {
     min-height: 560px;
   }
 
+  .hero img {
+    object-position: center center;
+  }
+
   .hero-copy {
     width: 100%;
     padding: 40px 20px;
