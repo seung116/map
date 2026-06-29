@@ -1624,7 +1624,15 @@ main {
 .bar-column {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
+}
+
+.bar-column strong {
+  color: #4d654a;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .bar-column span {

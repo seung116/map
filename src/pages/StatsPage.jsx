@@ -46,6 +46,7 @@ export default function StatsPage({ records }) {
               const value = monthCounts[month] || 0;
               return (
                 <div key={month} className="bar-column">
+                  <strong>{value}회</strong>
                   <span style={{ height: `${Math.max(8, value * 34)}px` }} />
                   <small>{Number(month)}월</small>
                 </div>
