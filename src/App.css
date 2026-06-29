@@ -350,7 +350,7 @@ main {
 
 .admin-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 86px 104px 120px;
+  grid-template-columns: minmax(0, 1fr) 78px 86px 104px 120px;
   gap: 12px;
   align-items: center;
   background: var(--paper);
@@ -373,6 +373,11 @@ main {
   overflow-wrap: anywhere;
   color: #7d867b;
   font-size: 0.72rem;
+}
+
+.admin-photo-count {
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .admin-row button {
@@ -1869,6 +1874,10 @@ main {
   .board-grid,
   .record-form,
   .photo-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-row {
     grid-template-columns: 1fr;
   }
 

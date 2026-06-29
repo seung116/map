@@ -88,6 +88,15 @@ export async function loadRemoteRecords(userId) {
   return snapshot.docs.map((item) => item.data());
 }
 
+export async function countRemoteUserPhotos(userId) {
+  if (!firebaseEnabled || !firestore || !userId) {
+    return 0;
+  }
+
+  const records = await loadRemoteRecords(userId);
+  return (records || []).reduce((sum, record) => sum + (record.photos || []).filter((photo) => photo.src).length, 0);
+}
+
 export function subscribeRemoteRecords(userId, onRecords, onError) {
   if (!firebaseEnabled || !firestore || !userId) {
     return null;

@@ -92,7 +92,8 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
 
       match /travelRecords/{recordId} {
-        allow read, delete: if isApproved() && request.auth.uid == userId;
+        allow read: if isAdmin() || (isApproved() && request.auth.uid == userId);
+        allow delete: if isApproved() && request.auth.uid == userId;
         allow create, update: if isApproved()
           && request.auth.uid == userId
           && request.resource.data.userId == request.auth.uid;

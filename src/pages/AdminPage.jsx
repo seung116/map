@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
 import { setUserApproval, setUserRole, subscribeUsers } from '../services/authStore';
+import { countRemoteUserPhotos } from '../services/recordStore';
 
 function adminErrorMessage(error) {
   if (error?.code === 'permission-denied') {
@@ -12,6 +13,7 @@ function adminErrorMessage(error) {
 
 export default function AdminPage() {
   const [users, setUsers] = useState([]);
+  const [photoCounts, setPhotoCounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const pendingUsers = users.filter((user) => user.role !== 'admin' && !user.approved);
@@ -41,6 +43,38 @@ export default function AdminPage() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (!users.length) {
+      setPhotoCounts({});
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    async function loadPhotoCounts() {
+      const entries = await Promise.all(
+        users.map(async (user) => {
+          try {
+            return [user.uid, await countRemoteUserPhotos(user.uid)];
+          } catch (countError) {
+            console.error('User photo count failed:', countError);
+            return [user.uid, null];
+          }
+        }),
+      );
+
+      if (!cancelled) {
+        setPhotoCounts(Object.fromEntries(entries));
+      }
+    }
+
+    loadPhotoCounts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [users]);
+
   const updateApproval = async (uid, approved) => {
     await setUserApproval(uid, approved);
   };
@@ -57,6 +91,9 @@ export default function AdminPage() {
         <code>{user.uid}</code>
       </div>
       <span>{user.role === 'admin' ? '관리자' : user.approved ? '승인됨' : '대기'}</span>
+      <span className="admin-photo-count">
+        사진 {photoCounts[user.uid] == null ? '-' : `${photoCounts[user.uid]}장`}
+      </span>
       <button type="button" onClick={() => updateApproval(user.uid, !user.approved)}>
         {user.approved ? '승인 해제' : '승인'}
       </button>
