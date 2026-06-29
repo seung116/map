@@ -1550,6 +1550,7 @@ main {
 }
 
 .stats-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   margin-bottom: 22px;
 }
 
@@ -1593,19 +1594,21 @@ main {
 }
 
 .stat-card {
-  min-height: 150px;
-  padding: 22px;
+  min-height: 118px;
+  padding: 16px;
 }
 
 .stat-card span {
   color: var(--muted);
+  font-size: 0.82rem;
   font-weight: 800;
 }
 
 .stat-card strong {
   display: block;
-  margin-top: 16px;
-  font-size: clamp(1.6rem, 3vw, 2.7rem);
+  margin-top: 12px;
+  font-size: clamp(1.2rem, 1.85vw, 1.85rem);
+  line-height: 1.18;
 }
 
 .chart-panel {
