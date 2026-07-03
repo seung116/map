@@ -12,7 +12,7 @@ const regionSeeds = [
   { id: 'gyeonggi', value: 3, seed: [390, 405] },
   { id: 'gangwon', value: 4, seed: [690, 275] },
   { id: 'chungbuk', value: 5, seed: [585, 500] },
-  { id: 'sejong', value: 6, seed: [375, 570] },
+  { id: 'sejong', value: 6, seed: [430, 565] },
   { id: 'chungnam', value: 7, seed: [305, 610] },
   { id: 'daejeon', value: 8, seed: [445, 665] },
   { id: 'gyeongbuk', value: 9, seed: [785, 635] },
@@ -25,6 +25,25 @@ const regionSeeds = [
   { id: 'jeonnam', value: 16, seed: [335, 1030] },
   { id: 'jeju', value: 17, seed: [305, 1325] },
 ];
+
+const regionSeedById = new Map(regionSeeds.map((region) => [region.id, region]));
+
+const sejongCorrectionPolygon = [
+  [384, 528],
+  [416, 512],
+  [444, 526],
+  [456, 552],
+  [446, 580],
+  [458, 608],
+  [444, 638],
+  [420, 648],
+  [406, 620],
+  [382, 606],
+  [366, 574],
+  [372, 548],
+];
+
+const sejongFallbackRegions = ['chungnam', 'chungbuk', 'daejeon', 'jeonbuk'].map((id) => regionSeedById.get(id));
 
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
@@ -177,7 +196,7 @@ function isBarrier(pixels, index) {
   const g = pixels[offset + 1];
   const b = pixels[offset + 2];
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance < 220;
+  return luminance < 235;
 }
 
 function buildBarrierMask(image) {
@@ -187,12 +206,12 @@ function buildBarrierMask(image) {
   }
 
   const mask = new Uint8Array(raw);
-  for (let y = 2; y < image.height - 2; y += 1) {
-    for (let x = 2; x < image.width - 2; x += 1) {
+  for (let y = 3; y < image.height - 3; y += 1) {
+    for (let x = 3; x < image.width - 3; x += 1) {
       const index = indexFor(image.width, x, y);
       if (!raw[index]) continue;
-      for (let dy = -2; dy <= 2; dy += 1) {
-        for (let dx = -2; dx <= 2; dx += 1) {
+      for (let dy = -3; dy <= 3; dy += 1) {
+        for (let dx = -3; dx <= 3; dx += 1) {
           mask[indexFor(image.width, x + dx, y + dy)] = 1;
         }
       }
@@ -285,6 +304,23 @@ function nearestRegionForPixel(regions, x, y) {
   return nearest;
 }
 
+function pointInPolygon(point, polygon) {
+  const [x, y] = point;
+  let inside = false;
+
+  for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index, index += 1) {
+    const [xi, yi] = polygon[index];
+    const [xj, yj] = polygon[previous];
+    const crosses = (yi > y) !== (yj > y);
+    if (!crosses) continue;
+
+    const xAtY = ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (x < xAtY) inside = !inside;
+  }
+
+  return inside;
+}
+
 function findClosedComponentNear(width, height, labels, components, x, y, maxRadius = 48) {
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
@@ -337,7 +373,15 @@ function buildRegionMask(image) {
   for (let id = 1; id < components.length; id += 1) {
     const component = components[id];
     if (componentRegions.has(id) || component.touchesBorder || component.size < 16) continue;
-    componentRegions.set(id, [nearestRegion(component)]);
+    const region = nearestRegion(component);
+    const correctedRegion = pointInPolygon([component.centerX, component.centerY], sejongCorrectionPolygon)
+      ? regionSeedById.get('sejong')
+      : region.id === 'jeju'
+      ? regionSeedById.get('jeonnam')
+      : region.id === 'busan'
+        ? regionSeedById.get('gyeongnam')
+        : region;
+    componentRegions.set(id, [correctedRegion]);
   }
 
   const rgb = Buffer.alloc(image.width * image.height * 3);
@@ -346,7 +390,11 @@ function buildRegionMask(image) {
     if (!regions) continue;
     const x = i % image.width;
     const y = Math.floor(i / image.width);
-    const region = regions.length === 1 ? regions[0] : nearestRegionForPixel(regions, x, y);
+    let region = regions.length === 1 ? regions[0] : nearestRegionForPixel(regions, x, y);
+    const insideSejongCorrection = pointInPolygon([x, y], sejongCorrectionPolygon);
+    if (region.id === 'sejong' && !insideSejongCorrection) {
+      region = nearestRegionForPixel(sejongFallbackRegions, x, y);
+    }
     const target = i * 3;
     rgb[target] = region.value;
     rgb[target + 1] = 0;
