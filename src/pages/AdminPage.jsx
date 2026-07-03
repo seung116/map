@@ -45,7 +45,6 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!users.length) {
-      setPhotoCounts({});
       return undefined;
     }
 

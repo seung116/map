@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import heroImage from '../assets/hero-travel-archive.png';
 import AppShell from '../components/AppShell';
@@ -6,12 +6,9 @@ import MapExplorer from '../components/MapExplorer';
 
 export default function Dashboard({ records }) {
   const location = useLocation();
-  const [mapSelectionActive, setMapSelectionActive] = useState(false);
+  const [mapSelection, setMapSelection] = useState({ homeReset: 0, active: false });
   const homeReset = location.state?.homeReset || 0;
-
-  useEffect(() => {
-    setMapSelectionActive(false);
-  }, [homeReset]);
+  const mapSelectionActive = mapSelection.homeReset === homeReset && mapSelection.active;
 
   return (
     <AppShell>
@@ -35,7 +32,11 @@ export default function Dashboard({ records }) {
               <p>Map</p>
               <h2>여행 지도</h2>
             </div>
-            <MapExplorer key={homeReset} records={records} onSelectionChange={setMapSelectionActive} />
+            <MapExplorer
+              key={homeReset}
+              records={records}
+              onSelectionChange={(active) => setMapSelection({ homeReset, active })}
+            />
           </div>
         </section>
       </main>
