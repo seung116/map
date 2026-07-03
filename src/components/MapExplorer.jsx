@@ -11,7 +11,7 @@ import provinceJeonnam from '../assets/province-jeonnam.png';
 import provinceSeoul from '../assets/province-seoul.png';
 import provinceChungbuk from '../assets/province-chungbuk.png';
 import provinceChungnam from '../assets/province-chungnam.png';
-import { detailLayouts, detailPlaces, districtCells, provinceGroups, regions } from '../data/travelData';
+import { detailLayouts, detailPlaces, districtCells, nationalMapAreas, provinceGroups, regions } from '../data/travelData';
 import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor, recordMatchesRegion, recordRegionId } from '../utils/travelUtils';
 
 const provinceImages = {
@@ -26,6 +26,35 @@ const provinceImages = {
   'gyeongnam-do': provinceGyeongnam,
   'jeju-do': provinceJeju,
 };
+
+const nationalMapAreaHoles = {
+  gyeonggi: ['seoul'],
+  chungnam: ['sejong', 'daejeon'],
+  gyeongbuk: ['daegu'],
+  gyeongnam: ['ulsan', 'busan'],
+  jeonnam: ['gwangju'],
+};
+
+const nationalMapAreaById = new Map(nationalMapAreas.map((area) => [area.id, area]));
+
+function polygonToPath(polygon) {
+  const points = polygon
+    .split(',')
+    .map((point) => point.trim().split(/\s+/).map((value) => Number.parseFloat(value)))
+    .filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
+
+  return points.map(([x, y], index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ') + ' Z';
+}
+
+function nationalMapAreaPath(area) {
+  const areaPath = polygonToPath(area.imagePolygon);
+  const holePaths = (nationalMapAreaHoles[area.id] || [])
+    .map((holeId) => nationalMapAreaById.get(holeId)?.imagePolygon)
+    .filter(Boolean)
+    .map(polygonToPath);
+
+  return [areaPath, ...holePaths].join(' ');
+}
 
 function scrollToPageTop() {
   window.requestAnimationFrame(() => {
@@ -63,6 +92,15 @@ export default function MapExplorer({ records, onSelectionChange }) {
     scrollToPageTop();
   };
 
+  const selectNationalArea = (area) => {
+    if (area.provinceGroupId) {
+      selectProvince(area.provinceGroupId);
+      return;
+    }
+
+    navigate(`/region/${area.regionIds[0]}`);
+  };
+
   const resetProvince = () => {
     setSelectedProvince(null);
     setSelectedRegion(null);
@@ -87,28 +125,31 @@ export default function MapExplorer({ records, onSelectionChange }) {
         {!province && (
           <div className="province-image-map" role="img" aria-label="전국 도 단위로 나뉜 한국 행정 지도">
             <img src={adminMapImage} alt="" aria-hidden="true" />
-            <div className="province-click-layer">
-              {provinceGroups.map((group) => {
-                const visited = group.regionIds.some((id) => visitedIds.has(id));
+            <svg className="province-click-layer national-map-layer" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {nationalMapAreas.map((area) => {
+                const visited = area.regionIds.some((id) => visitedIds.has(id));
                 return (
-                  <button
-                    key={group.id}
-                    type="button"
-                    className={`province-hotspot ${visited ? 'visited' : ''}`}
-                    style={{
-                      clipPath: `polygon(${group.imagePolygon})`,
-                      zIndex: group.id === 'seoul-si' ? 2 : 1,
-                    }}
-                    onClick={() => selectProvince(group.id)}
+                  <path
+                    key={area.id}
+                    className={`national-map-area ${visited ? 'visited' : ''}`}
+                    d={nationalMapAreaPath(area)}
+                    fillRule="evenodd"
+                    onClick={() => selectNationalArea(area)}
                     onKeyDown={(event) => {
-                      if (event.key === 'Enter') selectProvince(group.id);
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        selectNationalArea(area);
+                      }
                     }}
-                    aria-label={`${group.name} ${visited ? '방문 기록 있음' : '미방문'}`}
-                    title={group.name}
-                  />
+                    aria-label={`${area.name} ${visited ? '방문 기록 있음' : '미방문'}`}
+                    role="button"
+                    tabIndex="0"
+                  >
+                    <title>{area.name}</title>
+                  </path>
                 );
               })}
-            </div>
+            </svg>
           </div>
         )}
 

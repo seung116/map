@@ -133,6 +133,121 @@ export const provinceGroups = [
   },
 ];
 
+export const nationalMapAreas = [
+  {
+    id: 'incheon',
+    name: '인천광역시',
+    regionIds: ['incheon'],
+    imagePolygon: '6.0% 25.0%, 8.9% 21.6%, 13.2% 21.8%, 16.1% 25.7%, 16.0% 31.4%, 11.4% 34.9%, 7.6% 32.1%',
+  },
+  {
+    id: 'seoul',
+    name: '서울특별시',
+    regionIds: ['seoul'],
+    provinceGroupId: 'seoul-si',
+    imagePolygon: '28.4% 21.4%, 33.7% 19.3%, 38.2% 21.6%, 39.2% 25.4%, 36.1% 29.2%, 30.3% 29.5%, 27.4% 26.2%',
+  },
+  {
+    id: 'gyeonggi',
+    name: '경기도',
+    regionIds: ['gyeonggi'],
+    provinceGroupId: 'gyeonggi-do',
+    imagePolygon: '16.4% 13.5%, 28.9% 7.4%, 42.1% 7.5%, 45.4% 15.2%, 42.9% 22.1%, 38.9% 24.1%, 39.2% 28.3%, 34.1% 31.1%, 27.0% 35.8%, 18.0% 32.9%, 14.1% 25.6%',
+  },
+  {
+    id: 'gangwon',
+    name: '강원도',
+    regionIds: ['gangwon'],
+    provinceGroupId: 'gangwon-do',
+    imagePolygon: '36.0% 8.0%, 57.7% 8.3%, 60.6% 3.0%, 62.7% 2.2%, 65.3% 6.3%, 67.9% 13.5%, 74.4% 19.1%, 82.6% 31.7%, 81.1% 39.3%, 72.8% 38.8%, 65.2% 33.8%, 56.2% 33.3%, 49.0% 35.3%, 42.7% 30.6%, 44.5% 23.5%, 41.5% 17.0%',
+  },
+  {
+    id: 'chungbuk',
+    name: '충청북도',
+    regionIds: ['chungbuk'],
+    provinceGroupId: 'chungbuk-do',
+    imagePolygon: '42.7% 31.0%, 49.0% 35.3%, 56.2% 33.3%, 65.2% 33.8%, 62.6% 42.0%, 56.4% 49.6%, 50.1% 53.2%, 43.0% 49.0%, 39.2% 42.5%',
+  },
+  {
+    id: 'sejong',
+    name: '세종특별자치시',
+    regionIds: ['sejong'],
+    imagePolygon: '33.4% 42.5%, 38.2% 40.0%, 41.7% 42.4%, 41.9% 47.0%, 38.1% 50.0%, 34.0% 47.4%',
+  },
+  {
+    id: 'chungnam',
+    name: '충청남도',
+    regionIds: ['chungnam'],
+    provinceGroupId: 'chungnam-do',
+    imagePolygon: '11.0% 36.2%, 18.6% 33.3%, 27.0% 35.8%, 34.0% 37.2%, 33.2% 42.4%, 33.9% 47.4%, 38.2% 50.0%, 35.4% 54.7%, 27.2% 54.5%, 18.5% 56.2%, 12.4% 51.5%, 10.2% 44.0%',
+  },
+  {
+    id: 'daejeon',
+    name: '대전광역시',
+    regionIds: ['daejeon'],
+    imagePolygon: '36.2% 50.0%, 41.5% 49.2%, 44.5% 53.0%, 42.2% 57.3%, 36.6% 57.2%, 33.9% 53.8%',
+  },
+  {
+    id: 'gyeongbuk',
+    name: '경상북도',
+    regionIds: ['gyeongbuk'],
+    provinceGroupId: 'gyeongbuk-do',
+    imagePolygon: '62.6% 42.0%, 65.2% 33.8%, 72.8% 38.8%, 81.1% 39.3%, 82.6% 31.7%, 84.1% 43.0%, 84.4% 53.2%, 86.5% 62.4%, 84.3% 70.0%, 76.8% 74.2%, 67.5% 72.0%, 57.8% 70.8%, 50.1% 63.1%, 50.1% 53.2%, 56.4% 49.6%',
+  },
+  {
+    id: 'daegu',
+    name: '대구광역시',
+    regionIds: ['daegu'],
+    imagePolygon: '61.8% 60.9%, 67.6% 58.4%, 72.0% 62.2%, 71.0% 68.0%, 65.2% 69.8%, 60.5% 66.5%',
+  },
+  {
+    id: 'ulsan',
+    name: '울산광역시',
+    regionIds: ['ulsan'],
+    imagePolygon: '76.8% 72.0%, 82.0% 71.0%, 85.4% 74.6%, 83.8% 80.0%, 78.0% 80.9%, 74.8% 76.8%',
+  },
+  {
+    id: 'busan',
+    name: '부산광역시',
+    regionIds: ['busan'],
+    imagePolygon: '69.5% 79.3%, 75.0% 77.9%, 79.6% 81.0%, 78.3% 86.5%, 72.5% 88.1%, 67.4% 84.6%',
+  },
+  {
+    id: 'gyeongnam',
+    name: '경상남도',
+    regionIds: ['gyeongnam'],
+    provinceGroupId: 'gyeongnam-do',
+    imagePolygon: '50.1% 63.1%, 57.8% 70.8%, 67.5% 72.0%, 76.8% 74.2%, 74.8% 78.0%, 69.5% 79.3%, 67.4% 84.6%, 58.0% 85.7%, 49.8% 82.8%, 43.7% 76.3%, 44.2% 68.8%',
+  },
+  {
+    id: 'jeonbuk',
+    name: '전북특별자치도',
+    regionIds: ['jeonbuk'],
+    provinceGroupId: 'jeonbuk-do',
+    imagePolygon: '18.5% 56.2%, 27.2% 54.5%, 35.4% 54.7%, 42.2% 57.3%, 50.1% 53.2%, 50.1% 63.1%, 44.2% 68.8%, 36.8% 68.5%, 27.7% 67.1%, 19.4% 70.3%, 15.5% 65.5%',
+  },
+  {
+    id: 'gwangju',
+    name: '광주광역시',
+    regionIds: ['gwangju'],
+    imagePolygon: '24.8% 73.0%, 31.0% 71.2%, 35.9% 74.5%, 34.7% 79.2%, 28.8% 80.8%, 24.0% 77.2%',
+  },
+  {
+    id: 'jeonnam',
+    name: '전라남도',
+    regionIds: ['jeonnam'],
+    provinceGroupId: 'jeonnam-do',
+    imagePolygon: '8.2% 70.9%, 15.5% 65.5%, 19.4% 70.3%, 27.7% 67.1%, 36.8% 68.5%, 44.2% 68.8%, 43.7% 76.3%, 49.8% 82.8%, 41.5% 86.9%, 32.8% 87.7%, 26.3% 95.0%, 17.9% 91.0%, 10.9% 84.7%',
+  },
+  {
+    id: 'jeju',
+    name: '제주도',
+    regionIds: ['jeju'],
+    provinceGroupId: 'jeju-do',
+    imagePolygon: '18.0% 91.9%, 25.2% 89.7%, 31.8% 90.0%, 35.3% 93.0%, 32.9% 97.0%, 23.9% 98.2%, 17.1% 96.2%',
+  },
+];
+
 export const detailLayouts = {
   'gyeonggi-do': {
     viewBox: '0 0 100 104',
