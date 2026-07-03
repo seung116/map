@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import nationalMapMask from '../assets/korea-province-mask.png';
 import adminMapImage from '../assets/korea-province-map.png';
 import provinceGangwon from '../assets/province-gangwon.png';
 import provinceGyeonggi from '../assets/province-gyeonggi.png';
@@ -27,33 +28,30 @@ const provinceImages = {
   'jeju-do': provinceJeju,
 };
 
-const nationalMapAreaHoles = {
-  gyeonggi: ['seoul'],
-  chungnam: ['sejong', 'daejeon'],
-  gyeongbuk: ['daegu'],
-  gyeongnam: ['ulsan', 'busan'],
-  jeonnam: ['gwangju'],
-};
+const nationalMapAreaByMaskValue = new Map(nationalMapAreas.map((area, index) => [index + 1, area]));
+const orange = { r: 223, g: 111, b: 67 };
 
-const nationalMapAreaById = new Map(nationalMapAreas.map((area) => [area.id, area]));
-
-function polygonToPath(polygon) {
-  const points = polygon
-    .split(',')
-    .map((point) => point.trim().split(/\s+/).map((value) => Number.parseFloat(value)))
-    .filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
-
-  return points.map(([x, y], index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ') + ' Z';
+function sampleMaskValue(maskData, x, y) {
+  if (!maskData || x < 0 || y < 0 || x >= maskData.width || y >= maskData.height) return 0;
+  return maskData.data[(y * maskData.width + x) * 4];
 }
 
-function nationalMapAreaPath(area) {
-  const areaPath = polygonToPath(area.imagePolygon);
-  const holePaths = (nationalMapAreaHoles[area.id] || [])
-    .map((holeId) => nationalMapAreaById.get(holeId)?.imagePolygon)
-    .filter(Boolean)
-    .map(polygonToPath);
+function sampleNearbyMaskValue(maskData, x, y) {
+  const exact = sampleMaskValue(maskData, x, y);
+  if (exact) return exact;
 
-  return [areaPath, ...holePaths].join(' ');
+  const counts = new Map();
+  for (let dy = -5; dy <= 5; dy += 1) {
+    for (let dx = -5; dx <= 5; dx += 1) {
+      if (dx * dx + dy * dy > 25) continue;
+      const value = sampleMaskValue(maskData, x + dx, y + dy);
+      if (value) counts.set(value, (counts.get(value) || 0) + 1);
+    }
+  }
+
+  const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  if (!ranked.length || (ranked[1] && ranked[1][1] > ranked[0][1] * 0.45)) return 0;
+  return ranked[0][0];
 }
 
 function scrollToPageTop() {
@@ -64,9 +62,13 @@ function scrollToPageTop() {
 
 export default function MapExplorer({ records, onSelectionChange }) {
   const navigate = useNavigate();
-  const visitedIds = new Set(records.map((record) => recordRegionId(record)));
+  const visitedIds = useMemo(() => new Set(records.map((record) => recordRegionId(record))), [records]);
+  const overlayCanvasRef = useRef(null);
+  const maskDataRef = useRef(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState(null);
+  const [hoveredNationalArea, setHoveredNationalArea] = useState(null);
+  const [maskReady, setMaskReady] = useState(false);
   const province = provinceGroups.find((group) => group.id === selectedProvince);
   const detailLayout = province ? detailLayouts[province.id] : null;
   const provinceImage = province ? provinceImages[province.id] : null;
@@ -85,6 +87,12 @@ export default function MapExplorer({ records, onSelectionChange }) {
   const provinceCityUnit = provinceRegion ? cityUnitLabel(provinceRegion.id) : '시';
   const currentRegion = regions.find((region) => region.id === selectedRegion);
   const currentRegionShape = currentRegion ? detailShapeFor(currentRegion.id) : null;
+  const visitedMaskValues = useMemo(
+    () => nationalMapAreas
+      .map((area, index) => (area.regionIds.some((id) => visitedIds.has(id)) ? index + 1 : 0))
+      .filter(Boolean),
+    [visitedIds],
+  );
   const selectProvince = (provinceId) => {
     setSelectedProvince(provinceId);
     setSelectedRegion(null);
@@ -107,6 +115,79 @@ export default function MapExplorer({ records, onSelectionChange }) {
     onSelectionChange?.(false);
   };
 
+  useEffect(() => {
+    let cancelled = false;
+    const image = new Image();
+    image.src = nationalMapMask;
+    image.onload = () => {
+      if (cancelled) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      context.drawImage(image, 0, 0);
+      maskDataRef.current = context.getImageData(0, 0, image.naturalWidth, image.naturalHeight);
+      setMaskReady(true);
+    };
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = overlayCanvasRef.current;
+    const maskData = maskDataRef.current;
+    if (!canvas || !maskData) return;
+
+    if (canvas.width !== maskData.width || canvas.height !== maskData.height) {
+      canvas.width = maskData.width;
+      canvas.height = maskData.height;
+    }
+
+    const context = canvas.getContext('2d');
+    const output = context.createImageData(maskData.width, maskData.height);
+    const visitedValues = new Set(visitedMaskValues);
+    const hoveredValue = hoveredNationalArea
+      ? [...nationalMapAreaByMaskValue.entries()].find(([, area]) => area.id === hoveredNationalArea.id)?.[0]
+      : 0;
+
+    for (let pixel = 0; pixel < maskData.width * maskData.height; pixel += 1) {
+      const value = maskData.data[pixel * 4];
+      const active = value && (visitedValues.has(value) || value === hoveredValue);
+      if (!active) continue;
+
+      const target = pixel * 4;
+      output.data[target] = orange.r;
+      output.data[target + 1] = orange.g;
+      output.data[target + 2] = orange.b;
+      output.data[target + 3] = value === hoveredValue ? 108 : 92;
+    }
+
+    context.putImageData(output, 0, 0);
+  }, [hoveredNationalArea, maskReady, visitedMaskValues]);
+
+  const findNationalAreaFromPointer = (event) => {
+    const maskData = maskDataRef.current;
+    if (!maskData) return null;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = Math.floor(((event.clientX - rect.left) / rect.width) * maskData.width);
+    const y = Math.floor(((event.clientY - rect.top) / rect.height) * maskData.height);
+    const value = sampleNearbyMaskValue(maskData, x, y);
+    return nationalMapAreaByMaskValue.get(value) || null;
+  };
+
+  const moveNationalMapPointer = (event) => {
+    const area = findNationalAreaFromPointer(event);
+    setHoveredNationalArea((current) => (current?.id === area?.id ? current : area));
+  };
+
+  const openNationalMapArea = (event) => {
+    const area = findNationalAreaFromPointer(event) || hoveredNationalArea;
+    if (area) selectNationalArea(area);
+  };
+
   return (
     <div className="map-shell staged-map-shell" aria-label="단계별 한국 여행 지도">
       <div className="map-toolbar">
@@ -125,31 +206,14 @@ export default function MapExplorer({ records, onSelectionChange }) {
         {!province && (
           <div className="province-image-map" role="img" aria-label="전국 도 단위로 나뉜 한국 행정 지도">
             <img src={adminMapImage} alt="" aria-hidden="true" />
-            <svg className="province-click-layer national-map-layer" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {nationalMapAreas.map((area) => {
-                const visited = area.regionIds.some((id) => visitedIds.has(id));
-                return (
-                  <path
-                    key={area.id}
-                    className={`national-map-area ${visited ? 'visited' : ''}`}
-                    d={nationalMapAreaPath(area)}
-                    fillRule="evenodd"
-                    onClick={() => selectNationalArea(area)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        selectNationalArea(area);
-                      }
-                    }}
-                    aria-label={`${area.name} ${visited ? '방문 기록 있음' : '미방문'}`}
-                    role="button"
-                    tabIndex="0"
-                  >
-                    <title>{area.name}</title>
-                  </path>
-                );
-              })}
-            </svg>
+            <canvas
+              ref={overlayCanvasRef}
+              className={`province-click-layer national-map-overlay ${hoveredNationalArea ? 'is-interactive' : ''}`}
+              onPointerMove={moveNationalMapPointer}
+              onPointerLeave={() => setHoveredNationalArea(null)}
+              onClick={openNationalMapArea}
+              aria-label={hoveredNationalArea ? `${hoveredNationalArea.name} 지도 영역` : '전국 지도 영역'}
+            />
           </div>
         )}
 

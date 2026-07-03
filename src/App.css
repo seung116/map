@@ -561,27 +561,15 @@ main {
   inset: 12px;
 }
 
-.national-map-layer {
+.national-map-overlay {
+  display: block;
   width: calc(100% - 24px);
   height: calc(100% - 24px);
+  border-radius: 6px;
 }
 
-.national-map-area {
+.national-map-overlay.is-interactive {
   cursor: pointer;
-  fill: rgba(244, 162, 97, 0);
-  outline: none;
-  pointer-events: visiblePainted;
-  transition: fill 160ms ease, filter 160ms ease;
-}
-
-.national-map-area:hover,
-.national-map-area:focus {
-  fill: rgba(223, 111, 67, 0.28);
-  filter: drop-shadow(0 4px 6px rgba(47, 53, 47, 0.16));
-}
-
-.national-map-area.visited {
-  fill: rgba(223, 111, 67, 0.34);
 }
 
 .province-crop-map {
