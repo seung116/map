@@ -1101,6 +1101,7 @@ main {
   overflow: hidden;
   color: var(--muted);
   line-height: 1.55;
+  white-space: pre-line;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -1521,6 +1522,7 @@ main {
   margin: 0 0 16px;
   color: var(--muted);
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .lightbox-details dl {
