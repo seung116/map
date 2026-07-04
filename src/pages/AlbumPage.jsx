@@ -98,7 +98,6 @@ export default function AlbumPage({ records }) {
     <AppShell>
       <main className="page">
         <section className="section-heading">
-          <p>Photo Album</p>
           <h1>전체 여행 사진</h1>
         </section>
         {albumGroups.length > 0 ? (
@@ -107,7 +106,6 @@ export default function AlbumPage({ records }) {
               <section className="album-year" key={yearGroup.key}>
                 <div className="album-year-heading">
                   <div>
-                    <p>Travel Group</p>
                     <h2>{yearGroup.label}</h2>
                     <span>{yearGroup.startDate === yearGroup.endDate ? yearGroup.startDate : `${yearGroup.startDate} ~ ${yearGroup.endDate}`}</span>
                   </div>

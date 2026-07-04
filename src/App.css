@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&display=swap');
+
 :root {
   color: #2f352f;
   background: #fbf6ed;
   font-family: Inter, Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --title-font: "Gaegu", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   --paper: #fffaf2;
   --ink: #2f352f;
   --muted: #6f766e;
@@ -190,9 +193,13 @@ main {
 .hero-copy h1 {
   max-width: 100%;
   margin: 0;
-  font-size: clamp(3rem, 7vw, 6.2rem);
-  line-height: 1.04;
+  font-family: var(--title-font);
+  font-size: clamp(3.25rem, 7.2vw, 6.45rem);
+  font-weight: 700;
+  line-height: 0.98;
   letter-spacing: 0;
+  -webkit-text-stroke: 0.7px rgba(18, 22, 18, 0.32);
+  text-shadow: 0 10px 26px rgba(31, 38, 30, 0.42), 0 2px 2px rgba(31, 38, 30, 0.18), 0 1px 0 rgba(255, 250, 242, 0.2);
   white-space: nowrap;
 }
 
@@ -439,8 +446,12 @@ main {
 .region-header h1,
 .auth-card h1,
 .profile-panel h1 {
+  font-family: var(--title-font);
   font-size: clamp(2rem, 4vw, 3.6rem);
-  line-height: 1.1;
+  font-weight: 700;
+  line-height: 1.02;
+  -webkit-text-stroke: 0.45px rgba(18, 22, 18, 0.22);
+  text-shadow: 0 7px 18px rgba(62, 72, 58, 0.22), 0 1px 1px rgba(62, 72, 58, 0.12);
 }
 
 .section-heading h2,
@@ -1433,12 +1444,12 @@ main {
 
 .album-timeline {
   display: grid;
-  gap: 34px;
+  gap: 24px;
 }
 
 .album-year {
   display: grid;
-  gap: 22px;
+  gap: 16px;
 }
 
 .album-year-heading,
@@ -1466,7 +1477,7 @@ main {
 }
 
 .album-year-heading h2 {
-  font-size: clamp(1.65rem, 3vw, 2.4rem);
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
 }
 
 .album-year-heading strong,
@@ -1482,20 +1493,20 @@ main {
 
 .album-month {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   border-top: 1px solid rgba(91, 105, 81, 0.13);
-  padding-top: 18px;
+  padding-top: 12px;
 }
 
 .album-month-heading h3 {
-  font-size: 1.18rem;
+  font-size: 1.04rem;
 }
 
 .album-grid {
   display: grid;
-  grid-auto-columns: minmax(190px, 240px);
+  grid-auto-columns: minmax(132px, 164px);
   grid-auto-flow: column;
-  gap: 18px;
+  gap: 12px;
   align-items: stretch;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
@@ -1513,7 +1524,7 @@ main {
   color: var(--ink);
   padding: 0;
   text-align: left;
-  box-shadow: 0 12px 34px rgba(62, 72, 58, 0.12);
+  box-shadow: 0 8px 22px rgba(62, 72, 58, 0.1);
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
   animation: albumCardIn 360ms ease both;
   animation-delay: var(--delay, 0ms);
@@ -1528,7 +1539,7 @@ main {
 
 .album-photo {
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: #ece6dc;
 }
@@ -1546,9 +1557,9 @@ main {
 
 .album-caption {
   display: grid;
-  gap: 4px;
-  min-height: 74px;
-  padding: 12px 13px 13px;
+  gap: 3px;
+  min-height: 58px;
+  padding: 9px 10px 10px;
 }
 
 .album-caption strong {
@@ -1556,7 +1567,8 @@ main {
   overflow: hidden;
   color: var(--ink);
   font-weight: 800;
-  line-height: 1.35;
+  font-size: 0.92rem;
+  line-height: 1.25;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -1564,7 +1576,7 @@ main {
 .album-caption small {
   overflow: hidden;
   color: #789181;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2040,13 +2052,13 @@ main {
   }
 
   .album-grid {
-    grid-auto-columns: minmax(160px, 70vw);
+    grid-auto-columns: minmax(128px, 48vw);
     gap: 12px;
   }
 
   .album-caption {
-    min-height: 66px;
-    padding: 10px;
+    min-height: 56px;
+    padding: 8px;
   }
 
   .span-2 {
