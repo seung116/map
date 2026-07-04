@@ -26,12 +26,37 @@ export function normalizeRecordDates(record) {
   return { ...record, startDate, endDate };
 }
 
+function parseLocalDate(value) {
+  if (!value) return null;
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function tripDayNumberFromDates(tripStartDate, recordDate) {
+  const start = parseLocalDate(tripStartDate);
+  const current = parseLocalDate(recordDate);
+  if (!start || !current) return null;
+
+  const diff = Math.floor((current.getTime() - start.getTime()) / 86400000) + 1;
+  return Math.max(1, diff);
+}
+
 export function recordTripStartDate(record) {
   return record?.tripStartDate || recordStartDate(record);
 }
 
 export function recordTripEndDate(record) {
   return record?.tripEndDate || recordEndDate(record);
+}
+
+export function recordTripDayNumber(record) {
+  if (record?.tripDayNumber) return record.tripDayNumber;
+  return tripDayNumberFromDates(recordTripStartDate(record), recordStartDate(record));
+}
+
+export function recordTripDayLabel(record) {
+  const dayNumber = recordTripDayNumber(record);
+  return dayNumber ? `${dayNumber}일차` : '일차 미정';
 }
 
 export function recordTripId(record) {
@@ -46,7 +71,7 @@ export function recordTripName(record) {
 }
 
 export function recordDayLabel(record) {
-  return recordDateRange(record);
+  return recordTripDayLabel(record);
 }
 
 export function groupRecordsByTrip(records) {
@@ -75,12 +100,21 @@ export function groupRecordsByTrip(records) {
   });
 
   groups.forEach((group) => {
-    group.records.sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a)) || String(b.id).localeCompare(String(a.id)));
+    group.records.sort((a, b) => (
+      recordTripDayNumber(a) - recordTripDayNumber(b)
+      || recordStartDate(a).localeCompare(recordStartDate(b))
+      || String(a.id).localeCompare(String(b.id))
+    ));
     group.dayGroups = group.records.reduce((days, record) => {
       const dayKey = recordDayLabel(record);
       let dayGroup = days.find((item) => item.key === dayKey);
       if (!dayGroup) {
-        dayGroup = { key: dayKey, label: dayKey, records: [] };
+        dayGroup = {
+          key: dayKey,
+          label: dayKey,
+          dayNumber: recordTripDayNumber(record),
+          records: [],
+        };
         days.push(dayGroup);
       }
       dayGroup.records.push(record);
@@ -88,7 +122,10 @@ export function groupRecordsByTrip(records) {
     }, []);
   });
 
-  return groups.sort((a, b) => (b.endDate || '').localeCompare(a.endDate || ''));
+  return groups.sort((a, b) => (
+    (b.endDate || '').localeCompare(a.endDate || '')
+    || (b.startDate || '').localeCompare(a.startDate || '')
+  ));
 }
 
 export function detailShapeFor(regionId) {

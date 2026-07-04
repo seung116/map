@@ -13,6 +13,7 @@ import {
   recordTripId,
   recordTripName,
   recordTripStartDate,
+  tripDayNumberFromDates,
   toPhotoFiles,
 } from '../utils/travelUtils';
 
@@ -85,6 +86,7 @@ export default function RecordFormPage({ records, setRecords }) {
   const selectedTrip = tripGroups.find((group) => group.id === form.tripId);
   const activeTripStartDate = tripMode === 'existing' ? selectedTrip?.startDate || form.tripStartDate : form.tripStartDate;
   const activeTripEndDate = tripMode === 'existing' ? selectedTrip?.endDate || form.tripEndDate : form.tripEndDate;
+  const activeTripDayNumber = tripDayNumberFromDates(activeTripStartDate, form.startDate);
 
   const applyTripToForm = (trip) => {
     if (!trip) return;
@@ -191,6 +193,7 @@ export default function RecordFormPage({ records, setRecords }) {
     const tripEndDate = tripMode === 'existing'
       ? activeTripEndDate
       : normalizedForm.tripEndDate;
+    const tripDayNumber = tripDayNumberFromDates(tripStartDate, normalizedForm.startDate);
     const nextRecord = {
       ...normalizedForm,
       id: editing?.id || Date.now(),
@@ -198,6 +201,7 @@ export default function RecordFormPage({ records, setRecords }) {
       tripName,
       tripStartDate,
       tripEndDate,
+      tripDayNumber,
       endDate: normalizedForm.startDate,
       photos: form.photos,
     };
@@ -278,6 +282,9 @@ export default function RecordFormPage({ records, setRecords }) {
               value={form.startDate}
               onChange={(event) => update('startDate', event.target.value)}
             />
+            <span className="trip-day-summary">
+              {activeTripDayNumber ? `${activeTripDayNumber}일차` : '여행 기간을 먼저 정하면 일차가 표시돼요'}
+            </span>
           </label>
           <label className="form-field">
             여행 도/광역시

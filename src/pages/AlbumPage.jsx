@@ -10,7 +10,9 @@ import {
   recordTripEndDate,
   recordTripId,
   recordTripName,
+  recordTripDayNumber,
   recordTripStartDate,
+  recordTripDayLabel,
   regionName,
 } from '../utils/travelUtils';
 
@@ -36,15 +38,24 @@ function groupPhotosByTrip(photos) {
     if (!tripGroup.startDate || (photo.tripStartDate && photo.tripStartDate < tripGroup.startDate)) tripGroup.startDate = photo.tripStartDate;
     if (!tripGroup.endDate || (photo.tripEndDate && photo.tripEndDate > tripGroup.endDate)) tripGroup.endDate = photo.tripEndDate;
 
-    let dayGroup = tripGroup.days.find((group) => group.key === photo.dateRange);
+    let dayGroup = tripGroup.days.find((group) => group.key === photo.tripDayLabel);
     if (!dayGroup) {
-      dayGroup = { key: photo.dateRange, label: photo.dateRange, items: [] };
+      dayGroup = {
+        key: photo.tripDayLabel,
+        label: photo.tripDayLabel,
+        dayNumber: photo.tripDayNumber,
+        dateRange: photo.dateRange,
+        items: [],
+      };
       tripGroup.days.push(dayGroup);
     }
 
     dayGroup.items.push(photo);
     return trips;
-  }, []);
+  }, []).map((tripGroup) => ({
+    ...tripGroup,
+    days: [...tripGroup.days].sort((a, b) => (a.dayNumber || 0) - (b.dayNumber || 0)),
+  }));
 }
 
 export default function AlbumPage({ records }) {
@@ -61,6 +72,8 @@ export default function AlbumPage({ records }) {
         tripName: recordTripName(record),
         tripStartDate: recordTripStartDate(record),
         tripEndDate: recordTripEndDate(record),
+        tripDayNumber: recordTripDayNumber(record),
+        tripDayLabel: recordTripDayLabel(record),
         recordId: record.id,
         recordTitle: record.title,
         regionId: displayRegionId,
@@ -100,13 +113,14 @@ export default function AlbumPage({ records }) {
                   </div>
                 </div>
 
-                {yearGroup.days.map((monthGroup) => (
-                  <section className="album-month" key={monthGroup.key}>
+                {yearGroup.days.map((dayGroup) => (
+                  <section className="album-month" key={dayGroup.key}>
                     <div className="album-month-heading">
-                      <h3>{monthGroup.label}</h3>
+                      <h3>{dayGroup.label}</h3>
+                      <span>{dayGroup.dateRange}</span>
                     </div>
                     <div className="album-grid">
-                      {monthGroup.items.map((photo, index) => (
+                      {dayGroup.items.map((photo, index) => (
                         <button
                           key={`${photo.id}-${photo.recordTitle}`}
                           className="album-item"
@@ -119,7 +133,7 @@ export default function AlbumPage({ records }) {
                           </span>
                           <span className="album-caption">
                             <strong>{photo.caption}</strong>
-                            <small>{photo.cityName ? `${regionName(photo.regionId)} · ${photo.cityName}` : regionName(photo.regionId)} · {photo.dateRange}</small>
+                            <small>{photo.cityName ? `${regionName(photo.regionId)} · ${photo.cityName}` : regionName(photo.regionId)} · {photo.dateRange} · {photo.tripDayLabel}</small>
                           </span>
                         </button>
                       ))}

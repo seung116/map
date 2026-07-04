@@ -1321,6 +1321,17 @@ main {
   font-size: 0.88rem;
 }
 
+.trip-day-summary {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: #dcebd9;
+  color: #354d38;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
 .segmented-control {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1482,9 +1493,14 @@ main {
 
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-auto-columns: minmax(190px, 240px);
+  grid-auto-flow: column;
   gap: 18px;
   align-items: stretch;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-bottom: 8px;
+  scroll-snap-type: inline proximity;
 }
 
 .album-item {
@@ -1501,6 +1517,7 @@ main {
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
   animation: albumCardIn 360ms ease both;
   animation-delay: var(--delay, 0ms);
+  scroll-snap-align: start;
 }
 
 .album-item:hover {
@@ -2023,7 +2040,7 @@ main {
   }
 
   .album-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-columns: minmax(160px, 70vw);
     gap: 12px;
   }
 
