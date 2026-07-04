@@ -458,7 +458,9 @@ main {
 .empty-state h2,
 .chart-panel h2,
 .board-card h2 {
+  font-family: var(--title-font);
   font-size: clamp(1.45rem, 2.6vw, 2.25rem);
+  font-weight: 700;
   line-height: 1.18;
 }
 
@@ -1093,11 +1095,13 @@ main {
 .trip-day-heading h3 {
   margin: 0;
   color: var(--ink);
+  font-family: var(--title-font);
+  font-weight: 700;
 }
 
 .trip-heading span,
 .trip-day-heading span,
-.album-year-heading span {
+.album-year-heading > div > span {
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 800;
@@ -1153,7 +1157,9 @@ main {
 
 .travel-card h3 {
   margin: 10px 0 8px;
+  font-family: var(--title-font);
   font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .travel-card p {
@@ -1444,12 +1450,20 @@ main {
 
 .album-timeline {
   display: grid;
-  gap: 24px;
+  gap: 34px;
 }
 
 .album-year {
+  position: relative;
   display: grid;
-  gap: 16px;
+  gap: 18px;
+  border-left: 6px solid rgba(223, 111, 67, 0.52);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(244, 249, 239, 0.88)),
+    var(--paper);
+  padding: 22px 24px 24px;
+  box-shadow: 0 16px 38px rgba(62, 72, 58, 0.1);
 }
 
 .album-year-heading,
@@ -1458,6 +1472,11 @@ main {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
+}
+
+.album-year-heading > div {
+  display: grid;
+  gap: 3px;
 }
 
 .album-year-heading p {
@@ -1473,22 +1492,36 @@ main {
 .album-month-heading h3 {
   margin: 0;
   color: var(--ink);
+  font-family: var(--title-font);
+  font-weight: 700;
   letter-spacing: 0;
 }
 
 .album-year-heading h2 {
-  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-size: clamp(2rem, 3.8vw, 3.1rem);
 }
 
-.album-year-heading strong,
+.album-year-heading span {
+  width: fit-content;
+  border-radius: 0;
+  background: transparent;
+  color: #5d6b5b;
+  padding: 0;
+  font-family: var(--title-font);
+  font-size: 1.32rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .album-month-heading span {
   min-width: max-content;
   border-radius: 999px;
   background: rgba(184, 217, 194, 0.42);
   color: #4d654a;
+  font-family: var(--title-font);
   padding: 7px 12px;
-  font-size: 0.88rem;
-  font-weight: 900;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .album-month {
@@ -1499,7 +1532,8 @@ main {
 }
 
 .album-month-heading h3 {
-  font-size: 1.04rem;
+  font-size: 1.38rem;
+  font-weight: 700;
 }
 
 .album-grid {
@@ -1648,13 +1682,17 @@ main {
 
 .lightbox-details h2 {
   margin: 14px 0 4px;
+  font-family: var(--title-font);
   font-size: 1.45rem;
+  font-weight: 700;
 }
 
 .lightbox-details h3 {
   margin: 0 0 12px;
   color: #4d654a;
+  font-family: var(--title-font);
   font-size: 1.02rem;
+  font-weight: 700;
 }
 
 .lightbox-details p {
@@ -1724,7 +1762,9 @@ main {
 .stats-progress-panel h2 {
   margin: 0 0 10px;
   color: var(--ink);
+  font-family: var(--title-font);
   font-size: clamp(1.5rem, 3vw, 2.35rem);
+  font-weight: 700;
   letter-spacing: 0;
 }
 
@@ -2049,6 +2089,11 @@ main {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .album-year {
+    border-left-width: 4px;
+    padding: 16px 14px 18px;
   }
 
   .album-grid {

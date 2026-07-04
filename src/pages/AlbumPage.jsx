@@ -21,6 +21,19 @@ function parseDateValue(value) {
   return Number.isNaN(time) ? 0 : time;
 }
 
+function formatShortDate(value) {
+  if (!value) return '';
+  const [year, month, day] = value.split('-');
+  if (!year || !month || !day) return value;
+  return `${year.slice(-2)}/${month}/${day}`;
+}
+
+function formatShortDateRange(startDate, endDate) {
+  if (!startDate && !endDate) return '날짜 미정';
+  if (!endDate || startDate === endDate) return formatShortDate(startDate || endDate);
+  return `${formatShortDate(startDate)} ~ ${formatShortDate(endDate)}`;
+}
+
 function groupPhotosByTrip(photos) {
   return photos.reduce((trips, photo) => {
     let tripGroup = trips.find((group) => group.key === photo.tripId);
@@ -65,6 +78,7 @@ export default function AlbumPage({ records }) {
       const startDate = recordStartDate(record);
       const endDate = recordEndDate(record);
       const sortDate = endDate || startDate;
+      const recordDate = startDate || recordDateRange(record);
       const displayRegionId = recordRegionId(record);
       return {
         ...photo,
@@ -78,7 +92,7 @@ export default function AlbumPage({ records }) {
         recordTitle: record.title,
         regionId: displayRegionId,
         cityName: record.cityName || '',
-        dateRange: recordDateRange(record),
+        dateRange: recordDate,
         startDate,
         endDate,
         sortDate,
@@ -107,7 +121,7 @@ export default function AlbumPage({ records }) {
                 <div className="album-year-heading">
                   <div>
                     <h2>{yearGroup.label}</h2>
-                    <span>{yearGroup.startDate === yearGroup.endDate ? yearGroup.startDate : `${yearGroup.startDate} ~ ${yearGroup.endDate}`}</span>
+                    <span>{formatShortDateRange(yearGroup.startDate, yearGroup.endDate)}</span>
                   </div>
                 </div>
 
@@ -115,7 +129,7 @@ export default function AlbumPage({ records }) {
                   <section className="album-month" key={dayGroup.key}>
                     <div className="album-month-heading">
                       <h3>{dayGroup.label}</h3>
-                      <span>{dayGroup.dateRange}</span>
+                      <span>{formatShortDate(dayGroup.dateRange)}</span>
                     </div>
                     <div className="album-grid">
                       {dayGroup.items.map((photo, index) => (

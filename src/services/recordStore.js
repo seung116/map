@@ -50,7 +50,7 @@ async function sharedRecord(userId, record) {
   return {
     ...record,
     userId,
-    photos: await Promise.all((record.photos || []).filter((photo) => photo.src).slice(0, 3).map((photo) => uploadPhoto(userId, record.id, photo))),
+    photos: await Promise.all((record.photos || []).filter((photo) => photo.src).slice(0, 5).map((photo) => uploadPhoto(userId, record.id, photo))),
   };
 }
 

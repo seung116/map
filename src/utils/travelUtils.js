@@ -222,7 +222,7 @@ function compressImage(file, index, maxWidth = 1200, quality = 0.78) {
 export function toPhotoFiles(files) {
   return Promise.all(
     Array.from(files)
-      .slice(0, 3)
+      .slice(0, 5)
       .map((file, index) => compressImage(file, index)),
   );
 }

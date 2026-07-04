@@ -321,12 +321,16 @@ export default function MapExplorer({ records, onSelectionChange }) {
 
       {!province && (
         <div className="province-list">
-          {provinceGroups.map((group) => {
-            const visited = group.regionIds.some((id) => visitedIds.has(id));
+          {nationalMapAreas.map((area) => {
+            const visited = area.regionIds.some((id) => visitedIds.has(id));
+            const provinceGroup = area.provinceGroupId
+              ? provinceGroups.find((group) => group.id === area.provinceGroupId)
+              : null;
+            const areaNote = provinceGroup?.note || `${area.name} 여행 기록`;
             return (
-              <button key={group.id} type="button" className={visited ? 'visited' : ''} onClick={() => selectProvince(group.id)}>
-                <strong>{group.name}</strong>
-                <span>{group.note}</span>
+              <button key={area.id} type="button" className={visited ? 'visited' : ''} onClick={() => selectNationalArea(area)}>
+                <strong>{area.name}</strong>
+                <span>{areaNote}</span>
               </button>
             );
           })}
