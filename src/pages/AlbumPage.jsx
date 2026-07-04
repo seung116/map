@@ -2,51 +2,38 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
-import { recordDateRange, recordEndDate, recordRegionId, recordStartDate, regionName } from '../utils/travelUtils';
-
-const monthFormatter = new Intl.DateTimeFormat('ko-KR', { month: 'long' });
+import { recordDateRange, recordEndDate, recordRegionId, recordStartDate, recordTripId, recordTripName, regionName } from '../utils/travelUtils';
 
 function parseDateValue(value) {
   const time = value ? new Date(value).getTime() : 0;
   return Number.isNaN(time) ? 0 : time;
 }
 
-function albumDateParts(dateValue) {
-  if (!dateValue) {
-    return {
-      yearKey: 'unknown',
-      yearLabel: '날짜 미정',
-      monthKey: 'unknown',
-      monthLabel: '날짜 미정',
-    };
-  }
-
-  const date = new Date(dateValue);
-  return {
-    yearKey: String(date.getFullYear()),
-    yearLabel: `${date.getFullYear()}년`,
-    monthKey: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-    monthLabel: monthFormatter.format(date),
-  };
-}
-
-function groupPhotosByDate(photos) {
-  return photos.reduce((years, photo) => {
-    let yearGroup = years.find((group) => group.key === photo.yearKey);
-    if (!yearGroup) {
-      yearGroup = { key: photo.yearKey, label: photo.yearLabel, count: 0, months: [] };
-      years.push(yearGroup);
+function groupPhotosByTrip(photos) {
+  return photos.reduce((trips, photo) => {
+    let tripGroup = trips.find((group) => group.key === photo.tripId);
+    if (!tripGroup) {
+      tripGroup = {
+        key: photo.tripId,
+        label: photo.tripName,
+        startDate: photo.startDate,
+        endDate: photo.endDate,
+        days: [],
+      };
+      trips.push(tripGroup);
     }
 
-    let monthGroup = yearGroup.months.find((group) => group.key === photo.monthKey);
-    if (!monthGroup) {
-      monthGroup = { key: photo.monthKey, label: photo.monthLabel, items: [] };
-      yearGroup.months.push(monthGroup);
+    if (!tripGroup.startDate || (photo.startDate && photo.startDate < tripGroup.startDate)) tripGroup.startDate = photo.startDate;
+    if (!tripGroup.endDate || (photo.endDate && photo.endDate > tripGroup.endDate)) tripGroup.endDate = photo.endDate;
+
+    let dayGroup = tripGroup.days.find((group) => group.key === photo.dateRange);
+    if (!dayGroup) {
+      dayGroup = { key: photo.dateRange, label: photo.dateRange, items: [] };
+      tripGroup.days.push(dayGroup);
     }
 
-    monthGroup.items.push(photo);
-    yearGroup.count += 1;
-    return years;
+    dayGroup.items.push(photo);
+    return trips;
   }, []);
 }
 
@@ -60,7 +47,8 @@ export default function AlbumPage({ records }) {
       const displayRegionId = recordRegionId(record);
       return {
         ...photo,
-        ...albumDateParts(sortDate),
+        tripId: recordTripId(record),
+        tripName: recordTripName(record),
         recordId: record.id,
         recordTitle: record.title,
         regionId: displayRegionId,
@@ -79,7 +67,7 @@ export default function AlbumPage({ records }) {
     if (endDiff !== 0) return endDiff;
     return parseDateValue(b.startDate) - parseDateValue(a.startDate);
   });
-  const albumGroups = groupPhotosByDate(photos);
+  const albumGroups = groupPhotosByTrip(photos);
 
   return (
     <AppShell>
@@ -94,17 +82,16 @@ export default function AlbumPage({ records }) {
               <section className="album-year" key={yearGroup.key}>
                 <div className="album-year-heading">
                   <div>
-                    <p>Travel Photos</p>
+                    <p>Travel Group</p>
                     <h2>{yearGroup.label}</h2>
+                    <span>{yearGroup.startDate === yearGroup.endDate ? yearGroup.startDate : `${yearGroup.startDate} ~ ${yearGroup.endDate}`}</span>
                   </div>
-                  <strong>{yearGroup.count}장</strong>
                 </div>
 
-                {yearGroup.months.map((monthGroup) => (
+                {yearGroup.days.map((monthGroup) => (
                   <section className="album-month" key={monthGroup.key}>
                     <div className="album-month-heading">
                       <h3>{monthGroup.label}</h3>
-                      <span>{monthGroup.items.length}장</span>
                     </div>
                     <div className="album-grid">
                       {monthGroup.items.map((photo, index) => (

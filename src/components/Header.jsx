@@ -24,7 +24,6 @@ export default function Header() {
         <Link to="/write">기록</Link>
         <Link to="/album">앨범</Link>
         <Link to="/stats">통계</Link>
-        <Link to="/mypage">마이</Link>
         {auth?.isAdmin && <Link to="/admin">관리</Link>}
         <button className="nav-button" type="button" onClick={logoutUser}>로그아웃</button>
       </nav>

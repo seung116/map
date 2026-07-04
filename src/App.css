@@ -1047,6 +1047,66 @@ main {
   gap: 18px;
 }
 
+.trip-timeline {
+  display: grid;
+  gap: 28px;
+}
+
+.trip-group {
+  display: grid;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.74);
+  padding: 20px;
+}
+
+.trip-heading,
+.trip-day-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.trip-heading p {
+  margin: 0 0 7px;
+  color: #5f8c75;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trip-heading h2,
+.trip-day-heading h3 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.trip-heading span,
+.trip-day-heading span,
+.album-year-heading span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.trip-heading strong {
+  color: #5f8c75;
+  white-space: nowrap;
+}
+
+.trip-days {
+  display: grid;
+  gap: 22px;
+}
+
+.trip-day {
+  display: grid;
+  gap: 12px;
+}
+
 .travel-card {
   overflow: hidden;
 }
@@ -1192,6 +1252,10 @@ main {
 }
 
 .record-form .form-field {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
   border: 1px solid rgba(91, 105, 81, 0.13);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.58);
@@ -1226,6 +1290,37 @@ main {
 .record-form textarea {
   min-height: 140px;
   resize: vertical;
+}
+
+.trip-field > span {
+  color: #536153;
+  font-weight: 800;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.segmented-control button {
+  min-height: 42px;
+  border: 1px solid rgba(91, 105, 81, 0.16);
+  border-radius: 14px;
+  background: #fffdf8;
+  color: #536153;
+  font-weight: 900;
+}
+
+.segmented-control button.is-active {
+  border-color: rgba(95, 140, 117, 0.58);
+  background: #dcebd9;
+  color: #354d38;
+}
+
+.segmented-control button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .span-2 {

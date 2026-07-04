@@ -2,7 +2,7 @@ import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import TravelCard from '../components/TravelCard';
 import { regions } from '../data/travelData';
-import { cityUnitLabel, recordMatchesRegion } from '../utils/travelUtils';
+import { cityUnitLabel, groupRecordsByTrip, recordMatchesRegion } from '../utils/travelUtils';
 
 export default function RegionPage({ records, setRecords }) {
   const { regionId } = useParams();
@@ -12,6 +12,7 @@ export default function RegionPage({ records, setRecords }) {
   const regionRecords = records.filter((record) => (
     recordMatchesRegion(record, regionId) && (!selectedCity || record.cityName === selectedCity)
   ));
+  const tripGroups = groupRecordsByTrip(regionRecords);
 
   if (!region) return <Navigate to="/" replace />;
 
@@ -42,9 +43,33 @@ export default function RegionPage({ records, setRecords }) {
             <p>여행 날짜, 함께 간 사람, 짧은 메모와 여러 장의 사진을 저장할 수 있습니다.</p>
           </div>
         ) : (
-          <div className="record-grid">
-            {regionRecords.map((record) => (
-              <TravelCard key={record.id} record={record} onDelete={deleteRecord} />
+          <div className="trip-timeline">
+            {tripGroups.map((trip) => (
+              <section className="trip-group" key={trip.id}>
+                <div className="trip-heading">
+                  <div>
+                    <p>Travel Group</p>
+                    <h2>{trip.name}</h2>
+                    <span>{trip.startDate === trip.endDate ? trip.startDate : `${trip.startDate} ~ ${trip.endDate}`}</span>
+                  </div>
+                  <strong>{trip.records.length}개 기록</strong>
+                </div>
+                <div className="trip-days">
+                  {trip.dayGroups.map((dayGroup) => (
+                    <section className="trip-day" key={dayGroup.key}>
+                      <div className="trip-day-heading">
+                        <h3>{dayGroup.label}</h3>
+                        <span>{dayGroup.records.length}개</span>
+                      </div>
+                      <div className="record-grid">
+                        {dayGroup.records.map((record) => (
+                          <TravelCard key={record.id} record={record} onDelete={deleteRecord} />
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}

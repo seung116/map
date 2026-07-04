@@ -26,6 +26,63 @@ export function normalizeRecordDates(record) {
   return { ...record, startDate, endDate };
 }
 
+export function recordTripId(record) {
+  if (record?.tripId) return record.tripId;
+  return `trip-${recordStartDate(record) || 'unknown'}-${recordEndDate(record) || 'unknown'}`;
+}
+
+export function recordTripName(record) {
+  if (record?.tripName) return record.tripName;
+  const dateRange = recordDateRange(record);
+  return dateRange === '날짜 미정' ? '묶이지 않은 여행' : `${dateRange} 여행`;
+}
+
+export function recordDayLabel(record) {
+  return recordDateRange(record);
+}
+
+export function groupRecordsByTrip(records) {
+  const groups = [];
+
+  records.forEach((record) => {
+    const tripId = recordTripId(record);
+    let group = groups.find((item) => item.id === tripId);
+    if (!group) {
+      group = {
+        id: tripId,
+        name: recordTripName(record),
+        startDate: recordStartDate(record),
+        endDate: recordEndDate(record),
+        records: [],
+        dayGroups: [],
+      };
+      groups.push(group);
+    }
+
+    group.records.push(record);
+    const startDate = recordStartDate(record);
+    const endDate = recordEndDate(record);
+    if (!group.startDate || (startDate && startDate < group.startDate)) group.startDate = startDate;
+    if (!group.endDate || (endDate && endDate > group.endDate)) group.endDate = endDate;
+  });
+
+  groups.forEach((group) => {
+    group.records.sort((a, b) => recordStartDate(b).localeCompare(recordStartDate(a)) || String(b.id).localeCompare(String(a.id)));
+    group.dayGroups = group.records.reduce((days, record) => {
+      const dayKey = recordDayLabel(record);
+      let dayGroup = days.find((item) => item.key === dayKey);
+      if (!dayGroup) {
+        dayGroup = { key: dayKey, label: dayKey, records: [] };
+        days.push(dayGroup);
+      }
+      dayGroup.records.push(record);
+      return days;
+    }, []);
+  });
+
+  return groups.sort((a, b) => (b.endDate || '').localeCompare(a.endDate || ''));
+}
+
 export function detailShapeFor(regionId) {
   return Object.values(detailLayouts)
     .flatMap((layout) => layout.shapes)

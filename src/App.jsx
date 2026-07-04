@@ -7,7 +7,6 @@ import AlbumPage from './pages/AlbumPage';
 import AuthPage from './pages/AuthPage';
 import BoardsPage from './pages/BoardsPage';
 import Dashboard from './pages/Dashboard';
-import MyPage from './pages/MyPage';
 import PendingApprovalPage from './pages/PendingApprovalPage';
 import RecordFormPage from './pages/RecordFormPage';
 import RegionPage from './pages/RegionPage';
@@ -54,7 +53,6 @@ export default function App() {
           <Route path="/album" element={<AlbumPage records={records} />} />
           <Route path="/stats" element={<StatsPage records={records} />} />
           <Route path="/boards" element={<BoardsPage records={records} />} />
-          <Route path="/mypage" element={<MyPage records={records} setRecords={setRecords} />} />
           {auth.isAdmin && <Route path="/admin" element={<AdminPage />} />}
           <Route path="*" element={<Dashboard records={records} />} />
         </Routes>
