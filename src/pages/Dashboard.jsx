@@ -17,7 +17,7 @@ export default function Dashboard({ records }) {
           <section className="hero">
             <img src={heroImage} alt="한국 여행 사진과 엽서가 놓인 따뜻한 테이블" />
             <div className="hero-copy">
-              <h1>기억지도</h1>
+              <h1>날 기억할 지도...</h1>
               <div className="hero-actions">
                 <Link className="primary-button" to="/write">여행 기록하기</Link>
                 <Link className="secondary-button" to="/album">사진 모아보기</Link>
