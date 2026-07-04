@@ -426,6 +426,8 @@ export const starterRecords = [
 export const emptyForm = {
   tripId: '',
   tripName: '',
+  tripStartDate: '',
+  tripEndDate: '',
   regionId: 'seoul',
   cityName: '',
   startDate: '',

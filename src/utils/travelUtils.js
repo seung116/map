@@ -26,6 +26,14 @@ export function normalizeRecordDates(record) {
   return { ...record, startDate, endDate };
 }
 
+export function recordTripStartDate(record) {
+  return record?.tripStartDate || recordStartDate(record);
+}
+
+export function recordTripEndDate(record) {
+  return record?.tripEndDate || recordEndDate(record);
+}
+
 export function recordTripId(record) {
   if (record?.tripId) return record.tripId;
   return `trip-${recordStartDate(record) || 'unknown'}-${recordEndDate(record) || 'unknown'}`;
@@ -51,8 +59,8 @@ export function groupRecordsByTrip(records) {
       group = {
         id: tripId,
         name: recordTripName(record),
-        startDate: recordStartDate(record),
-        endDate: recordEndDate(record),
+        startDate: recordTripStartDate(record),
+        endDate: recordTripEndDate(record),
         records: [],
         dayGroups: [],
       };
@@ -60,8 +68,8 @@ export function groupRecordsByTrip(records) {
     }
 
     group.records.push(record);
-    const startDate = recordStartDate(record);
-    const endDate = recordEndDate(record);
+    const startDate = recordTripStartDate(record);
+    const endDate = recordTripEndDate(record);
     if (!group.startDate || (startDate && startDate < group.startDate)) group.startDate = startDate;
     if (!group.endDate || (endDate && endDate > group.endDate)) group.endDate = endDate;
   });

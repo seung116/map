@@ -9,8 +9,10 @@ import {
   normalizeRecordDates,
   recordDateRange,
   recordPlaceOptionsFor,
+  recordTripEndDate,
   recordTripId,
   recordTripName,
+  recordTripStartDate,
   toPhotoFiles,
 } from '../utils/travelUtils';
 
@@ -37,6 +39,19 @@ function saveFailureMessage() {
   return '기록 저장에 실패했습니다. 사진을 줄이거나 잠시 후 다시 시도해주세요.';
 }
 
+function dateInRange(date, startDate, endDate) {
+  if (!date) return false;
+  if (startDate && date < startDate) return false;
+  if (endDate && date > endDate) return false;
+  return true;
+}
+
+function tripDateLabel(trip) {
+  if (!trip.startDate && !trip.endDate) return '기간 미정';
+  if (!trip.endDate || trip.startDate === trip.endDate) return trip.startDate;
+  return `${trip.startDate} ~ ${trip.endDate}`;
+}
+
 export default function RecordFormPage({ records, setRecords }) {
   const navigate = useNavigate();
   const params = useParams();
@@ -60,32 +75,74 @@ export default function RecordFormPage({ records, setRecords }) {
       cityName,
       tripId: editing ? recordTripId(editing) : baseForm.tripId,
       tripName: editing ? recordTripName(editing) : baseForm.tripName,
+      tripStartDate: editing ? recordTripStartDate(editing) : baseForm.tripStartDate,
+      tripEndDate: editing ? recordTripEndDate(editing) : baseForm.tripEndDate,
     };
   });
   const [tripMode, setTripMode] = useState(() => (editing?.tripId ? 'existing' : 'new'));
   const cityOptions = recordPlaceOptionsFor(form.regionId);
   const cityLabel = cityUnitLabel(form.regionId);
+  const selectedTrip = tripGroups.find((group) => group.id === form.tripId);
+  const activeTripStartDate = tripMode === 'existing' ? selectedTrip?.startDate || form.tripStartDate : form.tripStartDate;
+  const activeTripEndDate = tripMode === 'existing' ? selectedTrip?.endDate || form.tripEndDate : form.tripEndDate;
+
+  const applyTripToForm = (trip) => {
+    if (!trip) return;
+
+    setForm((current) => {
+      const recordDate = dateInRange(current.startDate, trip.startDate, trip.endDate)
+        ? current.startDate
+        : trip.startDate;
+
+      return {
+        ...current,
+        tripId: trip.id,
+        tripName: trip.name,
+        tripStartDate: trip.startDate,
+        tripEndDate: trip.endDate,
+        startDate: recordDate,
+        endDate: recordDate,
+      };
+    });
+  };
 
   const selectTripMode = (value) => {
     setTripMode(value);
     if (value === 'existing') {
-      const firstTrip = tripGroups[0];
-      if (firstTrip) {
-        setForm((current) => ({ ...current, tripId: firstTrip.id, tripName: firstTrip.name }));
-      }
+      applyTripToForm(tripGroups[0]);
       return;
     }
 
-    setForm((current) => ({ ...current, tripId: '', tripName: '' }));
+    setForm((current) => ({
+      ...current,
+      tripId: '',
+      tripName: '',
+      tripStartDate: '',
+      tripEndDate: '',
+      startDate: '',
+      endDate: '',
+    }));
   };
 
   const selectExistingTrip = (tripId) => {
     const trip = tripGroups.find((group) => group.id === tripId);
-    setForm((current) => ({ ...current, tripId, tripName: trip?.name || current.tripName }));
+    applyTripToForm(trip);
   };
 
   const update = (key, value) => setForm((current) => {
-    if (key === 'startDate' && current.endDate && current.endDate < value) {
+    if (key === 'tripStartDate') {
+      const tripEndDate = current.tripEndDate && current.tripEndDate < value ? value : current.tripEndDate;
+      const recordDate = dateInRange(current.startDate, value, tripEndDate) ? current.startDate : value;
+      return { ...current, tripStartDate: value, tripEndDate, startDate: recordDate, endDate: recordDate };
+    }
+
+    if (key === 'tripEndDate') {
+      const tripStartDate = current.tripStartDate && current.tripStartDate > value ? value : current.tripStartDate;
+      const recordDate = dateInRange(current.startDate, tripStartDate, value) ? current.startDate : value;
+      return { ...current, tripStartDate, tripEndDate: value, startDate: recordDate, endDate: recordDate };
+    }
+
+    if (key === 'startDate') {
       return { ...current, startDate: value, endDate: value };
     }
 
@@ -128,11 +185,20 @@ export default function RecordFormPage({ records, setRecords }) {
     const tripId = tripMode === 'existing' && normalizedForm.tripId
       ? normalizedForm.tripId
       : `trip-${Date.now()}`;
+    const tripStartDate = tripMode === 'existing'
+      ? activeTripStartDate
+      : normalizedForm.tripStartDate;
+    const tripEndDate = tripMode === 'existing'
+      ? activeTripEndDate
+      : normalizedForm.tripEndDate;
     const nextRecord = {
       ...normalizedForm,
       id: editing?.id || Date.now(),
       tripId,
       tripName,
+      tripStartDate,
+      tripEndDate,
+      endDate: normalizedForm.startDate,
       photos: form.photos,
     };
 
@@ -168,6 +234,51 @@ export default function RecordFormPage({ records, setRecords }) {
         </section>
 
         <form className="record-form" onSubmit={saveRecord}>
+          <div className="form-field span-2 trip-field">
+            <span>여행 만들기</span>
+            <div className="segmented-control">
+              <button className={tripMode === 'new' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('new')}>새 여행</button>
+              <button className={tripMode === 'existing' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('existing')} disabled={tripGroups.length === 0}>기존 여행</button>
+            </div>
+            {tripMode === 'existing' && tripGroups.length > 0 ? (
+              <>
+                <select value={form.tripId || tripGroups[0].id} onChange={(event) => selectExistingTrip(event.target.value)}>
+                  {tripGroups.map((trip) => (
+                    <option key={trip.id} value={trip.id}>
+                      {trip.name} · {tripDateLabel(trip)} · {trip.records.length}개 기록
+                    </option>
+                  ))}
+                </select>
+                <strong className="trip-period-summary">여행 기간 {tripDateLabel(selectedTrip || tripGroups[0])}</strong>
+              </>
+            ) : (
+              <div className="trip-setup-grid">
+                <label>
+                  여행 이름
+                  <input required value={form.tripName} onChange={(event) => update('tripName', event.target.value)} placeholder="예: 2026 제주 가족여행" />
+                </label>
+                <label>
+                  여행 시작일
+                  <input required type="date" value={form.tripStartDate} onChange={(event) => update('tripStartDate', event.target.value)} />
+                </label>
+                <label>
+                  여행 종료일
+                  <input required type="date" min={form.tripStartDate} value={form.tripEndDate} onChange={(event) => update('tripEndDate', event.target.value)} />
+                </label>
+              </div>
+            )}
+          </div>
+          <label className="form-field span-2">
+            사진 저장 날짜
+            <input
+              required
+              type="date"
+              min={activeTripStartDate || undefined}
+              max={activeTripEndDate || undefined}
+              value={form.startDate}
+              onChange={(event) => update('startDate', event.target.value)}
+            />
+          </label>
           <label className="form-field">
             여행 도/광역시
             <select value={form.regionId} onChange={(event) => update('regionId', event.target.value)}>
@@ -185,35 +296,9 @@ export default function RecordFormPage({ records, setRecords }) {
               ))}
             </select>
           </label>
-          <label className="form-field">
-            여행 시작일
-            <input required type="date" value={form.startDate} onChange={(event) => update('startDate', event.target.value)} />
-          </label>
-          <label className="form-field">
-            여행 종료일
-            <input required type="date" min={form.startDate} value={form.endDate} onChange={(event) => update('endDate', event.target.value)} />
-          </label>
-          <div className="form-field span-2 trip-field">
-            <span>같은 여행 묶음</span>
-            <div className="segmented-control">
-              <button className={tripMode === 'new' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('new')}>새 여행</button>
-              <button className={tripMode === 'existing' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('existing')} disabled={tripGroups.length === 0}>기존 여행</button>
-            </div>
-            {tripMode === 'existing' && tripGroups.length > 0 ? (
-              <select value={form.tripId || tripGroups[0].id} onChange={(event) => selectExistingTrip(event.target.value)}>
-                {tripGroups.map((trip) => (
-                  <option key={trip.id} value={trip.id}>
-                    {trip.name} · {trip.startDate === trip.endDate ? trip.startDate : `${trip.startDate} ~ ${trip.endDate}`} · {trip.records.length}개 기록
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input value={form.tripName} onChange={(event) => update('tripName', event.target.value)} placeholder="예: 2026 제주 가족여행" />
-            )}
-          </div>
           <label className="form-field span-2">
-            여행 제목
-            <input required value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="예: 봄비가 그친 전주 한옥마을" />
+            날짜별 기록 제목
+            <input required value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="예: 첫날 협재 해변" />
           </label>
           <label className="form-field">
             함께 간 사람

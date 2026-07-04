@@ -1297,6 +1297,30 @@ main {
   font-weight: 800;
 }
 
+.trip-setup-grid {
+  display: grid;
+  grid-template-columns: 1.3fr repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.trip-setup-grid label {
+  display: grid;
+  gap: 8px;
+  color: #536153;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.trip-period-summary {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: #edf4e6;
+  color: #51664c;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+}
+
 .segmented-control {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

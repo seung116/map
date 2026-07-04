@@ -2,7 +2,17 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
-import { recordDateRange, recordEndDate, recordRegionId, recordStartDate, recordTripId, recordTripName, regionName } from '../utils/travelUtils';
+import {
+  recordDateRange,
+  recordEndDate,
+  recordRegionId,
+  recordStartDate,
+  recordTripEndDate,
+  recordTripId,
+  recordTripName,
+  recordTripStartDate,
+  regionName,
+} from '../utils/travelUtils';
 
 function parseDateValue(value) {
   const time = value ? new Date(value).getTime() : 0;
@@ -16,15 +26,15 @@ function groupPhotosByTrip(photos) {
       tripGroup = {
         key: photo.tripId,
         label: photo.tripName,
-        startDate: photo.startDate,
-        endDate: photo.endDate,
+        startDate: photo.tripStartDate,
+        endDate: photo.tripEndDate,
         days: [],
       };
       trips.push(tripGroup);
     }
 
-    if (!tripGroup.startDate || (photo.startDate && photo.startDate < tripGroup.startDate)) tripGroup.startDate = photo.startDate;
-    if (!tripGroup.endDate || (photo.endDate && photo.endDate > tripGroup.endDate)) tripGroup.endDate = photo.endDate;
+    if (!tripGroup.startDate || (photo.tripStartDate && photo.tripStartDate < tripGroup.startDate)) tripGroup.startDate = photo.tripStartDate;
+    if (!tripGroup.endDate || (photo.tripEndDate && photo.tripEndDate > tripGroup.endDate)) tripGroup.endDate = photo.tripEndDate;
 
     let dayGroup = tripGroup.days.find((group) => group.key === photo.dateRange);
     if (!dayGroup) {
@@ -49,6 +59,8 @@ export default function AlbumPage({ records }) {
         ...photo,
         tripId: recordTripId(record),
         tripName: recordTripName(record),
+        tripStartDate: recordTripStartDate(record),
+        tripEndDate: recordTripEndDate(record),
         recordId: record.id,
         recordTitle: record.title,
         regionId: displayRegionId,
