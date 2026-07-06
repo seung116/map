@@ -70,6 +70,23 @@ const polygonCorrections = [
     ],
     replaceValues: ['chungnam', 'sejong', 'chungbuk', 'daejeon'],
   },
+  {
+    id: 'sejong-chungbuk-leftover-cleanup',
+    regionId: 'sejong',
+    polygon: [
+      [360, 545],
+      [395, 532],
+      [426, 548],
+      [424, 580],
+      [446, 612],
+      [430, 650],
+      [400, 660],
+      [374, 646],
+      [354, 616],
+      [349, 581],
+    ],
+    replaceValues: ['chungbuk'],
+  },
 ];
 
 const floodCorrections = [
