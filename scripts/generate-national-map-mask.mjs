@@ -28,6 +28,14 @@ const regionSeeds = [
 
 const componentOverrides = [
   { id: 'gyeongnam-detached-south-coast', regionId: 'gyeongnam', seed: [705, 1070] },
+  { id: 'jeonnam-southwest-island-1', regionId: 'jeonnam', seed: [130, 1174], minSize: 16 },
+  { id: 'jeonnam-southwest-island-2', regionId: 'jeonnam', seed: [257, 1204], minSize: 16 },
+  { id: 'jeonnam-southwest-island-3', regionId: 'jeonnam', seed: [209, 1251], minSize: 16 },
+  { id: 'jeonnam-southwest-island-4', regionId: 'jeonnam', seed: [345, 1192], minSize: 16 },
+  { id: 'jeonnam-southwest-island-5', regionId: 'jeonnam', seed: [82, 1223], minSize: 16 },
+  { id: 'jeonnam-southwest-island-6', regionId: 'jeonnam', seed: [286, 1184], minSize: 16 },
+  { id: 'jeonnam-southwest-island-7', regionId: 'jeonnam', seed: [301, 1247], minSize: 16 },
+  { id: 'jeonnam-southwest-island-8', regionId: 'jeonnam', seed: [294, 1204], minSize: 16 },
 ];
 
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -289,7 +297,7 @@ function nearestRegionForPixel(regions, x, y) {
   return nearest;
 }
 
-function findClosedComponentNear(width, height, labels, components, x, y, maxRadius = 48) {
+function findClosedComponentNear(width, height, labels, components, x, y, maxRadius = 48, minSize = 600) {
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
@@ -300,7 +308,7 @@ function findClosedComponentNear(width, height, labels, components, x, y, maxRad
 
         const componentId = labels[indexFor(width, nextX, nextY)];
         const component = components[componentId];
-        if (component && !component.touchesBorder && component.size >= 600) {
+        if (component && !component.touchesBorder && component.size >= minSize) {
           return { componentId, x: nextX, y: nextY };
         }
       }
@@ -341,7 +349,7 @@ function buildRegionMask(image) {
 
   for (const override of componentOverrides) {
     const [x, y] = override.seed;
-    const seedMatch = findClosedComponentNear(image.width, image.height, labels, components, x, y);
+    const seedMatch = findClosedComponentNear(image.width, image.height, labels, components, x, y, 48, override.minSize);
     const componentId = seedMatch?.componentId ?? -1;
     const component = components[componentId];
     const region = regionById.get(override.regionId);
