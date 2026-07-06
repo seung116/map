@@ -38,6 +38,34 @@ const componentOverrides = [
   { id: 'jeonnam-southwest-island-8', regionId: 'jeonnam', seed: [294, 1204], minSize: 16 },
 ];
 
+const polygonCorrections = [
+  {
+    id: 'sejong-overassigned-to-chungnam',
+    regionId: 'chungnam',
+    polygon: [
+      [250, 450],
+      [525, 450],
+      [525, 785],
+      [250, 785],
+    ],
+    replaceValues: ['sejong'],
+  },
+  {
+    id: 'sejong-main-area',
+    regionId: 'sejong',
+    polygon: [
+      [360, 538],
+      [386, 516],
+      [420, 532],
+      [416, 576],
+      [395, 604],
+      [361, 592],
+      [348, 562],
+    ],
+    replaceValues: ['chungnam', 'sejong'],
+  },
+];
+
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 function crc32(buffer) {
@@ -297,6 +325,18 @@ function nearestRegionForPixel(regions, x, y) {
   return nearest;
 }
 
+function pointInPolygon(x, y, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    const intersects = ((yi > y) !== (yj > y))
+      && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersects) inside = !inside;
+  }
+  return inside;
+}
+
 function findClosedComponentNear(width, height, labels, components, x, y, maxRadius = 48, minSize = 600) {
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
@@ -379,6 +419,28 @@ function buildRegionMask(image) {
     rgb[target] = region.value;
     rgb[target + 1] = 0;
     rgb[target + 2] = 0;
+  }
+
+  for (const correction of polygonCorrections) {
+    const region = regionById.get(correction.regionId);
+    const replaceValues = new Set(correction.replaceValues.map((regionId) => regionById.get(regionId)?.value).filter(Boolean));
+    if (!region || !replaceValues.size) {
+      throw new Error(`Polygon correction ${correction.id} could not be resolved`);
+    }
+
+    const minX = Math.max(0, Math.floor(Math.min(...correction.polygon.map(([x]) => x))));
+    const maxX = Math.min(image.width - 1, Math.ceil(Math.max(...correction.polygon.map(([x]) => x))));
+    const minY = Math.max(0, Math.floor(Math.min(...correction.polygon.map(([, y]) => y))));
+    const maxY = Math.min(image.height - 1, Math.ceil(Math.max(...correction.polygon.map(([, y]) => y))));
+
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) {
+        if (!pointInPolygon(x + 0.5, y + 0.5, correction.polygon)) continue;
+        const target = indexFor(image.width, x, y) * 3;
+        if (!replaceValues.has(rgb[target])) continue;
+        rgb[target] = region.value;
+      }
+    }
   }
 
   return { rgb, componentRegions, components };
