@@ -1,5 +1,7 @@
 import { detailLayouts, detailPlaces, regions } from '../data/travelData';
 
+export const RECORD_PHOTO_LIMIT = 7;
+
 export function regionName(id) {
   return regions.find((region) => region.id === id)?.name ?? '알 수 없음';
 }
@@ -222,7 +224,7 @@ function compressImage(file, index, maxWidth = 1200, quality = 0.78) {
 export function toPhotoFiles(files) {
   return Promise.all(
     Array.from(files)
-      .slice(0, 5)
+      .slice(0, RECORD_PHOTO_LIMIT)
       .map((file, index) => compressImage(file, index)),
   );
 }

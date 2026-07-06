@@ -1,6 +1,7 @@
 import { collection, deleteDoc, doc, getDocs, onSnapshot, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { firestore, storage, firebaseEnabled } from '../lib/firebase';
+import { RECORD_PHOTO_LIMIT } from '../utils/travelUtils';
 
 const RECORDS_COLLECTION = 'travelRecords';
 let lastRecordSaveError = null;
@@ -50,7 +51,7 @@ async function sharedRecord(userId, record) {
   return {
     ...record,
     userId,
-    photos: await Promise.all((record.photos || []).filter((photo) => photo.src).slice(0, 5).map((photo) => uploadPhoto(userId, record.id, photo))),
+    photos: await Promise.all((record.photos || []).filter((photo) => photo.src).slice(0, RECORD_PHOTO_LIMIT).map((photo) => uploadPhoto(userId, record.id, photo))),
   };
 }
 
