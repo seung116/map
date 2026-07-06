@@ -54,15 +54,15 @@ const polygonCorrections = [
     id: 'sejong-main-area',
     regionId: 'sejong',
     polygon: [
-      [360, 538],
-      [386, 516],
-      [420, 532],
-      [416, 576],
-      [395, 604],
-      [361, 592],
-      [348, 562],
+      [374, 537],
+      [410, 543],
+      [432, 566],
+      [422, 609],
+      [398, 635],
+      [368, 616],
+      [354, 578],
     ],
-    replaceValues: ['chungnam', 'sejong'],
+    replaceValues: ['chungnam', 'sejong', 'chungbuk'],
   },
 ];
 
