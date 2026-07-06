@@ -70,22 +70,6 @@ const polygonCorrections = [
     ],
     replaceValues: ['chungnam', 'sejong', 'chungbuk', 'daejeon'],
   },
-  {
-    id: 'daejeon-main-area',
-    regionId: 'daejeon',
-    polygon: [
-      [407, 610],
-      [423, 632],
-      [454, 631],
-      [480, 658],
-      [474, 695],
-      [444, 713],
-      [407, 706],
-      [390, 679],
-      [392, 644],
-    ],
-    replaceValues: ['chungnam', 'sejong', 'daejeon', 'chungbuk', 'jeonbuk'],
-  },
 ];
 
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
