@@ -72,6 +72,32 @@ const polygonCorrections = [
   },
 ];
 
+const floodCorrections = [
+  {
+    id: 'daejeon-fill-inside-boundary',
+    regionId: 'daejeon',
+    seed: [445, 665],
+    bounds: [345, 590, 505, 740],
+    clipPolygon: [
+      [421, 600],
+      [431, 624],
+      [461, 626],
+      [492, 652],
+      [493, 688],
+      [471, 711],
+      [444, 729],
+      [410, 718],
+      [392, 700],
+      [386, 675],
+      [392, 645],
+      [406, 626],
+    ],
+    ignoreBarrierRects: [
+      [394, 638, 484, 688],
+    ],
+  },
+];
+
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 function crc32(buffer) {
@@ -343,6 +369,11 @@ function pointInPolygon(x, y, polygon) {
   return inside;
 }
 
+function pointInRect(x, y, rect) {
+  const [minX, minY, maxX, maxY] = rect;
+  return x >= minX && x <= maxX && y >= minY && y <= maxY;
+}
+
 function findClosedComponentNear(width, height, labels, components, x, y, maxRadius = 48, minSize = 600) {
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
@@ -445,6 +476,58 @@ function buildRegionMask(image) {
         const target = indexFor(image.width, x, y) * 3;
         if (!replaceValues.has(rgb[target])) continue;
         rgb[target] = region.value;
+      }
+    }
+  }
+
+  for (const correction of floodCorrections) {
+    const region = regionById.get(correction.regionId);
+    if (!region) {
+      throw new Error(`Flood correction ${correction.id} could not be resolved`);
+    }
+
+    const [minX, minY, maxX, maxY] = correction.bounds;
+    const [seedX, seedY] = correction.seed;
+    const visited = new Uint8Array(image.width * image.height);
+    const queue = new Int32Array((maxX - minX + 1) * (maxY - minY + 1));
+    let head = 0;
+    let tail = 0;
+
+    queue[tail] = indexFor(image.width, seedX, seedY);
+    tail += 1;
+    visited[indexFor(image.width, seedX, seedY)] = 1;
+
+    while (head < tail) {
+      const current = queue[head];
+      head += 1;
+      const x = current % image.width;
+      const y = Math.floor(current / image.width);
+      const canPassBarrier = correction.ignoreBarrierRects.some((rect) => pointInRect(x, y, rect));
+
+      if (!barrier[current]) {
+        const target = current * 3;
+        rgb[target] = region.value;
+        rgb[target + 1] = 0;
+        rgb[target + 2] = 0;
+      } else if (!canPassBarrier) {
+        continue;
+      }
+
+      const neighbors = [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+      ];
+
+      for (const [nextX, nextY] of neighbors) {
+        if (nextX < minX || nextX > maxX || nextY < minY || nextY > maxY) continue;
+        if (correction.clipPolygon && !pointInPolygon(nextX + 0.5, nextY + 0.5, correction.clipPolygon)) continue;
+        const next = indexFor(image.width, nextX, nextY);
+        if (visited[next]) continue;
+        visited[next] = 1;
+        queue[tail] = next;
+        tail += 1;
       }
     }
   }
