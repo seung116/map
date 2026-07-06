@@ -26,6 +26,10 @@ const regionSeeds = [
   { id: 'jeju', value: 17, seed: [305, 1325] },
 ];
 
+const componentOverrides = [
+  { id: 'gyeongnam-detached-south-coast', regionId: 'gyeongnam', seed: [705, 1070] },
+];
+
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 function crc32(buffer) {
@@ -310,6 +314,7 @@ function buildRegionMask(image) {
   const barrier = buildBarrierMask(image);
   const { labels, components } = labelComponents(image.width, image.height, barrier);
   const componentRegions = new Map();
+  const regionById = new Map(regionSeeds.map((region) => [region.id, region]));
 
   for (const region of regionSeeds) {
     const [x, y] = region.seed;
@@ -332,6 +337,21 @@ function buildRegionMask(image) {
     const regions = componentRegions.get(componentId) || [];
     regions.push(region);
     componentRegions.set(componentId, regions);
+  }
+
+  for (const override of componentOverrides) {
+    const [x, y] = override.seed;
+    const seedMatch = findClosedComponentNear(image.width, image.height, labels, components, x, y);
+    const componentId = seedMatch?.componentId ?? -1;
+    const component = components[componentId];
+    const region = regionById.get(override.regionId);
+    if (!component || component.touchesBorder || !region) {
+      throw new Error(
+        `Component override ${override.id} could not be resolved `
+        + `(seed=${x},${y}, region=${override.regionId}, component=${componentId}, touchesBorder=${component?.touchesBorder ?? 'n/a'}, size=${component?.size ?? 'n/a'})`,
+      );
+    }
+    componentRegions.set(componentId, [region]);
   }
 
   for (let id = 1; id < components.length; id += 1) {
