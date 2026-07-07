@@ -87,6 +87,26 @@ const polygonCorrections = [
     ],
     replaceValues: ['chungbuk'],
   },
+  {
+    id: 'daejeon-main-area',
+    regionId: 'daejeon',
+    polygon: [
+      [423, 600],
+      [431, 625],
+      [463, 625],
+      [496, 650],
+      [500, 690],
+      [475, 716],
+      [444, 732],
+      [410, 718],
+      [405, 700],
+      [402, 674],
+      [406, 646],
+      [413, 625],
+    ],
+    replaceValues: ['chungnam', 'chungbuk', 'daejeon', 'jeonbuk'],
+    fillUnassigned: true,
+  },
 ];
 
 const floodCorrections = [
@@ -96,21 +116,21 @@ const floodCorrections = [
     seed: [445, 665],
     bounds: [345, 590, 505, 740],
     clipPolygon: [
-      [421, 600],
-      [431, 624],
-      [461, 626],
-      [492, 652],
-      [493, 688],
-      [471, 711],
-      [444, 729],
-      [410, 718],
-      [392, 700],
-      [386, 675],
-      [392, 645],
-      [406, 626],
+      [420, 600],
+      [431, 622],
+      [463, 624],
+      [493, 648],
+      [499, 686],
+      [474, 714],
+      [444, 731],
+      [405, 720],
+      [376, 702],
+      [364, 675],
+      [375, 642],
+      [402, 624],
     ],
     ignoreBarrierRects: [
-      [394, 638, 484, 688],
+      [412, 636, 485, 688],
     ],
   },
 ];
@@ -491,7 +511,8 @@ function buildRegionMask(image) {
       for (let x = minX; x <= maxX; x += 1) {
         if (!pointInPolygon(x + 0.5, y + 0.5, correction.polygon)) continue;
         const target = indexFor(image.width, x, y) * 3;
-        if (!replaceValues.has(rgb[target])) continue;
+        const pixel = indexFor(image.width, x, y);
+        if (!replaceValues.has(rgb[target]) && (!correction.fillUnassigned || rgb[target] !== 0 || barrier[pixel])) continue;
         rgb[target] = region.value;
       }
     }
