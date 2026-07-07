@@ -33,13 +33,6 @@ export const provinceGroups = [
     crop: { x: 255, y: 145, width: 95, height: 95 },
   },
   {
-    id: 'incheon-si',
-    name: '인천광역시',
-    regionIds: ['incheon'],
-    note: '인천 구·군 목록',
-    crop: { x: 36, y: 190, width: 112, height: 142 },
-  },
-  {
     id: 'gyeonggi-do',
     name: '경기도',
     regionIds: ['gyeonggi'],
@@ -73,13 +66,6 @@ export const provinceGroups = [
     crop: { x: 285, y: 285, width: 205, height: 215 },
   },
   {
-    id: 'sejong-si',
-    name: '세종특별자치시',
-    regionIds: ['sejong'],
-    note: '세종 읍·면·동 목록',
-    crop: { x: 247, y: 350, width: 78, height: 96 },
-  },
-  {
     id: 'chungnam-do',
     name: '충청남도',
     regionIds: ['chungnam', 'daejeon', 'sejong'],
@@ -89,13 +75,6 @@ export const provinceGroups = [
     labelY: 46,
     imagePolygon: '16.5% 35.7%, 19.4% 34.3%, 22.8% 35.0%, 25.1% 34.4%, 29.2% 34.2%, 34.9% 35.6%, 40.9% 35.5%, 41.6% 43.1%, 41.5% 49.0%, 38.6% 51.8%, 36.2% 54.2%, 31.0% 54.0%, 26.0% 55.4%, 22.2% 52.5%, 21.3% 48.2%, 18.7% 44.0%, 16.0% 41.5%',
     crop: { x: 88, y: 305, width: 290, height: 250 },
-  },
-  {
-    id: 'daejeon-si',
-    name: '대전광역시',
-    regionIds: ['daejeon'],
-    note: '대전 구 목록',
-    crop: { x: 238, y: 448, width: 110, height: 108 },
   },
   {
     id: 'jeonbuk-do',
@@ -131,13 +110,6 @@ export const provinceGroups = [
     crop: { x: 380, y: 295, width: 285, height: 325 },
   },
   {
-    id: 'daegu-si',
-    name: '대구광역시',
-    regionIds: ['daegu'],
-    note: '대구 구·군 목록',
-    crop: { x: 426, y: 535, width: 120, height: 120 },
-  },
-  {
     id: 'gyeongnam-do',
     name: '경상남도',
     regionIds: ['gyeongnam', 'busan', 'ulsan'],
@@ -147,27 +119,6 @@ export const provinceGroups = [
     labelY: 77,
     imagePolygon: '50.2% 57.6%, 54.0% 62.6%, 58.0% 67.0%, 62.4% 71.1%, 66.8% 70.3%, 72.4% 70.0%, 78.0% 71.1%, 84.4% 68.2%, 85.7% 64.1%, 87.3% 67.8%, 83.7% 73.1%, 80.7% 78.4%, 74.0% 81.6%, 67.1% 84.5%, 60.5% 83.2%, 53.3% 80.9%, 49.2% 82.0%, 47.0% 82.4%, 50.5% 77.2%, 54.9% 72.9%, 51.4% 69.4%, 47.8% 65.3%, 49.0% 62.2%',
     crop: { x: 310, y: 555, width: 340, height: 245 },
-  },
-  {
-    id: 'ulsan-si',
-    name: '울산광역시',
-    regionIds: ['ulsan'],
-    note: '울산 구·군 목록',
-    crop: { x: 526, y: 650, width: 116, height: 108 },
-  },
-  {
-    id: 'busan-si',
-    name: '부산광역시',
-    regionIds: ['busan'],
-    note: '부산 구·군 목록',
-    crop: { x: 472, y: 718, width: 128, height: 112 },
-  },
-  {
-    id: 'gwangju-si',
-    name: '광주광역시',
-    regionIds: ['gwangju'],
-    note: '광주 구 목록',
-    crop: { x: 166, y: 656, width: 116, height: 106 },
   },
   {
     id: 'jeju-do',
@@ -187,7 +138,6 @@ export const nationalMapAreas = [
     id: 'incheon',
     name: '인천광역시',
     regionIds: ['incheon'],
-    provinceGroupId: 'incheon-si',
     imagePolygon: '6.0% 25.0%, 8.9% 21.6%, 13.2% 21.8%, 16.1% 25.7%, 16.0% 31.4%, 11.4% 34.9%, 7.6% 32.1%',
   },
   {
@@ -222,7 +172,6 @@ export const nationalMapAreas = [
     id: 'sejong',
     name: '세종특별자치시',
     regionIds: ['sejong'],
-    provinceGroupId: 'sejong-si',
     imagePolygon: '34.9% 39.1%, 36.2% 39.1%, 37.6% 39.8%, 36.9% 41.0%, 37.5% 42.5%, 39.1% 44.3%, 37.9% 45.7%, 36.4% 46.2%, 36.5% 45.4%, 36.6% 44.2%, 34.9% 42.8%, 34.4% 41.4%, 34.8% 40.2%',
   },
   {
@@ -236,7 +185,6 @@ export const nationalMapAreas = [
     id: 'daejeon',
     name: '대전광역시',
     regionIds: ['daejeon'],
-    provinceGroupId: 'daejeon-si',
     imagePolygon: '36.2% 50.0%, 41.5% 49.2%, 44.5% 53.0%, 42.2% 57.3%, 36.6% 57.2%, 33.9% 53.8%',
   },
   {
@@ -250,21 +198,18 @@ export const nationalMapAreas = [
     id: 'daegu',
     name: '대구광역시',
     regionIds: ['daegu'],
-    provinceGroupId: 'daegu-si',
     imagePolygon: '61.8% 60.9%, 67.6% 58.4%, 72.0% 62.2%, 71.0% 68.0%, 65.2% 69.8%, 60.5% 66.5%',
   },
   {
     id: 'ulsan',
     name: '울산광역시',
     regionIds: ['ulsan'],
-    provinceGroupId: 'ulsan-si',
     imagePolygon: '76.8% 72.0%, 82.0% 71.0%, 85.4% 74.6%, 83.8% 80.0%, 78.0% 80.9%, 74.8% 76.8%',
   },
   {
     id: 'busan',
     name: '부산광역시',
     regionIds: ['busan'],
-    provinceGroupId: 'busan-si',
     imagePolygon: '69.5% 79.3%, 75.0% 77.9%, 79.6% 81.0%, 78.3% 86.5%, 72.5% 88.1%, 67.4% 84.6%',
   },
   {
@@ -285,7 +230,6 @@ export const nationalMapAreas = [
     id: 'gwangju',
     name: '광주광역시',
     regionIds: ['gwangju'],
-    provinceGroupId: 'gwangju-si',
     imagePolygon: '24.8% 73.0%, 31.0% 71.2%, 35.9% 74.5%, 34.7% 79.2%, 28.8% 80.8%, 24.0% 77.2%',
   },
   {

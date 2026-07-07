@@ -604,6 +604,21 @@ main {
   height: auto;
 }
 
+.province-asset-map {
+  display: grid;
+  min-height: auto;
+  padding: 12px;
+  place-items: center;
+}
+
+.province-asset-map img {
+  position: static;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 .province-shape,
 .detail-shape,
 .district-shape {

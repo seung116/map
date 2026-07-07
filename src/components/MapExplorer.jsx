@@ -2,8 +2,31 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import nationalMapMask from '../assets/korea-province-mask.png';
 import adminMapImage from '../assets/korea-province-map.png';
+import provinceGangwon from '../assets/province-gangwon.png';
+import provinceGyeonggi from '../assets/province-gyeonggi.png';
+import provinceGyeongbuk from '../assets/province-gyeongbuk.png';
+import provinceGyeongnam from '../assets/province-gyeongnam.png';
+import provinceJeju from '../assets/province-jeju.png';
+import provinceJeonbuk from '../assets/province-jeonbuk.png';
+import provinceJeonnam from '../assets/province-jeonnam.png';
+import provinceSeoul from '../assets/province-seoul.png';
+import provinceChungbuk from '../assets/province-chungbuk.png';
+import provinceChungnam from '../assets/province-chungnam.png';
 import { detailLayouts, detailPlaces, districtCells, nationalMapAreas, provinceGroups, regions } from '../data/travelData';
 import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor, recordMatchesRegion, recordRegionId } from '../utils/travelUtils';
+
+const provinceImages = {
+  'seoul-si': provinceSeoul,
+  'gyeonggi-do': provinceGyeonggi,
+  'gangwon-do': provinceGangwon,
+  'chungbuk-do': provinceChungbuk,
+  'chungnam-do': provinceChungnam,
+  'jeonbuk-do': provinceJeonbuk,
+  'jeonnam-do': provinceJeonnam,
+  'gyeongbuk-do': provinceGyeongbuk,
+  'gyeongnam-do': provinceGyeongnam,
+  'jeju-do': provinceJeju,
+};
 
 const nationalMapAreaByMaskValue = new Map(nationalMapAreas.map((area, index) => [index + 1, area]));
 const orange = { r: 223, g: 111, b: 67 };
@@ -48,6 +71,7 @@ export default function MapExplorer({ records, onSelectionChange }) {
   const [maskReady, setMaskReady] = useState(false);
   const province = provinceGroups.find((group) => group.id === selectedProvince);
   const detailLayout = province ? detailLayouts[province.id] : null;
+  const provinceImage = province ? provinceImages[province.id] : null;
   const provinceCrop = province?.crop;
   const provinceRegion = province
     ? regions.find((region) => province.regionIds.includes(region.id) && region.type.includes('도'))
@@ -196,21 +220,29 @@ export default function MapExplorer({ records, onSelectionChange }) {
         {province && !currentRegion && (
           <div className="province-detail-stage">
             <div
-              className="province-crop-map"
+              className={`province-crop-map ${provinceImage ? 'province-asset-map' : ''}`}
               role="img"
               aria-label={`${province.name} 지도`}
-              style={provinceCrop ? { aspectRatio: `${provinceCrop.width} / ${provinceCrop.height}` } : undefined}
+              style={provinceImage || !provinceCrop ? undefined : { aspectRatio: `${provinceCrop.width} / ${provinceCrop.height}` }}
             >
-              <img
-                src={adminMapImage}
-                alt=""
-                aria-hidden="true"
-                style={provinceCrop ? {
-                  width: `${(740 / provinceCrop.width) * 100}%`,
-                  left: `-${(provinceCrop.x / provinceCrop.width) * 100}%`,
-                  top: `-${(provinceCrop.y / provinceCrop.height) * 100}%`,
-                } : undefined}
-              />
+              {provinceImage ? (
+                <img
+                  src={provinceImage}
+                  alt=""
+                  aria-hidden="true"
+                />
+              ) : (
+                <img
+                  src={adminMapImage}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    width: `${(740 / provinceCrop.width) * 100}%`,
+                    left: `-${(provinceCrop.x / provinceCrop.width) * 100}%`,
+                    top: `-${(provinceCrop.y / provinceCrop.height) * 100}%`,
+                  }}
+                />
+              )}
             </div>
             <div className="drill-panel">
               <div>
