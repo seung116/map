@@ -97,9 +97,25 @@ function recordsForTrip(trip) {
   return [...recordsById.values()];
 }
 
+function photosForTripRecords(records) {
+  return records.flatMap((record) => record.photos.map((photo) => ({
+    ...photo,
+    recordId: record.id,
+    recordTitle: record.title,
+    regionId: record.regionId,
+    cityName: record.cityName,
+    dateRange: record.dateRange,
+    tripDayLabel: record.tripDayLabel,
+    companions: record.companions,
+    memo: record.memo,
+    board: record.board,
+  })));
+}
+
 export default function AlbumPage({ records }) {
   const [selected, setSelected] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const [selectedTripPhotoIndex, setSelectedTripPhotoIndex] = useState(0);
   const photos = records.flatMap((record) =>
     record.photos.map((photo) => {
       const startDate = recordStartDate(record);
@@ -135,6 +151,20 @@ export default function AlbumPage({ records }) {
   });
   const albumGroups = groupPhotosByTrip(photos);
   const selectedTripRecords = recordsForTrip(selectedTrip);
+  const selectedTripPhotos = photosForTripRecords(selectedTripRecords);
+  const selectedTripPhoto = selectedTripPhotos[selectedTripPhotoIndex] || selectedTripPhotos[0];
+  const hasTripPhotoNav = selectedTripPhotos.length > 1;
+  const openTrip = (trip) => {
+    setSelectedTrip(trip);
+    setSelectedTripPhotoIndex(0);
+  };
+  const closeTrip = () => setSelectedTrip(null);
+  const moveTripPhoto = (direction) => {
+    setSelectedTripPhotoIndex((current) => {
+      if (!selectedTripPhotos.length) return 0;
+      return (current + direction + selectedTripPhotos.length) % selectedTripPhotos.length;
+    });
+  };
 
   return (
     <AppShell>
@@ -148,7 +178,7 @@ export default function AlbumPage({ records }) {
               <section className="album-year" key={yearGroup.key}>
                 <div className="album-year-heading">
                   <div>
-                    <button className="album-trip-title" type="button" onClick={() => setSelectedTrip(yearGroup)}>
+                    <button className="album-trip-title" type="button" onClick={() => openTrip(yearGroup)}>
                       <h2>{yearGroup.label}</h2>
                     </button>
                     <span>{formatShortDateRange(yearGroup.startDate, yearGroup.endDate)}</span>
@@ -236,9 +266,9 @@ export default function AlbumPage({ records }) {
         </div>
       )}
       {selectedTrip && (
-        <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setSelectedTrip(null)}>
+        <div className="lightbox" role="dialog" aria-modal="true" onClick={closeTrip}>
           <div className="lightbox-card trip-lightbox-card" onClick={(event) => event.stopPropagation()}>
-            <button className="lightbox-close-button" type="button" onClick={() => setSelectedTrip(null)} aria-label="닫기">×</button>
+            <button className="lightbox-close-button" type="button" onClick={closeTrip} aria-label="닫기">×</button>
             <div className="trip-lightbox-header">
               <div>
                 <span>{formatShortDateRange(selectedTrip.startDate, selectedTrip.endDate)}</span>
@@ -246,39 +276,47 @@ export default function AlbumPage({ records }) {
               </div>
               <Link to={`/write/${selectedTripRecords[0]?.id || ''}`}>여행 수정</Link>
             </div>
-            <div className="trip-lightbox-records">
-              {selectedTripRecords.map((record) => (
-                <article className="trip-record-detail" key={record.id}>
-                  <div className="trip-record-copy">
+            {selectedTripPhoto && (
+              <article className="trip-photo-card">
+                <div className="trip-photo-frame">
+                  <img src={selectedTripPhoto.src || heroImage} alt={selectedTripPhoto.caption} />
+                  {hasTripPhotoNav && (
+                    <>
+                      <button className="trip-slide-button previous" type="button" onClick={() => moveTripPhoto(-1)} aria-label="이전 사진">‹</button>
+                      <button className="trip-slide-button next" type="button" onClick={() => moveTripPhoto(1)} aria-label="다음 사진">›</button>
+                    </>
+                  )}
+                </div>
+                <div className="trip-photo-details">
+                  <div>
                     <div className="card-meta">
-                      <span>{record.cityName ? `${regionName(record.regionId)} · ${record.cityName}` : regionName(record.regionId)}</span>
-                      <span>{record.dateRange} · {record.tripDayLabel}</span>
+                      <span>{selectedTripPhoto.cityName ? `${regionName(selectedTripPhoto.regionId)} · ${selectedTripPhoto.cityName}` : regionName(selectedTripPhoto.regionId)}</span>
+                      <span>{selectedTripPhoto.dateRange} · {selectedTripPhoto.tripDayLabel}</span>
                     </div>
-                    <h3>{record.title}</h3>
-                    <p>{record.memo || '저장된 메모가 없습니다.'}</p>
-                    <dl>
-                      <div>
-                        <dt>함께 간 사람</dt>
-                        <dd>{record.companions || '나'}</dd>
-                      </div>
-                      <div>
-                        <dt>보드</dt>
-                        <dd>{record.board}</dd>
-                      </div>
-                    </dl>
+                    <h3>{selectedTripPhoto.caption}</h3>
+                    <h4>{selectedTripPhoto.recordTitle}</h4>
+                    <p>{selectedTripPhoto.memo || '저장된 메모가 없습니다.'}</p>
+                  </div>
+                  <dl>
+                    <div>
+                      <dt>함께 간 사람</dt>
+                      <dd>{selectedTripPhoto.companions || '나'}</dd>
+                    </div>
+                    <div>
+                      <dt>보드</dt>
+                      <dd>{selectedTripPhoto.board}</dd>
+                    </div>
+                  </dl>
+                  <div className="trip-photo-footer">
+                    <span>{selectedTripPhotoIndex + 1} / {selectedTripPhotos.length}</span>
                     <div className="card-actions">
-                      <Link to={`/write/${record.id}`}>기록 수정</Link>
-                      <Link to={`/region/${record.regionId}`}>지역 기록 보기</Link>
+                      <Link to={`/write/${selectedTripPhoto.recordId}`}>기록 수정</Link>
+                      <Link to={`/region/${selectedTripPhoto.regionId}`}>지역 기록 보기</Link>
                     </div>
                   </div>
-                  <div className="trip-record-photos">
-                    {record.photos.map((photo) => (
-                      <img key={photo.id} src={photo.src || heroImage} alt={photo.caption} />
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
+                </div>
+              </article>
+            )}
           </div>
         </div>
       )}
