@@ -1479,6 +1479,34 @@ main {
   gap: 3px;
 }
 
+.album-trip-title {
+  width: fit-content;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.album-trip-title h2 {
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.album-trip-title:hover h2 {
+  color: #df6f43;
+  transform: translateY(-1px);
+}
+
+.album-trip-edit {
+  min-width: max-content;
+  border-radius: 999px;
+  background: rgba(184, 217, 194, 0.5);
+  color: #3f654b;
+  padding: 9px 13px;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
 .album-year-heading p {
   margin: 0 0 8px;
   color: #5f8c75;
@@ -1648,7 +1676,7 @@ main {
   padding: 14px;
 }
 
-.lightbox-card button {
+.lightbox-close-button {
   position: absolute;
   top: 18px;
   right: 18px;
@@ -1726,6 +1754,106 @@ main {
   margin: 0;
   color: var(--ink);
   font-weight: 800;
+}
+
+.trip-lightbox-card {
+  width: min(1080px, 94vw);
+}
+
+.trip-lightbox-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 8px 56px 16px 4px;
+}
+
+.trip-lightbox-header span {
+  color: #5f8c75;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.trip-lightbox-header h2 {
+  margin: 4px 0 0;
+  font-family: var(--title-font);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+}
+
+.trip-lightbox-header a {
+  min-width: max-content;
+  border-radius: 999px;
+  background: rgba(182, 216, 234, 0.46);
+  color: #365668;
+  padding: 9px 13px;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.trip-lightbox-records {
+  display: grid;
+  gap: 16px;
+}
+
+.trip-record-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.trip-record-copy h3 {
+  margin: 12px 0 8px;
+  font-family: var(--title-font);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.trip-record-copy p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.trip-record-copy dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.trip-record-copy dl div {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+}
+
+.trip-record-copy dt {
+  color: #789181;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.trip-record-copy dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.trip-record-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.trip-record-photos img {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #ece6dc;
 }
 
 .stats-grid {
@@ -2040,6 +2168,20 @@ main {
   }
 
   .lightbox-details dl div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .trip-lightbox-header {
+    flex-direction: column;
+    padding-right: 56px;
+  }
+
+  .trip-record-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-record-copy dl div {
     grid-template-columns: 1fr;
     gap: 4px;
   }

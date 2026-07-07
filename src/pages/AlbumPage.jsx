@@ -71,8 +71,35 @@ function groupPhotosByTrip(photos) {
   }));
 }
 
+function recordsForTrip(trip) {
+  if (!trip) return [];
+  const recordsById = new Map();
+
+  trip.days.forEach((day) => {
+    day.items.forEach((photo) => {
+      const record = recordsById.get(photo.recordId) || {
+        id: photo.recordId,
+        title: photo.recordTitle,
+        regionId: photo.regionId,
+        cityName: photo.cityName,
+        dateRange: photo.dateRange,
+        tripDayLabel: photo.tripDayLabel,
+        companions: photo.companions,
+        memo: photo.memo,
+        board: photo.board,
+        photos: [],
+      };
+      record.photos.push(photo);
+      recordsById.set(photo.recordId, record);
+    });
+  });
+
+  return [...recordsById.values()];
+}
+
 export default function AlbumPage({ records }) {
   const [selected, setSelected] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
   const photos = records.flatMap((record) =>
     record.photos.map((photo) => {
       const startDate = recordStartDate(record);
@@ -107,6 +134,7 @@ export default function AlbumPage({ records }) {
     return parseDateValue(b.startDate) - parseDateValue(a.startDate);
   });
   const albumGroups = groupPhotosByTrip(photos);
+  const selectedTripRecords = recordsForTrip(selectedTrip);
 
   return (
     <AppShell>
@@ -120,9 +148,12 @@ export default function AlbumPage({ records }) {
               <section className="album-year" key={yearGroup.key}>
                 <div className="album-year-heading">
                   <div>
-                    <h2>{yearGroup.label}</h2>
+                    <button className="album-trip-title" type="button" onClick={() => setSelectedTrip(yearGroup)}>
+                      <h2>{yearGroup.label}</h2>
+                    </button>
                     <span>{formatShortDateRange(yearGroup.startDate, yearGroup.endDate)}</span>
                   </div>
+                  <Link className="album-trip-edit" to={`/write/${yearGroup.days[0]?.items[0]?.recordId || ''}`}>여행 수정</Link>
                 </div>
 
                 {yearGroup.days.map((dayGroup) => (
@@ -166,7 +197,7 @@ export default function AlbumPage({ records }) {
       {selected && (
         <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setSelected(null)}>
           <div className="lightbox-card" onClick={(event) => event.stopPropagation()}>
-            <button type="button" onClick={() => setSelected(null)} aria-label="닫기">×</button>
+            <button className="lightbox-close-button" type="button" onClick={() => setSelected(null)} aria-label="닫기">×</button>
             <div className="lightbox-layout">
               <img src={selected.src || heroImage} alt={selected.caption} />
               <div className="lightbox-details">
@@ -200,6 +231,53 @@ export default function AlbumPage({ records }) {
                   <Link to={`/region/${selected.regionId}`}>지역 기록 보기</Link>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedTrip && (
+        <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setSelectedTrip(null)}>
+          <div className="lightbox-card trip-lightbox-card" onClick={(event) => event.stopPropagation()}>
+            <button className="lightbox-close-button" type="button" onClick={() => setSelectedTrip(null)} aria-label="닫기">×</button>
+            <div className="trip-lightbox-header">
+              <div>
+                <span>{formatShortDateRange(selectedTrip.startDate, selectedTrip.endDate)}</span>
+                <h2>{selectedTrip.label}</h2>
+              </div>
+              <Link to={`/write/${selectedTripRecords[0]?.id || ''}`}>여행 수정</Link>
+            </div>
+            <div className="trip-lightbox-records">
+              {selectedTripRecords.map((record) => (
+                <article className="trip-record-detail" key={record.id}>
+                  <div className="trip-record-copy">
+                    <div className="card-meta">
+                      <span>{record.cityName ? `${regionName(record.regionId)} · ${record.cityName}` : regionName(record.regionId)}</span>
+                      <span>{record.dateRange} · {record.tripDayLabel}</span>
+                    </div>
+                    <h3>{record.title}</h3>
+                    <p>{record.memo || '저장된 메모가 없습니다.'}</p>
+                    <dl>
+                      <div>
+                        <dt>함께 간 사람</dt>
+                        <dd>{record.companions || '나'}</dd>
+                      </div>
+                      <div>
+                        <dt>보드</dt>
+                        <dd>{record.board}</dd>
+                      </div>
+                    </dl>
+                    <div className="card-actions">
+                      <Link to={`/write/${record.id}`}>기록 수정</Link>
+                      <Link to={`/region/${record.regionId}`}>지역 기록 보기</Link>
+                    </div>
+                  </div>
+                  <div className="trip-record-photos">
+                    {record.photos.map((photo) => (
+                      <img key={photo.id} src={photo.src || heroImage} alt={photo.caption} />
+                    ))}
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </div>
