@@ -2078,6 +2078,14 @@ main {
     gap: 14px;
   }
 
+  .trip-setup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-setup-grid input {
+    min-width: 0;
+  }
+
   .record-form .form-field,
   .upload-box,
   .photo-edit-card {
