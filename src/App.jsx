@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthContext } from './contexts/AuthContext';
 import { useAuthState } from './hooks/useAuthState';
 import { useTravelRecords } from './hooks/useTravelRecords';
@@ -53,7 +53,7 @@ export default function App() {
           <Route path="/album" element={<AlbumPage records={records} />} />
           <Route path="/stats" element={<StatsPage records={records} />} />
           <Route path="/boards" element={<BoardsPage records={records} />} />
-          {auth.isAdmin && <Route path="/admin" element={<AdminPage />} />}
+          <Route path="/admin" element={auth.isAdmin ? <AdminPage /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Dashboard records={records} />} />
         </Routes>
       </HashRouter>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import { useAuth } from '../contexts/AuthContext';
 import { setUserApproval, setUserRole, subscribeUsers } from '../services/authStore';
 import { countRemoteUserPhotos } from '../services/recordStore';
 
@@ -12,6 +14,7 @@ function adminErrorMessage(error) {
 }
 
 export default function AdminPage() {
+  const auth = useAuth();
   const [users, setUsers] = useState([]);
   const [photoCounts, setPhotoCounts] = useState({});
   const [loading, setLoading] = useState(true);
@@ -27,6 +30,11 @@ export default function AdminPage() {
     });
 
   useEffect(() => {
+    if (!auth?.isAdmin) {
+      setLoading(false);
+      return undefined;
+    }
+
     const unsubscribe = subscribeUsers(
       (nextUsers) => {
         setError('');
@@ -41,10 +49,10 @@ export default function AdminPage() {
     );
 
     return unsubscribe;
-  }, []);
+  }, [auth?.isAdmin]);
 
   useEffect(() => {
-    if (!users.length) {
+    if (!auth?.isAdmin || !users.length) {
       return undefined;
     }
 
@@ -72,7 +80,7 @@ export default function AdminPage() {
     return () => {
       cancelled = true;
     };
-  }, [users]);
+  }, [auth?.isAdmin, users]);
 
   const updateApproval = async (uid, approved) => {
     await setUserApproval(uid, approved);
@@ -101,6 +109,10 @@ export default function AdminPage() {
       </button>
     </div>
   );
+
+  if (!auth?.isAdmin) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <AppShell>
