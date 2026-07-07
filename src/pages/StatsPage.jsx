@@ -7,10 +7,8 @@ export default function StatsPage({ records }) {
   const visitedCount = new Set(records.map((record) => recordRegionId(record))).size;
   const completion = Math.round((visitedCount / regions.length) * 100);
   const regionCounts = countBy(records.map((record) => regionName(recordRegionId(record))));
-  const companionCounts = countBy(records.flatMap((record) => record.companions.split(',').map((name) => name.trim()).filter(Boolean)));
   const monthCounts = countBy(records.map((record) => recordStartDate(record).slice(5, 7) || '미정'));
   const mostRegion = topItem(regionCounts);
-  const mostCompanion = topItem(companionCounts);
   const currentYear = String(new Date().getFullYear());
   const thisYear = records.filter((record) => recordStartDate(record).startsWith(currentYear)).length;
 
@@ -36,7 +34,6 @@ export default function StatsPage({ records }) {
           <StatCard label="방문한 지역 수" value={`${visitedCount}곳`} />
           <StatCard label="저장된 기록" value={`${records.length}개`} />
           <StatCard label="가장 많이 간 지역" value={mostRegion || '-'} />
-          <StatCard label="함께 여행을 가장 많이 간 사람" value={mostCompanion || '-'} />
           <StatCard label="올해 여행 기록" value={`${thisYear}개`} />
         </div>
         <section className="chart-panel">
