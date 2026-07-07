@@ -29,7 +29,19 @@ const provinceImages = {
 };
 
 const nationalMapAreaByMaskValue = new Map(nationalMapAreas.map((area, index) => [index + 1, area]));
-const orange = { r: 223, g: 111, b: 67 };
+const visitLevelColors = {
+  none: { r: 210, g: 214, b: 211, alpha: 104 },
+  low: { r: 248, g: 203, b: 185, alpha: 122 },
+  medium: { r: 239, g: 143, b: 104, alpha: 140 },
+  high: { r: 194, g: 78, b: 52, alpha: 158 },
+};
+
+function visitLevelForCount(count) {
+  if (count >= 4) return 'high';
+  if (count >= 2) return 'medium';
+  if (count === 1) return 'low';
+  return 'none';
+}
 
 function sampleMaskValue(maskData, x, y) {
   if (!maskData || x < 0 || y < 0 || x >= maskData.width || y >= maskData.height) return 0;
@@ -62,7 +74,11 @@ function scrollToPageTop() {
 
 export default function MapExplorer({ records, onSelectionChange }) {
   const navigate = useNavigate();
-  const visitedIds = useMemo(() => new Set(records.map((record) => recordRegionId(record))), [records]);
+  const regionVisitCounts = useMemo(() => records.reduce((counts, record) => {
+    const regionId = recordRegionId(record);
+    counts.set(regionId, (counts.get(regionId) || 0) + 1);
+    return counts;
+  }, new Map()), [records]);
   const overlayCanvasRef = useRef(null);
   const maskDataRef = useRef(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
@@ -87,11 +103,12 @@ export default function MapExplorer({ records, onSelectionChange }) {
   const provinceCityUnit = provinceRegion ? cityUnitLabel(provinceRegion.id) : '시';
   const currentRegion = regions.find((region) => region.id === selectedRegion);
   const currentRegionShape = currentRegion ? detailShapeFor(currentRegion.id) : null;
-  const visitedMaskValues = useMemo(
-    () => nationalMapAreas
-      .map((area, index) => (area.regionIds.some((id) => visitedIds.has(id)) ? index + 1 : 0))
-      .filter(Boolean),
-    [visitedIds],
+  const nationalAreaVisitCounts = useMemo(
+    () => new Map(nationalMapAreas.map((area, index) => [
+      index + 1,
+      area.regionIds.reduce((total, id) => total + (regionVisitCounts.get(id) || 0), 0),
+    ])),
+    [regionVisitCounts],
   );
   const selectProvince = (provinceId) => {
     setSelectedProvince(provinceId);
@@ -147,25 +164,25 @@ export default function MapExplorer({ records, onSelectionChange }) {
 
     const context = canvas.getContext('2d');
     const output = context.createImageData(maskData.width, maskData.height);
-    const visitedValues = new Set(visitedMaskValues);
     const hoveredValue = hoveredNationalArea
       ? [...nationalMapAreaByMaskValue.entries()].find(([, area]) => area.id === hoveredNationalArea.id)?.[0]
       : 0;
 
     for (let pixel = 0; pixel < maskData.width * maskData.height; pixel += 1) {
       const value = maskData.data[pixel * 4];
-      const active = value && (visitedValues.has(value) || value === hoveredValue);
-      if (!active) continue;
+      if (!value) continue;
 
       const target = pixel * 4;
-      output.data[target] = orange.r;
-      output.data[target + 1] = orange.g;
-      output.data[target + 2] = orange.b;
-      output.data[target + 3] = value === hoveredValue ? 108 : 92;
+      const count = nationalAreaVisitCounts.get(value) || 0;
+      const color = visitLevelColors[visitLevelForCount(count)];
+      output.data[target] = color.r;
+      output.data[target + 1] = color.g;
+      output.data[target + 2] = color.b;
+      output.data[target + 3] = value === hoveredValue ? Math.min(color.alpha + 34, 210) : color.alpha;
     }
 
     context.putImageData(output, 0, 0);
-  }, [hoveredNationalArea, maskReady, visitedMaskValues]);
+  }, [hoveredNationalArea, maskReady, nationalAreaVisitCounts]);
 
   const findNationalAreaFromPointer = (event) => {
     const maskData = maskDataRef.current;
@@ -322,15 +339,16 @@ export default function MapExplorer({ records, onSelectionChange }) {
       {!province && (
         <div className="province-list">
           {nationalMapAreas.map((area) => {
-            const visited = area.regionIds.some((id) => visitedIds.has(id));
+            const visitCount = area.regionIds.reduce((total, id) => total + (regionVisitCounts.get(id) || 0), 0);
+            const visitLevel = visitLevelForCount(visitCount);
             const provinceGroup = area.provinceGroupId
               ? provinceGroups.find((group) => group.id === area.provinceGroupId)
               : null;
             const areaNote = provinceGroup?.note || `${area.name} 여행 기록`;
             return (
-              <button key={area.id} type="button" className={visited ? 'visited' : ''} onClick={() => selectNationalArea(area)}>
+              <button key={area.id} type="button" className={`visit-level-${visitLevel}`} onClick={() => selectNationalArea(area)}>
                 <strong>{area.name}</strong>
-                <span>{areaNote}</span>
+                <span>{visitCount ? `${visitCount}회 · ${areaNote}` : `0회 · ${areaNote}`}</span>
               </button>
             );
           })}
@@ -338,8 +356,10 @@ export default function MapExplorer({ records, onSelectionChange }) {
       )}
 
       <div className="map-legend">
-        <span><i className="legend-dot visited-dot" />방문한 지역</span>
-        <span><i className="legend-dot empty-dot" />아직 남은 지역</span>
+        <span><i className="legend-dot visit-dot-none" />0회</span>
+        <span><i className="legend-dot visit-dot-low" />1회</span>
+        <span><i className="legend-dot visit-dot-medium" />2~3회</span>
+        <span><i className="legend-dot visit-dot-high" />4회 이상</span>
       </div>
     </div>
   );

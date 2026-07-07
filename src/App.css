@@ -800,9 +800,26 @@ main {
   text-align: left;
 }
 
-.province-list button.visited {
-  border-color: rgba(223, 111, 67, 0.72);
-  background: #ffd8c3;
+.province-list button.visit-level-none {
+  background: #eef0ed;
+  color: #4f594f;
+}
+
+.province-list button.visit-level-low {
+  border-color: rgba(239, 143, 104, 0.38);
+  background: #fbd9cb;
+}
+
+.province-list button.visit-level-medium {
+  border-color: rgba(223, 111, 67, 0.58);
+  background: #ef9368;
+  color: #fffaf2;
+}
+
+.province-list button.visit-level-high {
+  border-color: rgba(156, 73, 57, 0.72);
+  background: #c24e34;
+  color: #fffaf2;
 }
 
 .province-list strong {
@@ -813,6 +830,11 @@ main {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 700;
+}
+
+.province-list button.visit-level-medium span,
+.province-list button.visit-level-high span {
+  color: rgba(255, 250, 242, 0.82);
 }
 
 .drill-panel {
@@ -982,6 +1004,22 @@ main {
 
 .empty-dot {
   background: var(--empty);
+}
+
+.visit-dot-none {
+  background: #d2d6d3;
+}
+
+.visit-dot-low {
+  background: #f8cbb9;
+}
+
+.visit-dot-medium {
+  background: #ef8f68;
+}
+
+.visit-dot-high {
+  background: #c24e34;
 }
 
 .summary-panel {
