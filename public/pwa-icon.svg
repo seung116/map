@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="여행 발자국">
+  <rect width="512" height="512" rx="112" fill="#fffaf2"/>
+  <path d="M92 132c48-26 104-38 164-38 58 0 114 12 164 38v270c-50-26-106-38-164-38-60 0-116 12-164 38V132Z" fill="#b8d9c2"/>
+  <path d="M256 94v270" fill="none" stroke="#fffaf2" stroke-width="18" stroke-linecap="round"/>
+  <path d="M126 172c42-22 82-30 130-30s88 8 130 30" fill="none" stroke="#2f352f" stroke-width="18" stroke-linecap="round"/>
+  <path d="M126 238c42-22 82-30 130-30s88 8 130 30" fill="none" stroke="#2f352f" stroke-width="18" stroke-linecap="round" opacity=".78"/>
+  <path d="M126 304c42-22 82-30 130-30s88 8 130 30" fill="none" stroke="#2f352f" stroke-width="18" stroke-linecap="round" opacity=".56"/>
+  <circle cx="256" cy="238" r="54" fill="#df6f43"/>
+  <path d="M256 328c42-58 66-98 66-132a66 66 0 0 0-132 0c0 34 24 74 66 132Z" fill="#df6f43"/>
+  <circle cx="256" cy="196" r="24" fill="#fffaf2"/>
+  <text x="256" y="438" text-anchor="middle" font-family="system-ui, sans-serif" font-size="58" font-weight="800" fill="#2f352f">KR</text>
+</svg>

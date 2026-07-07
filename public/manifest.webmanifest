@@ -1,0 +1,19 @@
+{
+  "name": "날 기억할 지도",
+  "short_name": "여행지도",
+  "description": "사진으로 채우는 한국 여행 기록 지도",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fffaf2",
+  "theme_color": "#fffaf2",
+  "icons": [
+    {
+      "src": "./pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
