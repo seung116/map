@@ -207,9 +207,21 @@ export default function RecordFormPage({ records, setRecords }) {
       photos: form.photos,
     };
 
-    const nextRecords = editing
+    const recordsWithCurrentSave = editing
       ? records.map((record) => (record.id === editing.id ? nextRecord : record))
       : [nextRecord, ...records];
+    const nextRecords = tripMode === 'existing'
+      ? recordsWithCurrentSave.map((record) => (
+        recordTripId(record) === tripId
+          ? {
+              ...record,
+              tripName,
+              tripStartDate,
+              tripEndDate,
+            }
+          : record
+      ))
+      : recordsWithCurrentSave;
 
     const saved = await setRecords(nextRecords);
     if (saved) {
@@ -254,6 +266,12 @@ export default function RecordFormPage({ records, setRecords }) {
                     </option>
                   ))}
                 </select>
+                <div className="trip-setup-grid">
+                  <label>
+                    여행 이름
+                    <input required value={form.tripName} onChange={(event) => update('tripName', event.target.value)} placeholder="예: 2026 제주 가족여행" />
+                  </label>
+                </div>
                 <strong className="trip-period-summary">여행 기간 {tripDateLabel(selectedTrip || tripGroups[0])}</strong>
               </>
             ) : (
