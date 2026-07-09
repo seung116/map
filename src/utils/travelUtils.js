@@ -168,6 +168,23 @@ export function recordMatchesRegion(record, regionId) {
   return recordRegionId(record) === regionId;
 }
 
+export function countTripsByRegion(records) {
+  const tripsByRegion = new Map();
+
+  records.forEach((record) => {
+    const regionId = recordRegionId(record);
+    if (!regionId) return;
+
+    if (!tripsByRegion.has(regionId)) {
+      tripsByRegion.set(regionId, new Set());
+    }
+
+    tripsByRegion.get(regionId).add(recordTripId(record));
+  });
+
+  return new Map([...tripsByRegion.entries()].map(([regionId, tripIds]) => [regionId, tripIds.size]));
+}
+
 export function cityUnitLabel(regionId) {
   if (regionId === 'seoul') return '구';
   if (regionId === 'jeju') return '행정시';

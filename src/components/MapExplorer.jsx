@@ -13,7 +13,7 @@ import provinceSeoul from '../assets/province-seoul.png';
 import provinceChungbuk from '../assets/province-chungbuk.png';
 import provinceChungnam from '../assets/province-chungnam.png';
 import { detailLayouts, detailPlaces, districtCells, nationalMapAreas, provinceGroups, regions } from '../data/travelData';
-import { cityPlacesFor, cityUnitLabel, detailShapeFor, districtCellFor, recordMatchesRegion, recordRegionId } from '../utils/travelUtils';
+import { cityPlacesFor, cityUnitLabel, countTripsByRegion, detailShapeFor, districtCellFor, recordMatchesRegion } from '../utils/travelUtils';
 
 const provinceImages = {
   'seoul-si': provinceSeoul,
@@ -74,11 +74,7 @@ function scrollToPageTop() {
 
 export default function MapExplorer({ records, onSelectionChange }) {
   const navigate = useNavigate();
-  const regionVisitCounts = useMemo(() => records.reduce((counts, record) => {
-    const regionId = recordRegionId(record);
-    counts.set(regionId, (counts.get(regionId) || 0) + 1);
-    return counts;
-  }, new Map()), [records]);
+  const regionVisitCounts = useMemo(() => countTripsByRegion(records), [records]);
   const overlayCanvasRef = useRef(null);
   const maskDataRef = useRef(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
