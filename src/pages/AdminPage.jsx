@@ -90,6 +90,11 @@ export default function AdminPage() {
   };
 
   const deleteUser = async (user) => {
+    if (!auth?.isAdmin) {
+      window.alert('관리자 계정만 회원을 삭제할 수 있습니다.');
+      return;
+    }
+
     if (user.uid === auth.user?.uid) {
       window.alert('현재 로그인한 관리자 계정은 삭제할 수 없습니다.');
       return;
@@ -129,7 +134,7 @@ export default function AdminPage() {
         className="admin-delete-button"
         type="button"
         onClick={() => deleteUser(user)}
-        disabled={user.uid === auth.user?.uid}
+        disabled={!auth?.isAdmin || user.uid === auth.user?.uid}
       >
         삭제
       </button>
