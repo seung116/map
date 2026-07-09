@@ -357,7 +357,7 @@ main {
 
 .admin-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 78px 86px 104px 120px;
+  grid-template-columns: minmax(0, 1fr) 78px 86px 104px 120px 82px;
   gap: 12px;
   align-items: center;
   background: var(--paper);
@@ -394,6 +394,17 @@ main {
   background: #fff;
   color: var(--ink);
   font-weight: 800;
+}
+
+.admin-row .admin-delete-button {
+  border-color: rgba(156, 73, 57, 0.22);
+  background: #fde5dc;
+  color: #9c4939;
+}
+
+.admin-row button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .admin-empty {

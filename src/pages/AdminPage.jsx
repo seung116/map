@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import { useAuth } from '../contexts/AuthContext';
-import { setUserApproval, setUserRole, subscribeUsers } from '../services/authStore';
+import { deleteUserProfile, setUserApproval, setUserRole, subscribeUsers } from '../services/authStore';
 import { countRemoteUserPhotos } from '../services/recordStore';
 
 function adminErrorMessage(error) {
@@ -31,7 +31,6 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!auth?.isAdmin) {
-      setLoading(false);
       return undefined;
     }
 
@@ -90,6 +89,25 @@ export default function AdminPage() {
     await setUserRole(uid, role);
   };
 
+  const deleteUser = async (user) => {
+    if (user.uid === auth.user?.uid) {
+      window.alert('현재 로그인한 관리자 계정은 삭제할 수 없습니다.');
+      return;
+    }
+
+    const label = user.displayName || user.email || user.uid;
+    if (!window.confirm(`"${label}" 회원을 삭제할까요?\nFirebase Auth 계정은 남아 있지만 앱 회원 목록과 승인 상태에서는 제거됩니다.`)) {
+      return;
+    }
+
+    try {
+      await deleteUserProfile(user.uid);
+    } catch (deleteError) {
+      console.error('User delete failed:', deleteError);
+      window.alert(deleteError?.message || '회원 삭제에 실패했습니다.');
+    }
+  };
+
   const renderUserRow = (user) => (
     <div className="admin-row" key={user.uid}>
       <div>
@@ -106,6 +124,14 @@ export default function AdminPage() {
       </button>
       <button type="button" onClick={() => updateRole(user.uid, user.role === 'admin' ? 'member' : 'admin')}>
         {user.role === 'admin' ? '관리자 해제' : '관리자 지정'}
+      </button>
+      <button
+        className="admin-delete-button"
+        type="button"
+        onClick={() => deleteUser(user)}
+        disabled={user.uid === auth.user?.uid}
+      >
+        삭제
       </button>
     </div>
   );

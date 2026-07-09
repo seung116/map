@@ -7,7 +7,7 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, onSnapshot, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore, firebaseEnabled } from '../lib/firebase';
 
 const USERS_COLLECTION = 'users';
@@ -173,6 +173,14 @@ export async function setUserRole(uid, role) {
     role,
     reviewedAt: serverTimestamp(),
   });
+}
+
+export async function deleteUserProfile(uid) {
+  if (uid === BOOTSTRAP_ADMIN_UID) {
+    throw new Error('초기 관리자 계정은 삭제할 수 없습니다.');
+  }
+
+  await deleteDoc(doc(firestore, USERS_COLLECTION, uid));
 }
 
 export async function getUserProfile(uid) {
