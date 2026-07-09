@@ -357,7 +357,7 @@ main {
 
 .admin-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 78px 86px 104px 120px 82px;
+  grid-template-columns: minmax(0, 1fr) 78px 86px repeat(3, minmax(82px, auto));
   gap: 12px;
   align-items: center;
   background: var(--paper);

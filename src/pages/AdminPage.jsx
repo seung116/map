@@ -113,7 +113,7 @@ export default function AdminPage() {
     }
   };
 
-  const renderUserRow = (user) => (
+  const renderUserRow = (user, { canDelete = false } = {}) => (
     <div className="admin-row" key={user.uid}>
       <div>
         <strong>{user.displayName || '이름 없음'}</strong>
@@ -130,14 +130,16 @@ export default function AdminPage() {
       <button type="button" onClick={() => updateRole(user.uid, user.role === 'admin' ? 'member' : 'admin')}>
         {user.role === 'admin' ? '관리자 해제' : '관리자 지정'}
       </button>
-      <button
-        className="admin-delete-button"
-        type="button"
-        onClick={() => deleteUser(user)}
-        disabled={!auth?.isAdmin || user.uid === auth.user?.uid}
-      >
-        삭제
-      </button>
+      {canDelete && (
+        <button
+          className="admin-delete-button"
+          type="button"
+          onClick={() => deleteUser(user)}
+          disabled={!auth?.isAdmin || user.uid === auth.user?.uid}
+        >
+          삭제
+        </button>
+      )}
     </div>
   );
 
@@ -168,7 +170,7 @@ export default function AdminPage() {
                 <strong>{pendingUsers.length}명</strong>
               </div>
               <div className="admin-table">
-                {pendingUsers.length ? pendingUsers.map(renderUserRow) : <p className="admin-empty">대기 중인 가입 신청이 없습니다.</p>}
+                {pendingUsers.length ? pendingUsers.map((user) => renderUserRow(user, { canDelete: true })) : <p className="admin-empty">대기 중인 가입 신청이 없습니다.</p>}
               </div>
 
               <div className="section-heading inline admin-subheading">
@@ -179,7 +181,7 @@ export default function AdminPage() {
                 <strong>{approvedUsers.length}명</strong>
               </div>
               <div className="admin-table">
-                {approvedUsers.length ? approvedUsers.map(renderUserRow) : <p className="admin-empty">승인된 회원이 없습니다.</p>}
+                {approvedUsers.length ? approvedUsers.map((user) => renderUserRow(user)) : <p className="admin-empty">승인된 회원이 없습니다.</p>}
               </div>
             </>
           )}
