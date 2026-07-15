@@ -7,11 +7,11 @@ export function regionName(id) {
 }
 
 export function recordStartDate(record) {
-  return record.startDate || record.date || '';
+  return record?.startDate || record?.date || '';
 }
 
 export function recordEndDate(record) {
-  return record.endDate || record.startDate || record.date || '';
+  return record?.endDate || record?.startDate || record?.date || '';
 }
 
 export function recordDateRange(record) {

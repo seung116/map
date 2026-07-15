@@ -23,6 +23,7 @@ export default function Header() {
       <nav className="top-nav" aria-label="주요 메뉴">
         <Link to="/write">기록</Link>
         <Link to="/album">앨범</Link>
+        <Link to="/calendar">달력</Link>
         <Link to="/stats">통계</Link>
         {auth?.isAdmin && <Link to="/admin">관리</Link>}
         <button className="nav-button" type="button" onClick={logoutUser}>로그아웃</button>
