@@ -63,7 +63,8 @@ export function recordTripDayLabel(record) {
 
 export function recordTripId(record) {
   if (record?.tripId) return record.tripId;
-  return `trip-${recordStartDate(record) || 'unknown'}-${recordEndDate(record) || 'unknown'}`;
+  if (record?.id) return `legacy-trip-${record.id}`;
+  return `legacy-trip-${recordStartDate(record) || 'unknown'}-${recordEndDate(record) || 'unknown'}`;
 }
 
 export function recordTripName(record) {
