@@ -1402,41 +1402,86 @@ main {
   font-weight: 900;
 }
 
-.calendar-records {
+.calendar-trip-blocks {
   display: grid;
-  gap: 7px;
+  gap: 6px;
   margin-top: 9px;
 }
 
-.calendar-record {
+.calendar-trip-block {
   display: grid;
   gap: 2px;
+  min-height: 42px;
   min-width: 0;
-  border: 1px solid rgba(223, 111, 67, 0.16);
-  border-radius: 8px;
-  background: rgba(253, 229, 220, 0.72);
+  border: 1px solid rgba(95, 140, 117, 0.12);
+  border-radius: 0;
   padding: 8px;
+  box-shadow: 0 8px 18px rgba(62, 72, 58, 0.08);
 }
 
-.calendar-record:hover {
-  border-color: rgba(223, 111, 67, 0.32);
+.calendar-trip-block.is-start {
+  margin-right: -11px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.calendar-trip-block.is-middle {
+  margin-left: -11px;
+  margin-right: -11px;
+  border-left-color: transparent;
+}
+
+.calendar-trip-block.is-end {
+  margin-right: 0;
+  border-right-color: rgba(95, 140, 117, 0.12);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.calendar-trip-block.is-start.is-end {
+  margin-right: 0;
+  border-radius: 8px;
+}
+
+.calendar-trip-block.trip-color-0 {
   background: #fde5dc;
 }
 
-.calendar-record strong,
-.calendar-record small {
+.calendar-trip-block.trip-color-1 {
+  background: #dcebd9;
+}
+
+.calendar-trip-block.trip-color-2 {
+  background: #dcecf4;
+}
+
+.calendar-trip-block.trip-color-3 {
+  background: #f3e8cf;
+}
+
+.calendar-trip-block.trip-color-4 {
+  background: #eadff1;
+}
+
+.calendar-trip-block:hover {
+  border-color: rgba(95, 140, 117, 0.34);
+  filter: saturate(1.04);
+}
+
+.calendar-trip-block strong,
+.calendar-trip-block small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.calendar-record strong {
-  color: #7b3f2d;
+.calendar-trip-block strong {
+  color: #384636;
   font-size: 0.9rem;
 }
 
-.calendar-record small {
-  color: #7a7069;
+.calendar-trip-block small {
+  color: #697268;
   font-size: 0.75rem;
   font-weight: 800;
 }

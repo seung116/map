@@ -1,7 +1,15 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
-import { recordRegionId, recordStartDate, regionName } from '../utils/travelUtils';
+import {
+  recordRegionId,
+  recordStartDate,
+  recordTripEndDate,
+  recordTripId,
+  recordTripName,
+  recordTripStartDate,
+  regionName,
+} from '../utils/travelUtils';
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -17,6 +25,12 @@ function parseLocalDate(value) {
   if (!value) return null;
   const date = new Date(`${value}T00:00:00`);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function addDays(date, days) {
+  const nextDate = new Date(date);
+  nextDate.setDate(date.getDate() + days);
+  return nextDate;
 }
 
 function monthLabel(monthKey) {
@@ -48,6 +62,80 @@ function moveMonth(monthKey, offset) {
   return formatMonthKey(new Date(year, month - 1 + offset, 1));
 }
 
+function dateKeysBetween(startKey, endKey) {
+  const startDate = parseLocalDate(startKey);
+  const endDate = parseLocalDate(endKey);
+  if (!startDate || !endDate || startDate > endDate) return [];
+
+  const keys = [];
+  for (let date = startDate, count = 0; date <= endDate && count < 370; date = addDays(date, 1), count += 1) {
+    keys.push(formatDateKey(date));
+  }
+  return keys;
+}
+
+function buildTripBlocksByDate(records) {
+  const trips = new Map();
+
+  records.forEach((record) => {
+    const dateKey = recordStartDate(record);
+    if (!dateKey) return;
+
+    const tripId = recordTripId(record);
+    if (!trips.has(tripId)) {
+      trips.set(tripId, {
+        id: tripId,
+        name: recordTripName(record),
+        regionId: recordRegionId(record),
+        cityName: record.cityName,
+        startDate: recordTripStartDate(record) || dateKey,
+        endDate: recordTripEndDate(record) || dateKey,
+        records: [],
+      });
+    }
+
+    const trip = trips.get(tripId);
+    trip.records.push(record);
+    const startDate = recordTripStartDate(record) || dateKey;
+    const endDate = recordTripEndDate(record) || dateKey;
+    if (startDate && startDate < trip.startDate) trip.startDate = startDate;
+    if (endDate && endDate > trip.endDate) trip.endDate = endDate;
+  });
+
+  return [...trips.values()]
+    .sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id))
+    .reduce((groups, trip, tripIndex) => {
+      const recordsByDate = trip.records.reduce((dateGroups, record) => {
+        const dateKey = recordStartDate(record);
+        if (!dateGroups[dateKey]) dateGroups[dateKey] = [];
+        dateGroups[dateKey].push(record);
+        return dateGroups;
+      }, {});
+      const dateKeys = dateKeysBetween(trip.startDate, trip.endDate);
+      const firstRecord = trip.records[0];
+
+      dateKeys.forEach((dateKey, dateIndex) => {
+        const date = parseLocalDate(dateKey);
+        const dayRecords = recordsByDate[dateKey] || [];
+        const isStart = dateIndex === 0 || date.getDay() === 0;
+        const isEnd = dateIndex === dateKeys.length - 1 || date.getDay() === 6;
+
+        if (!groups[dateKey]) groups[dateKey] = [];
+        groups[dateKey].push({
+          ...trip,
+          colorIndex: tripIndex % 5,
+          dayRecords,
+          isStart,
+          isEnd,
+          showLabel: isStart,
+          linkRecordId: dayRecords[0]?.id || firstRecord.id,
+        });
+      });
+
+      return groups;
+    }, {});
+}
+
 export default function CalendarPage({ records }) {
   const initialMonth = useMemo(() => {
     const latestRecord = records.reduce((latest, record) => {
@@ -70,6 +158,7 @@ export default function CalendarPage({ records }) {
     groups[dateKey].push(record);
     return groups;
   }, {}), [records]);
+  const tripBlocksByDate = useMemo(() => buildTripBlocksByDate(records), [records]);
   const calendarDays = useMemo(() => buildCalendarDays(currentMonth), [currentMonth]);
   const currentMonthRecordCount = calendarDays
     .filter((day) => day.isCurrentMonth)
@@ -107,6 +196,7 @@ export default function CalendarPage({ records }) {
           <div className="calendar-grid">
             {calendarDays.map((day) => {
               const dayRecords = recordsByDate[day.key] || [];
+              const tripBlocks = tripBlocksByDate[day.key] || [];
               return (
                 <article
                   className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''}`}
@@ -116,11 +206,20 @@ export default function CalendarPage({ records }) {
                     <time dateTime={day.key}>{day.day}</time>
                     {dayRecords.length > 0 && <span>{dayRecords.length}</span>}
                   </div>
-                  <div className="calendar-records">
-                    {dayRecords.map((record) => (
-                      <Link key={record.id} className="calendar-record" to={`/write/${record.id}`}>
-                        <strong>{record.title}</strong>
-                        <small>{regionName(recordRegionId(record))}{record.cityName ? ` ${record.cityName}` : ''}</small>
+                  <div className="calendar-trip-blocks">
+                    {tripBlocks.map((trip) => (
+                      <Link
+                        key={trip.id}
+                        className={`calendar-trip-block trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
+                        to={`/write/${trip.linkRecordId}`}
+                        title={`${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
+                      >
+                        {trip.showLabel && (
+                          <>
+                            <strong>{trip.name}</strong>
+                            <small>{regionName(trip.regionId)}{trip.cityName ? ` ${trip.cityName}` : ''}</small>
+                          </>
+                        )}
                       </Link>
                     ))}
                   </div>
