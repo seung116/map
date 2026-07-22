@@ -1344,11 +1344,12 @@ main {
 }
 
 .calendar-day {
+  --calendar-day-padding: 10px;
   min-height: 150px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background: rgba(255, 250, 242, 0.82);
-  padding: 10px;
+  padding: var(--calendar-day-padding);
 }
 
 .calendar-day:nth-child(7n) {
@@ -1423,6 +1424,7 @@ main {
 
 .calendar-trip-block {
   appearance: none;
+  position: relative;
   display: grid;
   align-content: center;
   width: 100%;
@@ -1430,7 +1432,7 @@ main {
   min-height: var(--calendar-trip-block-height);
   max-height: var(--calendar-trip-block-height);
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(95, 140, 117, 0.12);
   border-radius: 0;
   padding: 8px;
@@ -1439,10 +1441,42 @@ main {
   box-shadow: 0 8px 18px rgba(62, 72, 58, 0.08);
 }
 
+.calendar-trip-block::before,
+.calendar-trip-block::after {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  z-index: 0;
+  width: calc(var(--calendar-day-padding) + 1px);
+  background: inherit;
+  border-top: 1px solid rgba(95, 140, 117, 0.12);
+  border-bottom: 1px solid rgba(95, 140, 117, 0.12);
+  content: "";
+  pointer-events: none;
+}
+
+.calendar-trip-block::before {
+  left: calc((var(--calendar-day-padding) + 1px) * -1);
+}
+
+.calendar-trip-block::after {
+  right: calc((var(--calendar-day-padding) + 1px) * -1);
+}
+
+.calendar-trip-block.is-start::before,
+.calendar-trip-block.is-end::after,
+.calendar-trip-block.is-start.is-end::before,
+.calendar-trip-block.is-start.is-end::after {
+  display: none;
+}
+
 .calendar-trip-label {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 2px;
   min-width: 0;
+  overflow: hidden;
 }
 
 .calendar-trip-label.is-hidden {
@@ -2624,8 +2658,8 @@ main {
   }
 
   .calendar-day {
+    --calendar-day-padding: 4px;
     min-height: 86px;
-    padding: 4px;
   }
 
   .calendar-day-top {
