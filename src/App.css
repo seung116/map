@@ -1414,18 +1414,21 @@ main {
 }
 
 .calendar-trip-blocks {
+  --calendar-trip-block-height: 48px;
   display: grid;
-  grid-auto-rows: 48px;
+  grid-auto-rows: var(--calendar-trip-block-height);
   gap: 6px;
   margin-top: 9px;
 }
 
 .calendar-trip-block {
+  appearance: none;
   display: grid;
   align-content: center;
-  gap: 2px;
   width: 100%;
-  height: 48px;
+  height: var(--calendar-trip-block-height);
+  min-height: var(--calendar-trip-block-height);
+  max-height: var(--calendar-trip-block-height);
   min-width: 0;
   overflow: hidden;
   border: 1px solid rgba(95, 140, 117, 0.12);
@@ -1434,6 +1437,16 @@ main {
   color: inherit;
   text-align: left;
   box-shadow: 0 8px 18px rgba(62, 72, 58, 0.08);
+}
+
+.calendar-trip-label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.calendar-trip-label.is-hidden {
+  visibility: hidden;
 }
 
 .calendar-trip-block.is-start {
@@ -1481,22 +1494,24 @@ main {
   filter: saturate(1.04);
 }
 
-.calendar-trip-block strong,
-.calendar-trip-block small {
+.calendar-trip-label strong,
+.calendar-trip-label small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.calendar-trip-block strong {
+.calendar-trip-label strong {
   color: #384636;
   font-size: 0.9rem;
+  line-height: 1.15;
 }
 
-.calendar-trip-block small {
+.calendar-trip-label small {
   color: #697268;
   font-size: 0.75rem;
   font-weight: 800;
+  line-height: 1.15;
 }
 
 .calendar-detail-panel {

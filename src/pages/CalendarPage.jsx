@@ -227,14 +227,13 @@ export default function CalendarPage({ records }) {
                         className={`calendar-trip-block trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
                         type="button"
                         onClick={() => setSelectedDate(day.key)}
+                        aria-label={`${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
                         title={`${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
                       >
-                        {trip.showLabel && (
-                          <>
-                            <strong>{trip.name}</strong>
-                            <small>{regionName(trip.regionId)}{trip.cityName ? ` ${trip.cityName}` : ''}</small>
-                          </>
-                        )}
+                        <span className={`calendar-trip-label ${trip.showLabel ? '' : 'is-hidden'}`} aria-hidden={!trip.showLabel}>
+                          <strong>{trip.name}</strong>
+                          <small>{regionName(trip.regionId)}{trip.cityName ? ` ${trip.cityName}` : ''}</small>
+                        </span>
                       </button>
                     ))}
                   </div>
