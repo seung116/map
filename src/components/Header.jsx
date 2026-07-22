@@ -16,7 +16,6 @@ export default function Header() {
       <Link to="/" className="brand" aria-label="홈으로 이동" onClick={goHome}>
         <span className="brand-mark">KR</span>
         <span>
-          <strong>여행 발자국</strong>
           <small>사진으로 채우는 한국 기록</small>
         </span>
       </Link>
