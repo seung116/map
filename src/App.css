@@ -3,8 +3,8 @@
 :root {
   color: #2f352f;
   background: #fbf6ed;
-  font-family: Inter, Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   --title-font: "Gaegu", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  font-family: var(--title-font);
   --paper: #fffaf2;
   --ink: #2f352f;
   --muted: #6f766e;

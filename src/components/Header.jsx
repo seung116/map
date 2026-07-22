@@ -15,9 +15,6 @@ export default function Header() {
     <header className="app-header">
       <Link to="/" className="brand" aria-label="홈으로 이동" onClick={goHome}>
         <span className="brand-mark">KR</span>
-        <span>
-          <small>사진으로 채우는 한국 기록</small>
-        </span>
       </Link>
       <nav className="top-nav" aria-label="주요 메뉴">
         <Link to="/write">기록</Link>
