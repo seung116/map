@@ -433,6 +433,23 @@ main {
   padding: 54px 0 26px;
 }
 
+.home-map-section {
+  padding-top: 30px;
+}
+
+.home-map-heading {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.home-map-heading h1 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--title-font);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1;
+}
+
 .section-heading {
   margin-bottom: 20px;
 }
