@@ -204,7 +204,6 @@ export default function CalendarPage({ records }) {
           </div>
           <div className="calendar-grid">
             {calendarDays.map((day) => {
-              const dayRecords = recordsByDate[day.key] || [];
               const tripBlocks = tripBlocksByDate[day.key] || [];
               return (
                 <article
@@ -217,7 +216,7 @@ export default function CalendarPage({ records }) {
                     onClick={() => setSelectedDate(day.key)}
                     aria-label={`${dateLabel(day.key)} 기록 보기`}
                   >
-                    {dayRecords.length > 0 && <span>{dayRecords.length}</span>}
+                    <time dateTime={day.key}>{day.day}</time>
                   </button>
                   <div className="calendar-trip-blocks">
                     {tripBlocks.map((trip) => (

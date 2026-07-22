@@ -81,13 +81,45 @@ export default function RecordFormPage({ records, setRecords }) {
       tripEndDate: editing ? recordTripEndDate(editing) : baseForm.tripEndDate,
     };
   });
-  const [tripMode, setTripMode] = useState(() => (editing?.tripId ? 'existing' : 'new'));
+  const [tripMode, setTripMode] = useState(() => (editing?.tripId ? 'existing' : ''));
+  const [companionsTouched, setCompanionsTouched] = useState(() => Boolean(editing));
+  const [stepTouched, setStepTouched] = useState(() => ({
+    recordDate: Boolean(editing),
+    region: Boolean(editing),
+    city: Boolean(editing),
+    title: Boolean(editing),
+    memo: Boolean(editing),
+  }));
   const cityOptions = recordPlaceOptionsFor(form.regionId);
   const cityLabel = cityUnitLabel(form.regionId);
   const selectedTrip = tripGroups.find((group) => group.id === form.tripId);
   const activeTripStartDate = tripMode === 'existing' ? selectedTrip?.startDate || form.tripStartDate : form.tripStartDate;
   const activeTripEndDate = tripMode === 'existing' ? selectedTrip?.endDate || form.tripEndDate : form.tripEndDate;
   const activeTripDayNumber = tripDayNumberFromDates(activeTripStartDate, form.startDate);
+  const isEditing = Boolean(editing);
+  const hasTripMode = Boolean(tripMode);
+  const hasSelectedTrip = tripMode === 'existing' && Boolean(form.tripId);
+  const hasTripName = Boolean(form.tripName.trim());
+  const hasTripPeriod = Boolean(activeTripStartDate && activeTripEndDate);
+  const hasRecordDate = Boolean(form.startDate);
+  const hasRegion = Boolean(form.regionId);
+  const hasCity = Boolean(form.cityName);
+  const hasTitle = Boolean(form.title.trim());
+  const hasMemo = Boolean(form.memo.trim());
+  const canShowTripName = isEditing || hasTripMode;
+  const canShowTripDates = isEditing || hasSelectedTrip || (tripMode === 'new' && hasTripName);
+  const canShowRecordDate = isEditing || (tripMode === 'existing' ? hasSelectedTrip : hasTripName && hasTripPeriod);
+  const canShowRegion = isEditing || (canShowRecordDate && stepTouched.recordDate && hasRecordDate);
+  const canShowCity = isEditing || (canShowRegion && stepTouched.region && hasRegion);
+  const canShowTitle = isEditing || (canShowCity && stepTouched.city && hasCity);
+  const canShowCompanions = isEditing || (canShowTitle && stepTouched.title && hasTitle);
+  const canShowMemo = isEditing || (canShowCompanions && companionsTouched);
+  const canShowUpload = isEditing || (canShowMemo && stepTouched.memo && hasMemo);
+  const canShowActions = isEditing || canShowUpload;
+
+  const markStepTouched = (key) => {
+    setStepTouched((current) => ({ ...current, [key]: true }));
+  };
 
   const applyTripToForm = (trip) => {
     if (!trip) return;
@@ -257,29 +289,35 @@ export default function RecordFormPage({ records, setRecords }) {
               <button className={tripMode === 'new' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('new')}>새 여행</button>
               <button className={tripMode === 'existing' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('existing')} disabled={tripGroups.length === 0}>기존 여행</button>
             </div>
-            {tripMode === 'existing' && tripGroups.length > 0 ? (
-              <>
-                <select value={form.tripId || tripGroups[0].id} onChange={(event) => selectExistingTrip(event.target.value)}>
-                  {tripGroups.map((trip) => (
-                    <option key={trip.id} value={trip.id}>
-                      {trip.name} · {tripDateLabel(trip)} · {trip.records.length}개 기록
-                    </option>
-                  ))}
-                </select>
-                <div className="trip-setup-grid">
-                  <label>
-                    여행 이름
-                    <input required value={form.tripName} onChange={(event) => update('tripName', event.target.value)} placeholder="예: 2026 제주 가족여행" />
-                  </label>
-                </div>
+          </div>
+
+          {canShowTripName && tripMode === 'existing' && tripGroups.length > 0 && (
+            <div className="form-field span-2 trip-field step-field">
+              <span>여행 선택</span>
+              <select value={form.tripId || tripGroups[0].id} onChange={(event) => selectExistingTrip(event.target.value)}>
+                {tripGroups.map((trip) => (
+                  <option key={trip.id} value={trip.id}>
+                    {trip.name} · {tripDateLabel(trip)} · {trip.records.length}개 기록
+                  </option>
+                ))}
+              </select>
+              {canShowTripDates && (
                 <strong className="trip-period-summary">여행 기간 {tripDateLabel(selectedTrip || tripGroups[0])}</strong>
-              </>
-            ) : (
-              <div className="trip-setup-grid">
-                <label>
-                  여행 이름
-                  <input required value={form.tripName} onChange={(event) => update('tripName', event.target.value)} placeholder="예: 2026 제주 가족여행" />
-                </label>
+              )}
+            </div>
+          )}
+
+          {canShowTripName && tripMode !== 'existing' && (
+            <label className="form-field span-2 step-field">
+              여행 이름
+              <input required value={form.tripName} onChange={(event) => update('tripName', event.target.value)} placeholder="예: 2026 제주 가족여행" />
+            </label>
+          )}
+
+          {canShowTripDates && tripMode !== 'existing' && (
+            <div className="form-field span-2 trip-field step-field">
+              <span>여행 기간</span>
+              <div className="trip-setup-grid date-only">
                 <label>
                   여행 시작일
                   <input required type="date" value={form.tripStartDate} onChange={(event) => update('tripStartDate', event.target.value)} />
@@ -289,9 +327,11 @@ export default function RecordFormPage({ records, setRecords }) {
                   <input required type="date" min={form.tripStartDate} value={form.tripEndDate} onChange={(event) => update('tripEndDate', event.target.value)} />
                 </label>
               </div>
-            )}
-          </div>
-          <label className="form-field span-2">
+            </div>
+          )}
+
+          {canShowRecordDate && (
+          <label className="form-field span-2 step-field">
             사진 저장 날짜
             <input
               required
@@ -299,48 +339,111 @@ export default function RecordFormPage({ records, setRecords }) {
               min={activeTripStartDate || undefined}
               max={activeTripEndDate || undefined}
               value={form.startDate}
-              onChange={(event) => update('startDate', event.target.value)}
+              onChange={(event) => {
+                markStepTouched('recordDate');
+                update('startDate', event.target.value);
+              }}
+              onBlur={() => markStepTouched('recordDate')}
             />
             <span className="trip-day-summary">
               {activeTripDayNumber ? `${activeTripDayNumber}일차` : '여행 기간을 먼저 정하면 일차가 표시돼요'}
             </span>
           </label>
-          <label className="form-field">
+          )}
+
+          {canShowRegion && (
+          <label className="form-field step-field">
             여행 도/광역시
-            <select value={form.regionId} onChange={(event) => update('regionId', event.target.value)}>
+            <select
+              value={form.regionId}
+              onChange={(event) => {
+                markStepTouched('region');
+                update('regionId', event.target.value);
+              }}
+              onBlur={() => markStepTouched('region')}
+            >
               {regions.map((region) => (
                 <option key={region.id} value={region.id}>{region.name}</option>
               ))}
             </select>
           </label>
-          <label className="form-field">
+          )}
+
+          {canShowCity && (
+          <label className="form-field step-field">
             여행 {cityLabel}
-            <select required value={form.cityName || ''} onChange={(event) => update('cityName', event.target.value)}>
+            <select
+              required
+              value={form.cityName || ''}
+              onChange={(event) => {
+                markStepTouched('city');
+                update('cityName', event.target.value);
+              }}
+              onBlur={() => markStepTouched('city')}
+            >
               <option value="" disabled>{cityLabel} 선택</option>
               {cityOptions.map((city) => (
                 <option key={city} value={city}>{city}</option>
               ))}
             </select>
           </label>
-          <label className="form-field span-2">
+          )}
+
+          {canShowTitle && (
+          <label className="form-field span-2 step-field">
             날짜별 기록 제목
-            <input required value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="예: 첫날 협재 해변" />
+            <input
+              required
+              value={form.title}
+              onChange={(event) => {
+                markStepTouched('title');
+                update('title', event.target.value);
+              }}
+              onBlur={() => markStepTouched('title')}
+              placeholder="예: 첫날 협재 해변"
+            />
           </label>
-          <label className="form-field">
+          )}
+
+          {canShowCompanions && (
+          <label className="form-field step-field">
             함께 간 사람
-            <input value={form.companions} onChange={(event) => update('companions', event.target.value)} placeholder="쉼표로 구분해 입력" />
+            <input
+              value={form.companions}
+              onChange={(event) => {
+                setCompanionsTouched(true);
+                update('companions', event.target.value);
+              }}
+              onBlur={() => setCompanionsTouched(true)}
+              placeholder="없으면 비워두고 다음 칸으로 이동"
+            />
           </label>
-          <label className="form-field span-2">
+          )}
+
+          {canShowMemo && (
+          <label className="form-field span-2 step-field">
             여행 메모
-            <textarea value={form.memo} onChange={(event) => update('memo', event.target.value)} placeholder="사진 속 장면과 같이 기억하고 싶은 문장을 적어보세요." />
+            <textarea
+              value={form.memo}
+              onChange={(event) => {
+                markStepTouched('memo');
+                update('memo', event.target.value);
+              }}
+              onBlur={() => markStepTouched('memo')}
+              placeholder="사진 속 장면과 같이 기억하고 싶은 문장을 적어보세요."
+            />
           </label>
-          <label className="upload-box span-2">
+          )}
+
+          {canShowUpload && (
+          <label className="upload-box span-2 step-field">
             <input type="file" multiple accept="image/*" onChange={addPhotos} />
             <strong>사진 업로드</strong>
             <span>선택한 사진은 Firebase Storage에 저장되어 앨범에 표시됩니다.</span>
           </label>
+          )}
 
-          {form.photos.length > 0 && (
+          {canShowUpload && form.photos.length > 0 && (
             <div className="photo-editor span-2">
               {form.photos.map((photo) => (
                 <div key={photo.id} className="photo-edit-card">
@@ -352,6 +455,7 @@ export default function RecordFormPage({ records, setRecords }) {
             </div>
           )}
 
+          {canShowActions && (
           <div className="form-actions span-2">
             {editing && (
               <button className="delete-record-button" type="button" onClick={deleteRecord}>
@@ -360,6 +464,7 @@ export default function RecordFormPage({ records, setRecords }) {
             )}
             <button className="submit-button" type="submit">{editing ? '수정 저장' : '기록 저장'}</button>
           </div>
+          )}
         </form>
       </main>
     </AppShell>

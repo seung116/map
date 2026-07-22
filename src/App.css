@@ -1719,6 +1719,23 @@ main {
   box-shadow: 0 10px 26px rgba(62, 72, 58, 0.07);
 }
 
+.record-form .step-field {
+  grid-column: 1 / -1;
+  animation: form-step-in 220ms ease both;
+}
+
+@keyframes form-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .record-form input,
 .record-form select,
 .record-form textarea,
@@ -1758,6 +1775,10 @@ main {
   display: grid;
   grid-template-columns: 1.3fr repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.trip-setup-grid.date-only {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .trip-setup-grid label {
@@ -2516,12 +2537,12 @@ main {
 
 @media (max-width: 900px) {
   .app-header {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 
   .top-nav {
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
 
   .hero,
@@ -2579,7 +2600,16 @@ main {
 
 @media (max-width: 640px) {
   .app-header {
+    gap: 10px;
     padding: 12px 16px;
+  }
+
+  .brand {
+    flex: 0 0 auto;
+  }
+
+  .brand strong {
+    font-size: 0.92rem;
   }
 
   .brand small {
@@ -2587,12 +2617,25 @@ main {
   }
 
   .top-nav {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    font-size: 0.78rem;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .top-nav a {
+  .top-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .top-nav a,
+  .nav-button {
+    flex: 0 0 auto;
+    padding: 7px 8px;
     text-align: center;
   }
 
