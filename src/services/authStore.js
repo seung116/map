@@ -14,6 +14,12 @@ const USERS_COLLECTION = 'users';
 const BOOTSTRAP_ADMIN_UID = import.meta.env.VITE_BOOTSTRAP_ADMIN_UID || '';
 let authPersistencePromise = null;
 
+function assertFirebaseReady() {
+  if (!firebaseEnabled || !auth || !firestore) {
+    throw new Error('Firebase 설정이 필요합니다. VITE_FIREBASE_* 환경변수를 확인해주세요.');
+  }
+}
+
 function ensureAuthPersistence() {
   if (!auth) return Promise.resolve();
 
@@ -108,6 +114,7 @@ export function subscribeAuthState(onChange) {
 }
 
 export async function registerUser({ email, password, displayName }) {
+  assertFirebaseReady();
   await ensureAuthPersistence();
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(credential.user, { displayName });
@@ -115,17 +122,21 @@ export async function registerUser({ email, password, displayName }) {
 }
 
 export async function loginUser({ email, password }) {
+  assertFirebaseReady();
   await ensureAuthPersistence();
   return signInWithEmailAndPassword(auth, email, password);
 }
 
 export function logoutUser() {
+  assertFirebaseReady();
   return signOut(auth);
 }
 
-export async function requestApproval(user = auth.currentUser, displayName = auth.currentUser?.displayName || '') {
-  if (!user) throw new Error('로그인이 필요합니다.');
-  const profileRef = doc(firestore, USERS_COLLECTION, user.uid);
+export async function requestApproval(user, displayName) {
+  assertFirebaseReady();
+  const targetUser = user || auth.currentUser;
+  if (!targetUser) throw new Error('로그인이 필요합니다.');
+  const profileRef = doc(firestore, USERS_COLLECTION, targetUser.uid);
   const profile = await getDoc(profileRef);
 
   if (profile.exists()) {
@@ -135,9 +146,9 @@ export async function requestApproval(user = auth.currentUser, displayName = aut
   await setDoc(
     profileRef,
     {
-      uid: user.uid,
-      email: user.email,
-      displayName: displayName || user.displayName || user.email,
+      uid: targetUser.uid,
+      email: targetUser.email,
+      displayName: displayName || targetUser.displayName || targetUser.email,
       approved: false,
       role: 'member',
       createdAt: serverTimestamp(),

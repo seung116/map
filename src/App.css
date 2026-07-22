@@ -2597,12 +2597,76 @@ main {
   }
 
   .calendar-panel {
-    overflow-x: auto;
+    overflow: hidden;
+  }
+
+  .calendar-month-meta {
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .calendar-month-meta strong {
+    font-size: 0.96rem;
+  }
+
+  .calendar-month-meta span {
+    font-size: 0.78rem;
   }
 
   .calendar-weekdays,
   .calendar-grid {
-    min-width: 760px;
+    min-width: 0;
+  }
+
+  .calendar-weekdays span {
+    padding: 8px 2px;
+    font-size: 0.72rem;
+  }
+
+  .calendar-day {
+    min-height: 86px;
+    padding: 4px;
+  }
+
+  .calendar-day-top {
+    gap: 2px;
+    min-height: 22px;
+  }
+
+  .calendar-day-top time {
+    width: 22px;
+    height: 22px;
+    font-size: 0.78rem;
+  }
+
+  .calendar-day-top span {
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.64rem;
+  }
+
+  .calendar-trip-blocks {
+    --calendar-trip-block-height: 24px;
+    gap: 3px;
+    margin-top: 5px;
+  }
+
+  .calendar-trip-block {
+    padding: 3px;
+    box-shadow: none;
+  }
+
+  .calendar-trip-label {
+    gap: 0;
+  }
+
+  .calendar-trip-label strong {
+    font-size: 0.62rem;
+    line-height: 1;
+  }
+
+  .calendar-trip-label small {
+    display: none;
   }
 
   .province-list {
