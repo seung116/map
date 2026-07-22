@@ -217,7 +217,6 @@ export default function CalendarPage({ records }) {
                     onClick={() => setSelectedDate(day.key)}
                     aria-label={`${dateLabel(day.key)} 기록 보기`}
                   >
-                    <time dateTime={day.key}>{day.day}</time>
                     {dayRecords.length > 0 && <span>{dayRecords.length}</span>}
                   </button>
                   <div className="calendar-trip-blocks">
