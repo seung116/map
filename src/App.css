@@ -25,9 +25,14 @@
 body {
   margin: 0;
   min-width: 320px;
+  font-family: var(--title-font);
   background:
     linear-gradient(180deg, rgba(182, 216, 234, 0.28), rgba(255, 250, 242, 0) 320px),
     #fbf6ed;
+}
+
+#root {
+  font-family: var(--title-font);
 }
 
 a {
