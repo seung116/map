@@ -62,6 +62,13 @@ function moveMonth(monthKey, offset) {
   return formatMonthKey(new Date(year, month - 1 + offset, 1));
 }
 
+function dateLabel(dateKey) {
+  const date = parseLocalDate(dateKey);
+  if (!date) return '날짜 미정';
+
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${weekdays[date.getDay()]}요일`;
+}
+
 function dateKeysBetween(startKey, endKey) {
   const startDate = parseLocalDate(startKey);
   const endDate = parseLocalDate(endKey);
@@ -149,6 +156,7 @@ export default function CalendarPage({ records }) {
     return formatMonthKey(latestDate || new Date());
   }, [records]);
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
+  const [selectedDate, setSelectedDate] = useState(formatDateKey(new Date()));
 
   const recordsByDate = useMemo(() => records.reduce((groups, record) => {
     const dateKey = recordStartDate(record);
@@ -163,6 +171,7 @@ export default function CalendarPage({ records }) {
   const currentMonthRecordCount = calendarDays
     .filter((day) => day.isCurrentMonth)
     .reduce((total, day) => total + (recordsByDate[day.key]?.length || 0), 0);
+  const selectedDateRecords = recordsByDate[selectedDate] || [];
 
   return (
     <AppShell>
@@ -199,19 +208,25 @@ export default function CalendarPage({ records }) {
               const tripBlocks = tripBlocksByDate[day.key] || [];
               return (
                 <article
-                  className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''}`}
+                  className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''}`}
                   key={day.key}
                 >
-                  <div className="calendar-day-top">
+                  <button
+                    className="calendar-day-top"
+                    type="button"
+                    onClick={() => setSelectedDate(day.key)}
+                    aria-label={`${dateLabel(day.key)} 기록 보기`}
+                  >
                     <time dateTime={day.key}>{day.day}</time>
                     {dayRecords.length > 0 && <span>{dayRecords.length}</span>}
-                  </div>
+                  </button>
                   <div className="calendar-trip-blocks">
                     {tripBlocks.map((trip) => (
-                      <Link
+                      <button
                         key={trip.id}
                         className={`calendar-trip-block trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
-                        to={`/write/${trip.linkRecordId}`}
+                        type="button"
+                        onClick={() => setSelectedDate(day.key)}
                         title={`${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
                       >
                         {trip.showLabel && (
@@ -220,13 +235,36 @@ export default function CalendarPage({ records }) {
                             <small>{regionName(trip.regionId)}{trip.cityName ? ` ${trip.cityName}` : ''}</small>
                           </>
                         )}
-                      </Link>
+                      </button>
                     ))}
                   </div>
                 </article>
               );
             })}
           </div>
+        </section>
+
+        <section className="calendar-detail-panel" aria-label={`${dateLabel(selectedDate)} 여행 기록`}>
+          <div className="calendar-detail-heading">
+            <div>
+              <p>Selected Day</p>
+              <h2>{dateLabel(selectedDate)}</h2>
+            </div>
+            <strong>{selectedDateRecords.length}개 기록</strong>
+          </div>
+          {selectedDateRecords.length > 0 ? (
+            <div className="calendar-detail-list">
+              {selectedDateRecords.map((record) => (
+                <Link key={record.id} className="calendar-detail-record" to={`/write/${record.id}`}>
+                  <span>{recordTripName(record)}</span>
+                  <strong>{record.title}</strong>
+                  <small>{regionName(recordRegionId(record))}{record.cityName ? ` ${record.cityName}` : ''}</small>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="calendar-detail-empty">선택한 날짜에 저장된 여행 기록이 없습니다.</p>
+          )}
         </section>
       </main>
     </AppShell>
