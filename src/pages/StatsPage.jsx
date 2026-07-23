@@ -25,7 +25,6 @@ export default function StatsPage({ records }) {
     <AppShell>
       <main className="page">
         <section className="section-heading">
-          <p>Travel Stats</p>
           <h1>내 여행 통계</h1>
         </section>
         <section className="stats-progress-panel">

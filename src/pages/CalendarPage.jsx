@@ -178,7 +178,6 @@ export default function CalendarPage({ records }) {
       <main className="page calendar-page">
         <section className="section-heading inline calendar-heading">
           <div>
-            <p>Travel Calendar</p>
             <h1>여행 달력</h1>
             <span className="calendar-summary">
               여행 기록을 저장한 날짜에 맞춰 한 달 단위로 모아봅니다.

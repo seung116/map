@@ -277,7 +277,6 @@ export default function RecordFormPage({ records, setRecords }) {
     <AppShell>
       <main className="page form-page">
         <section className="section-heading">
-          <p>Travel Note</p>
           <h1>{editing ? '여행 기록 수정' : '새 여행 기록 작성'}</h1>
           <span className="form-intro">오늘 남기고 싶은 장면을 사진과 문장으로 천천히 채워보세요.</span>
         </section>
