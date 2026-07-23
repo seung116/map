@@ -2762,7 +2762,8 @@ main {
   }
 
   .home-map-heading h1 {
-    font-size: clamp(2.35rem, 13vw, 3.7rem);
+    font-size: clamp(1.95rem, 10vw, 3.1rem);
+    white-space: nowrap;
   }
 
   .home-map-heading span {
