@@ -487,38 +487,6 @@ main {
   gap: 10px;
 }
 
-.home-summary-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.home-summary-strip div {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 253, 248, 0.88);
-  padding: 12px 14px;
-}
-
-.home-summary-strip span {
-  color: #5f8c75;
-  font-size: 0.78rem;
-  font-weight: 900;
-}
-
-.home-summary-strip strong {
-  overflow: hidden;
-  color: var(--ink);
-  font-size: 1.14rem;
-  font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .section-heading {
   margin-bottom: 20px;
 }
@@ -2654,10 +2622,6 @@ main {
     justify-content: flex-start;
   }
 
-  .home-summary-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .summary-panel {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -2786,18 +2750,6 @@ main {
 
   .home-map-actions a {
     flex: 1 1 120px;
-  }
-
-  .home-summary-strip {
-    gap: 8px;
-  }
-
-  .home-summary-strip div {
-    padding: 10px;
-  }
-
-  .home-summary-strip strong {
-    font-size: 1rem;
   }
 
   .korea-map {
