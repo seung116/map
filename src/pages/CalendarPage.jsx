@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,6 +16,7 @@ import {
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 const calendarColorOptions = ['#fde5dc', '#dcebd9', '#dcecf4', '#f3e8cf', '#eadff1', '#f8d7df', '#d8eadf', '#e7e1d3'];
 const coupleDayMilestones = [100, 200, 300];
+const holidayApiBaseUrl = 'https://date.nager.at/api/v4/Holidays';
 
 function formatMonthKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -55,6 +56,7 @@ function buildCalendarDays(monthKey) {
     return {
       key: formatDateKey(date),
       day: date.getDate(),
+      dayOfWeek: date.getDay(),
       isCurrentMonth: date.getMonth() === month - 1,
       isToday: formatDateKey(date) === formatDateKey(new Date()),
     };
@@ -174,6 +176,25 @@ function addSpecialEvent(groups, event) {
   groups[event.dateKey].push(event);
 }
 
+function holidayLabel(holiday) {
+  return holiday?.localName || holiday?.name || holiday?.englishName || '공휴일';
+}
+
+function buildHolidaysByDate(calendarDays, holidaysByYear) {
+  const visibleDateKeys = new Set(calendarDays.map((day) => day.key));
+
+  return Object.values(holidaysByYear).reduce((groups, holidays) => {
+    holidays.forEach((holiday) => {
+      if (!holiday?.date || !visibleDateKeys.has(holiday.date)) return;
+      groups[holiday.date] = {
+        dateKey: holiday.date,
+        title: holidayLabel(holiday),
+      };
+    });
+    return groups;
+  }, {});
+}
+
 function buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile) {
   const visibleDateKeys = new Set(calendarDays.map((day) => day.key));
   const visibleYears = [...new Set(calendarDays.map((day) => Number(day.key.slice(0, 4))))];
@@ -253,6 +274,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
   }, [records]);
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
   const [selectedDate, setSelectedDate] = useState(formatDateKey(new Date()));
+  const [holidaysByYear, setHolidaysByYear] = useState({});
 
   const recordsByDate = useMemo(() => records.reduce((groups, record) => {
     const dateKey = recordStartDate(record);
@@ -264,6 +286,8 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
   }, {}), [records]);
   const tripBlocksByDate = useMemo(() => buildTripBlocksByDate(records), [records]);
   const calendarDays = useMemo(() => buildCalendarDays(currentMonth), [currentMonth]);
+  const visibleYears = useMemo(() => [...new Set(calendarDays.map((day) => Number(day.key.slice(0, 4))))], [calendarDays]);
+  const holidaysByDate = useMemo(() => buildHolidaysByDate(calendarDays, holidaysByYear), [calendarDays, holidaysByYear]);
   const specialEventsByDate = useMemo(
     () => buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile),
     [calendarDays, dateStartDate, coupleProfile],
@@ -276,6 +300,36 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
     .reduce((total, day) => total + (specialEventsByDate[day.key]?.length || 0), 0);
   const selectedDateRecords = recordsByDate[selectedDate] || [];
   const selectedDateEvents = specialEventsByDate[selectedDate] || [];
+
+  useEffect(() => {
+    const missingYears = visibleYears.filter((year) => !Object.prototype.hasOwnProperty.call(holidaysByYear, year));
+    if (missingYears.length === 0) return undefined;
+
+    const controller = new AbortController();
+
+    Promise.all(missingYears.map(async (year) => {
+      try {
+        const response = await fetch(`${holidayApiBaseUrl}/KR/${year}`, { signal: controller.signal });
+        if (!response.ok) return [year, []];
+        const holidays = await response.json();
+        return [year, Array.isArray(holidays) ? holidays : []];
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.warn('Holiday fetch failed:', error);
+        }
+        return [year, []];
+      }
+    })).then((entries) => {
+      if (controller.signal.aborted) return;
+      setHolidaysByYear((current) => entries.reduce((next, [year, holidays]) => ({
+        ...next,
+        [year]: holidays,
+      }), current));
+    });
+
+    return () => controller.abort();
+  }, [holidaysByYear, visibleYears]);
+
   const updateCalendarColor = async (targetRecord, color) => {
     if (!setRecords) return;
     const targetTripId = recordTripId(targetRecord);
@@ -313,24 +367,26 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
             <span>{monthLabel(currentMonth)}에 저장된 기록과 기념일</span>
           </div>
           <div className="calendar-weekdays">
-            {weekdays.map((weekday) => (
-              <span key={weekday}>{weekday}</span>
+            {weekdays.map((weekday, index) => (
+              <span className={index === 0 ? 'is-sunday' : index === 6 ? 'is-saturday' : ''} key={weekday}>{weekday}</span>
             ))}
           </div>
           <div className="calendar-grid">
             {calendarDays.map((day) => {
               const tripBlocks = tripBlocksByDate[day.key] || [];
               const specialEvents = specialEventsByDate[day.key] || [];
+              const holiday = holidaysByDate[day.key];
               return (
                 <article
-                  className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''}`}
+                  className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''} ${day.dayOfWeek === 0 ? 'is-sunday' : ''} ${day.dayOfWeek === 6 ? 'is-saturday' : ''} ${holiday ? 'is-holiday' : ''}`}
                   key={day.key}
                 >
                   <button
                     className="calendar-day-top"
                     type="button"
                     onClick={() => setSelectedDate(day.key)}
-                    aria-label={`${dateLabel(day.key)} 기록 보기`}
+                    aria-label={`${dateLabel(day.key)}${holiday ? ` · ${holiday.title}` : ''} 기록 보기`}
+                    title={holiday?.title}
                   >
                     <time dateTime={day.key}>{day.day}</time>
                   </button>
