@@ -112,7 +112,7 @@ function photosForTripRecords(records) {
   })));
 }
 
-export default function AlbumPage({ records }) {
+export default function AlbumPage({ records, basePath = '' }) {
   const [selected, setSelected] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedTripPhotoIndex, setSelectedTripPhotoIndex] = useState(0);
@@ -183,7 +183,7 @@ export default function AlbumPage({ records }) {
                     </button>
                     <span>{formatShortDateRange(yearGroup.startDate, yearGroup.endDate)}</span>
                   </div>
-                  <Link className="album-trip-edit" to={`/write/${yearGroup.days[0]?.items[0]?.recordId || ''}`}>여행 수정</Link>
+                  <Link className="album-trip-edit" to={`${basePath}/write/${yearGroup.days[0]?.items[0]?.recordId || ''}`}>여행 수정</Link>
                 </div>
 
                 {yearGroup.days.map((dayGroup) => (
@@ -220,7 +220,7 @@ export default function AlbumPage({ records }) {
           <section className="empty-state">
             <h2>아직 앨범 사진이 없습니다</h2>
             <p>여행 기록에 사진을 추가하면 최신 날짜순으로 정리됩니다.</p>
-            <Link className="primary-button" to="/write">기록 작성</Link>
+            <Link className="primary-button" to={`${basePath}/write`}>기록 작성</Link>
           </section>
         )}
       </main>
@@ -257,8 +257,8 @@ export default function AlbumPage({ records }) {
                   </div>
                 </dl>
                 <div className="card-actions">
-                  <Link to={`/write/${selected.recordId}`}>기록 수정</Link>
-                  <Link to={`/region/${selected.regionId}`}>지역 기록 보기</Link>
+                  <Link to={`${basePath}/write/${selected.recordId}`}>기록 수정</Link>
+                  <Link to={`${basePath}/region/${selected.regionId}`}>지역 기록 보기</Link>
                 </div>
               </div>
             </div>
@@ -274,7 +274,7 @@ export default function AlbumPage({ records }) {
                 <span>{formatShortDateRange(selectedTrip.startDate, selectedTrip.endDate)}</span>
                 <h2>{selectedTrip.label}</h2>
               </div>
-              <Link to={`/write/${selectedTripRecords[0]?.id || ''}`}>여행 수정</Link>
+              <Link to={`${basePath}/write/${selectedTripRecords[0]?.id || ''}`}>여행 수정</Link>
             </div>
             {selectedTripPhoto && (
               <article className="trip-photo-card">
@@ -310,8 +310,8 @@ export default function AlbumPage({ records }) {
                   <div className="trip-photo-footer">
                     <span>{selectedTripPhotoIndex + 1} / {selectedTripPhotos.length}</span>
                     <div className="card-actions">
-                      <Link to={`/write/${selectedTripPhoto.recordId}`}>기록 수정</Link>
-                      <Link to={`/region/${selectedTripPhoto.regionId}`}>지역 기록 보기</Link>
+                      <Link to={`${basePath}/write/${selectedTripPhoto.recordId}`}>기록 수정</Link>
+                      <Link to={`${basePath}/region/${selectedTripPhoto.regionId}`}>지역 기록 보기</Link>
                     </div>
                   </div>
                 </div>

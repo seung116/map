@@ -43,7 +43,7 @@ function sampleNearbyMaskValue(maskData, x, y) {
   return ranked[0][0];
 }
 
-export default function MapExplorer({ records }) {
+export default function MapExplorer({ records, basePath = '' }) {
   const navigate = useNavigate();
   const regionVisitCounts = useMemo(() => countTripsByRegion(records), [records]);
   const overlayCanvasRef = useRef(null);
@@ -59,7 +59,7 @@ export default function MapExplorer({ records }) {
   );
 
   const selectNationalArea = (area) => {
-    navigate(`/region/${area.regionIds[0]}`);
+    navigate(`${basePath}/region/${area.regionIds[0]}`);
   };
 
   useEffect(() => {

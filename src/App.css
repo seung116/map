@@ -6,6 +6,213 @@
   src: url("./assets/fonts/Gaegu-300.ttf") format("truetype");
 }
 
+.mode-select-page,
+.date-dashboard-page {
+  display: grid;
+  gap: 28px;
+}
+
+.mode-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 3vw, 28px);
+}
+
+.mode-card {
+  position: relative;
+  display: flex;
+  min-height: clamp(260px, 34vw, 420px);
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: clamp(22px, 4vw, 42px);
+  color: #fffaf2;
+  box-shadow: var(--shadow);
+}
+
+.mode-card::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(31, 38, 30, 0.08), rgba(31, 38, 30, 0.72)),
+    var(--mode-bg);
+  transition: transform 220ms ease;
+}
+
+.mode-card:hover::before {
+  transform: scale(1.03);
+}
+
+.travel-mode {
+  --mode-bg: linear-gradient(135deg, #6fa37e, #8fbfd4 58%, #e7c795);
+}
+
+.date-mode {
+  --mode-bg: linear-gradient(135deg, #d87970, #e8b9aa 52%, #8ea88d);
+}
+
+.mode-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.mode-card span {
+  color: rgba(255, 250, 242, 0.82);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mode-card h2 {
+  margin: 10px 0 8px;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  line-height: 1;
+}
+
+.mode-card p {
+  max-width: 360px;
+  margin: 0;
+  color: rgba(255, 250, 242, 0.88);
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.date-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+}
+
+.date-hero p,
+.date-record-card span,
+.date-summary-grid span {
+  margin: 0 0 10px;
+  color: #b96d62;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.date-hero h1 {
+  margin: 0;
+  font-size: clamp(2.7rem, 6vw, 5.4rem);
+  line-height: 1;
+}
+
+.date-hero span {
+  display: block;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.date-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.date-summary-grid article {
+  min-height: 126px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.76);
+  padding: 18px;
+  box-shadow: 0 12px 28px rgba(62, 72, 58, 0.08);
+}
+
+.date-summary-grid strong {
+  display: block;
+  color: var(--ink);
+  font-size: clamp(1.7rem, 3vw, 2.8rem);
+  line-height: 1.05;
+}
+
+.date-timeline-section {
+  display: grid;
+  gap: 18px;
+}
+
+.date-timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.date-record-card {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 14px 34px rgba(62, 72, 58, 0.08);
+}
+
+.date-record-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 190px;
+  object-fit: cover;
+}
+
+.date-record-card div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 18px 18px 0;
+}
+
+.date-record-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.7rem;
+}
+
+.date-record-card p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.date-record-card a {
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(245, 159, 133, 0.24);
+  padding: 8px 12px;
+  color: #8b463d;
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .mode-select-grid,
+  .date-summary-grid,
+  .date-record-card {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-card {
+    min-height: 220px;
+  }
+
+  .date-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .date-record-card div {
+    padding: 0 16px 16px;
+  }
+}
+
 @font-face {
   font-family: "Gaegu";
   font-style: normal;

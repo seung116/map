@@ -21,7 +21,7 @@ export default function BoardsPage({ records }) {
                 <div className="chip-row">
                   {members.length ? members.map((member) => <span key={member}>{member}</span>) : <span>나</span>}
                 </div>
-                <Link to="/write">사진이나 메모 추가</Link>
+                <Link to="/travel/write">사진이나 메모 추가</Link>
               </article>
             );
           })}

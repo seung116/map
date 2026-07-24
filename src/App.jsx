@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { AuthContext } from './contexts/AuthContext';
 import { useAuthState } from './hooks/useAuthState';
 import { useTravelRecords } from './hooks/useTravelRecords';
@@ -8,16 +8,30 @@ import AuthPage from './pages/AuthPage';
 import BoardsPage from './pages/BoardsPage';
 import CalendarPage from './pages/CalendarPage';
 import Dashboard from './pages/Dashboard';
+import DateDashboard from './pages/DateDashboard';
+import ModeSelectPage from './pages/ModeSelectPage';
 import PendingApprovalPage from './pages/PendingApprovalPage';
 import RecordFormPage from './pages/RecordFormPage';
 import RegionPage from './pages/RegionPage';
 import StatsPage from './pages/StatsPage';
 import './App.css';
 
+function LegacyRegionRedirect() {
+  const { regionId } = useParams();
+  return <Navigate to={`/travel/region/${regionId}`} replace />;
+}
+
+function LegacyWriteRedirect() {
+  const { recordId } = useParams();
+  return <Navigate to={`/travel/write/${recordId}`} replace />;
+}
+
 export default function App() {
   const auth = useAuthState();
   const canUseRecords = Boolean(auth.user && auth.isApproved);
   const { records, setRecords, ready } = useTravelRecords(canUseRecords, auth.user?.uid);
+  const travelRecords = records.filter((record) => record.type !== 'date');
+  const dateRecords = records.filter((record) => record.type === 'date');
 
   if (auth.loading) {
     return (
@@ -47,16 +61,31 @@ export default function App() {
     <AuthContext.Provider value={auth}>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<Dashboard records={records} />} />
-          <Route path="/region/:regionId" element={<RegionPage records={records} setRecords={setRecords} />} />
-          <Route path="/write" element={<RecordFormPage records={records} setRecords={setRecords} />} />
-          <Route path="/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} />} />
-          <Route path="/album" element={<AlbumPage records={records} />} />
-          <Route path="/calendar" element={<CalendarPage records={records} />} />
-          <Route path="/stats" element={<StatsPage records={records} />} />
+          <Route path="/" element={<Navigate to="/select" replace />} />
+          <Route path="/select" element={<ModeSelectPage />} />
+
+          <Route path="/travel" element={<Dashboard records={travelRecords} />} />
+          <Route path="/travel/region/:regionId" element={<RegionPage records={travelRecords} setRecords={setRecords} basePath="/travel" />} />
+          <Route path="/travel/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="travel" />} />
+          <Route path="/travel/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="travel" />} />
+          <Route path="/travel/album" element={<AlbumPage records={travelRecords} basePath="/travel" />} />
+          <Route path="/travel/calendar" element={<CalendarPage records={travelRecords} basePath="/travel" />} />
+          <Route path="/travel/stats" element={<StatsPage records={travelRecords} />} />
+
+          <Route path="/date" element={<DateDashboard records={dateRecords} />} />
+          <Route path="/date/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
+          <Route path="/date/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
+
+          <Route path="/region/:regionId" element={<LegacyRegionRedirect />} />
+          <Route path="/write" element={<Navigate to="/travel/write" replace />} />
+          <Route path="/write/:recordId" element={<LegacyWriteRedirect />} />
+          <Route path="/album" element={<Navigate to="/travel/album" replace />} />
+          <Route path="/calendar" element={<Navigate to="/travel/calendar" replace />} />
+          <Route path="/stats" element={<Navigate to="/travel/stats" replace />} />
+
           <Route path="/boards" element={<BoardsPage records={records} />} />
           <Route path="/admin" element={auth.isAdmin ? <AdminPage /> : <Navigate to="/" replace />} />
-          <Route path="*" element={<Dashboard records={records} />} />
+          <Route path="*" element={<Navigate to="/select" replace />} />
         </Routes>
       </HashRouter>
     </AuthContext.Provider>

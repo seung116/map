@@ -143,7 +143,7 @@ function buildTripBlocksByDate(records) {
     }, {});
 }
 
-export default function CalendarPage({ records }) {
+export default function CalendarPage({ records, basePath = '' }) {
   const initialMonth = useMemo(() => {
     const latestRecord = records.reduce((latest, record) => {
       const currentDate = recordStartDate(record);
@@ -251,7 +251,7 @@ export default function CalendarPage({ records }) {
           {selectedDateRecords.length > 0 ? (
             <div className="calendar-detail-list">
               {selectedDateRecords.map((record) => (
-                <Link key={record.id} className="calendar-detail-record" to={`/write/${record.id}`}>
+                <Link key={record.id} className="calendar-detail-record" to={`${basePath}/write/${record.id}`}>
                   <span>{recordTripName(record)}</span>
                   <strong>{record.title}</strong>
                   <small>{regionName(recordRegionId(record))}{record.cityName ? ` ${record.cityName}` : ''}</small>

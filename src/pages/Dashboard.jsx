@@ -15,13 +15,14 @@ export default function Dashboard({ records }) {
                 <span>다녀온 지역을 지도에 남기고, 여행의 날짜와 사진을 한 번에 이어봅니다.</span>
               </div>
               <div className="home-map-actions">
-                <Link className="primary-button" to="/write">기록하기</Link>
-                <Link className="secondary-button" to="/album">앨범 보기</Link>
+                <Link className="primary-button" to="/travel/write">기록하기</Link>
+                <Link className="secondary-button" to="/travel/album">앨범 보기</Link>
               </div>
             </div>
 
             <MapExplorer
               records={records}
+              basePath="/travel"
             />
           </div>
         </section>

@@ -4,7 +4,7 @@ import TravelCard from '../components/TravelCard';
 import { regions } from '../data/travelData';
 import { cityUnitLabel, groupRecordsByTrip, recordMatchesRegion } from '../utils/travelUtils';
 
-export default function RegionPage({ records, setRecords }) {
+export default function RegionPage({ records, setRecords, basePath = '' }) {
   const { regionId } = useParams();
   const [searchParams] = useSearchParams();
   const selectedCity = searchParams.get('city') || '';
@@ -14,12 +14,12 @@ export default function RegionPage({ records, setRecords }) {
   ));
   const tripGroups = groupRecordsByTrip(regionRecords);
 
-  if (!region) return <Navigate to="/" replace />;
+  if (!region) return <Navigate to={`${basePath || '/travel'}`} replace />;
 
   const cityLabel = cityUnitLabel(region.id);
   const writePath = selectedCity
-    ? `/write?region=${region.id}&city=${encodeURIComponent(selectedCity)}`
-    : `/write?region=${region.id}`;
+    ? `${basePath}/write?region=${region.id}&city=${encodeURIComponent(selectedCity)}`
+    : `${basePath}/write?region=${region.id}`;
 
   const deleteRecord = (recordId) => {
     setRecords(records.filter((record) => record.id !== recordId));
@@ -63,7 +63,7 @@ export default function RegionPage({ records, setRecords }) {
                       </div>
                       <div className="record-grid">
                         {dayGroup.records.map((record) => (
-                          <TravelCard key={record.id} record={record} onDelete={deleteRecord} />
+                          <TravelCard key={record.id} record={record} onDelete={deleteRecord} basePath={basePath} />
                         ))}
                       </div>
                     </section>
