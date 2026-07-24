@@ -200,7 +200,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
       <main className="page calendar-page">
         <section className="section-heading inline calendar-heading">
           <div>
-            <h1>{isAllArchive ? '여행과 데이트 달력' : `${archiveLabel} 달력`}</h1>
+            <h1>{isAllArchive ? '달력' : `${archiveLabel} 달력`}</h1>
             <span className="calendar-summary">
               {isAllArchive ? '여행 기록과 데이트 기록을 한 달 단위로 함께 모아봅니다.' : `${archiveLabel} 기록을 저장한 날짜에 맞춰 한 달 단위로 모아봅니다.`}
             </span>
@@ -274,7 +274,11 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
             <div className="calendar-detail-list">
               {selectedDateRecords.map((record) => (
                 <article key={record.id} className="calendar-detail-record-card">
-                  <Link className="calendar-detail-record" to={`${basePath || (record.type === 'date' ? '/date' : '/travel')}/write/${record.id}`}>
+                  <Link
+                    className="calendar-detail-record"
+                    style={record.calendarColor ? { '--calendar-detail-bg': record.calendarColor } : undefined}
+                    to={`${basePath || (record.type === 'date' ? '/date' : '/travel')}/write/${record.id}`}
+                  >
                     <span>{recordTripName(record)}</span>
                     <strong>{record.title}</strong>
                     <small>{record.type === 'date' ? `데이트 · ${record.cityName || '장소 미정'}` : `${isAllArchive ? '여행 · ' : ''}${regionName(recordRegionId(record))}${record.cityName ? ` ${record.cityName}` : ''}`}</small>

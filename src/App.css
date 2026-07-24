@@ -2087,7 +2087,7 @@ main {
   min-width: 0;
   border: 1px solid rgba(95, 140, 117, 0.16);
   border-radius: 8px;
-  background: rgba(245, 251, 240, 0.82);
+  background: var(--calendar-detail-bg, rgba(245, 251, 240, 0.82));
   padding: 14px;
 }
 
@@ -2099,7 +2099,7 @@ main {
 
 .calendar-detail-record:hover {
   border-color: rgba(95, 140, 117, 0.34);
-  background: #f3faef;
+  filter: saturate(1.04);
 }
 
 .calendar-detail-record span,
