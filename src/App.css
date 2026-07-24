@@ -81,6 +81,26 @@
   font-weight: 700;
 }
 
+.mode-admin-link {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.mode-admin-link a {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 250, 242, 0.72);
+  padding: 10px 16px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.mode-admin-link a:hover {
+  background: rgba(184, 217, 194, 0.36);
+  color: var(--ink);
+}
+
 .date-hero {
   display: flex;
   align-items: flex-end;

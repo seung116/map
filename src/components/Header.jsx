@@ -1,10 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logoutUser } from '../services/authStore';
 
 export default function Header() {
-  const auth = useAuth();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const isTravelMode = pathname.startsWith('/travel');
+  const isDateMode = pathname.startsWith('/date');
 
   const goHome = (event) => {
     event.preventDefault();
@@ -17,14 +18,21 @@ export default function Header() {
         <span className="brand-mark">KR</span>
       </Link>
       <nav className="top-nav" aria-label="주요 메뉴">
-        <Link to="/select">선택</Link>
-        <Link to="/travel">여행</Link>
-        <Link to="/travel/write">기록</Link>
-        <Link to="/travel/album">앨범</Link>
-        <Link to="/travel/calendar">달력</Link>
-        <Link to="/travel/stats">통계</Link>
-        <Link to="/date">데이트</Link>
-        {auth?.isAdmin && <Link to="/admin">관리</Link>}
+        {isTravelMode && (
+          <>
+            <Link to="/travel/write">기록</Link>
+            <Link to="/travel/album">앨범</Link>
+            <Link to="/travel/calendar">달력</Link>
+            <Link to="/travel/stats">통계</Link>
+          </>
+        )}
+        {isDateMode && (
+          <>
+            <Link to="/date/write">기록</Link>
+            <Link to="/date/album">앨범</Link>
+            <Link to="/date/stats">통계</Link>
+          </>
+        )}
         <button className="nav-button" type="button" onClick={logoutUser}>로그아웃</button>
       </nav>
     </header>

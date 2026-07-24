@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ModeSelectPage() {
+  const auth = useAuth();
+
   return (
     <AppShell hideHeaderOnMobile>
       <main className="page mode-select-page">
@@ -24,6 +27,12 @@ export default function ModeSelectPage() {
             <p>우리의 데이트 장소, 사진, 기념일을 따로 기록하기</p>
           </Link>
         </div>
+
+        {auth?.isAdmin && (
+          <div className="mode-admin-link">
+            <Link to="/admin">관리 페이지</Link>
+          </div>
+        )}
       </main>
     </AppShell>
   );
