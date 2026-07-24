@@ -6,6 +6,26 @@ export function coupleProfileStorageKey(userId) {
   return `couple-profile-${userId || 'local'}`;
 }
 
+export function defaultCoupleProfile() {
+  return {
+    boyfriendName: '',
+    boyfriendNickname: '',
+    boyfriendTraits: '',
+    boyfriendPhoto: '',
+    girlfriendName: '',
+    girlfriendNickname: '',
+    girlfriendTraits: '',
+    girlfriendPhoto: '',
+  };
+}
+
+export function normalizeCoupleProfile(profile = {}) {
+  return {
+    ...defaultCoupleProfile(),
+    ...profile,
+  };
+}
+
 export function loadDateStartDate(userId) {
   return localStorage.getItem(dateStartStorageKey(userId)) || '';
 }
@@ -23,41 +43,13 @@ export function saveDateStartDate(userId, value) {
 export function loadCoupleProfile(userId) {
   const saved = localStorage.getItem(coupleProfileStorageKey(userId));
   if (!saved) {
-    return {
-      boyfriendName: '',
-      boyfriendNickname: '',
-      boyfriendTraits: '',
-      boyfriendPhoto: '',
-      girlfriendName: '',
-      girlfriendNickname: '',
-      girlfriendTraits: '',
-      girlfriendPhoto: '',
-    };
+    return defaultCoupleProfile();
   }
 
   try {
-    return {
-      boyfriendName: '',
-      boyfriendNickname: '',
-      boyfriendTraits: '',
-      boyfriendPhoto: '',
-      girlfriendName: '',
-      girlfriendNickname: '',
-      girlfriendTraits: '',
-      girlfriendPhoto: '',
-      ...JSON.parse(saved),
-    };
+    return normalizeCoupleProfile(JSON.parse(saved));
   } catch {
-    return {
-      boyfriendName: '',
-      boyfriendNickname: '',
-      boyfriendTraits: '',
-      boyfriendPhoto: '',
-      girlfriendName: '',
-      girlfriendNickname: '',
-      girlfriendTraits: '',
-      girlfriendPhoto: '',
-    };
+    return defaultCoupleProfile();
   }
 }
 

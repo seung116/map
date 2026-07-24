@@ -19,7 +19,7 @@ function shortDateLabel(value) {
 
 export default function DateDashboard({ records }) {
   const auth = useAuth();
-  const dateStartDate = loadDateStartDate(auth?.user?.uid);
+  const dateStartDate = auth?.profile?.dateStartDate || loadDateStartDate(auth?.user?.uid);
   const sortedRecords = [...records].sort((a, b) => parseDate(b.startDate) - parseDate(a.startDate));
   const latestRecords = sortedRecords.slice(0, 6);
   const dateDayCount = useMemo(() => daysSince(dateStartDate), [dateStartDate]);

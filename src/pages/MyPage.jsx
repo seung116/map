@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
 import AppShell from '../components/AppShell';
 import { useAuth } from '../contexts/AuthContext';
+import { firebaseEnabled } from '../lib/firebase';
+import { saveUserDateProfile } from '../services/authStore';
 import {
   daysSince,
   formatDateLabel,
   loadCoupleProfile,
   loadDateStartDate,
+  normalizeCoupleProfile,
   saveCoupleProfile,
   saveDateStartDate,
 } from '../utils/dateProfile';
@@ -13,15 +16,20 @@ import {
 export default function MyPage() {
   const auth = useAuth();
   const userId = auth?.user?.uid;
-  const [dateStartDate, setDateStartDate] = useState(() => loadDateStartDate(userId));
-  const [coupleProfile, setCoupleProfile] = useState(() => loadCoupleProfile(userId));
-  const [draftProfile, setDraftProfile] = useState(() => loadCoupleProfile(userId));
+  const initialDateStartDate = auth?.profile?.dateStartDate || loadDateStartDate(userId);
+  const initialCoupleProfile = normalizeCoupleProfile(auth?.profile?.coupleProfile || loadCoupleProfile(userId));
+  const [dateStartDate, setDateStartDate] = useState(() => initialDateStartDate);
+  const [draftDateStartDate, setDraftDateStartDate] = useState(() => initialDateStartDate);
+  const [coupleProfile, setCoupleProfile] = useState(() => initialCoupleProfile);
+  const [draftProfile, setDraftProfile] = useState(() => initialCoupleProfile);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const dateDayCount = useMemo(() => daysSince(dateStartDate), [dateStartDate]);
+  const draftDateDayCount = useMemo(() => daysSince(draftDateStartDate), [draftDateStartDate]);
+  const displayDateStartDate = isEditingProfile ? draftDateStartDate : dateStartDate;
+  const displayDateDayCount = isEditingProfile ? draftDateDayCount : dateDayCount;
 
   const updateDateStartDate = (value) => {
-    setDateStartDate(value);
-    saveDateStartDate(userId, value);
+    setDraftDateStartDate(value);
   };
 
   const updateProfile = (key, value) => {
@@ -37,17 +45,35 @@ export default function MyPage() {
 
   const editProfile = () => {
     setDraftProfile(coupleProfile);
+    setDraftDateStartDate(dateStartDate);
     setIsEditingProfile(true);
   };
 
-  const saveProfile = () => {
-    setCoupleProfile(draftProfile);
-    saveCoupleProfile(userId, draftProfile);
-    setIsEditingProfile(false);
+  const saveProfile = async () => {
+    try {
+      let savedProfile = draftProfile;
+      if (firebaseEnabled && userId) {
+        savedProfile = await saveUserDateProfile(userId, {
+          dateStartDate: draftDateStartDate,
+          coupleProfile: draftProfile,
+        });
+      }
+
+      setDateStartDate(draftDateStartDate);
+      setCoupleProfile(savedProfile);
+      setDraftProfile(savedProfile);
+      saveDateStartDate(userId, draftDateStartDate);
+      saveCoupleProfile(userId, savedProfile);
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error('Date profile save failed:', error);
+      window.alert('프로필 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   const cancelProfileEdit = () => {
     setDraftProfile(coupleProfile);
+    setDraftDateStartDate(dateStartDate);
     setIsEditingProfile(false);
   };
 
@@ -64,15 +90,15 @@ export default function MyPage() {
         <section className="date-start-panel my-date-panel" aria-label="만난 날짜 설정">
           <div>
             <span>처음 만난 날</span>
-            <strong>{formatDateLabel(dateStartDate)}</strong>
+            <strong>{formatDateLabel(displayDateStartDate)}</strong>
           </div>
           <div>
             <span>함께한 시간</span>
-            <strong>{dateDayCount ? `${dateDayCount}일째` : '날짜를 입력해주세요'}</strong>
+            <strong>{displayDateDayCount ? `${displayDateDayCount}일째` : '날짜를 입력해주세요'}</strong>
           </div>
           <label>
             언제 만나기 시작했나요?
-            <input type="date" value={dateStartDate} onChange={(event) => updateDateStartDate(event.target.value)} />
+            <input readOnly={!isEditingProfile} type="date" value={displayDateStartDate} onChange={(event) => updateDateStartDate(event.target.value)} />
           </label>
         </section>
 

@@ -8,7 +8,8 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, firestore, firebaseEnabled } from '../lib/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { auth, firestore, firebaseEnabled, storage } from '../lib/firebase';
 
 const USERS_COLLECTION = 'users';
 const BOOTSTRAP_ADMIN_UID = import.meta.env.VITE_BOOTSTRAP_ADMIN_UID || '';
@@ -197,4 +198,45 @@ export async function deleteUserProfile(uid) {
 export async function getUserProfile(uid) {
   const snapshot = await getDoc(doc(firestore, USERS_COLLECTION, uid));
   return snapshot.exists() ? { uid, ...snapshot.data() } : null;
+}
+
+function isDataUrl(src) {
+  return typeof src === 'string' && src.startsWith('data:');
+}
+
+async function dataUrlToBlob(dataUrl) {
+  return (await fetch(dataUrl)).blob();
+}
+
+async function uploadProfilePhoto(uid, key, src) {
+  if (!isDataUrl(src)) return src || '';
+  if (!storage) return src || '';
+
+  const blob = await dataUrlToBlob(src);
+  const photoRef = ref(storage, `users/${uid}/profile/${key}.jpg`);
+  await uploadBytes(photoRef, blob, { contentType: blob.type || 'image/jpeg' });
+  return getDownloadURL(photoRef);
+}
+
+export async function saveUserDateProfile(uid, { dateStartDate, coupleProfile }) {
+  assertFirebaseReady();
+  if (!uid) throw new Error('로그인이 필요합니다.');
+
+  const nextCoupleProfile = {
+    ...coupleProfile,
+    boyfriendPhoto: await uploadProfilePhoto(uid, 'boyfriend', coupleProfile?.boyfriendPhoto),
+    girlfriendPhoto: await uploadProfilePhoto(uid, 'girlfriend', coupleProfile?.girlfriendPhoto),
+  };
+
+  await setDoc(
+    doc(firestore, USERS_COLLECTION, uid),
+    {
+      dateStartDate: dateStartDate || '',
+      coupleProfile: nextCoupleProfile,
+      profileUpdatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
+
+  return nextCoupleProfile;
 }
