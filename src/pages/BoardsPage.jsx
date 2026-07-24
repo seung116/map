@@ -7,7 +7,6 @@ export default function BoardsPage({ records }) {
     <AppShell>
       <main className="page">
         <section className="section-heading">
-          <p>Shared Boards</p>
           <h1>함께 쓰는 여행 보드</h1>
         </section>
         <div className="board-grid">

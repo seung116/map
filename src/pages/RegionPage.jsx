@@ -48,7 +48,6 @@ export default function RegionPage({ records, setRecords, basePath = '' }) {
               <section className="trip-group" key={trip.id}>
                 <div className="trip-heading">
                   <div>
-                    <p>Travel Group</p>
                     <h2>{trip.name}</h2>
                     <span>{trip.startDate === trip.endDate ? trip.startDate : `${trip.startDate} ~ ${trip.endDate}`}</span>
                   </div>

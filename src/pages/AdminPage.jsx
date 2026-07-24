@@ -151,7 +151,6 @@ export default function AdminPage() {
     <AppShell>
       <main className="page">
         <section className="section-heading">
-          <p>Admin</p>
           <h1>회원 관리</h1>
         </section>
 
@@ -164,7 +163,6 @@ export default function AdminPage() {
             <>
               <div className="section-heading inline admin-subheading">
                 <div>
-                  <p>Pending</p>
                   <h2>가입 신청</h2>
                 </div>
                 <strong>{pendingUsers.length}명</strong>
@@ -175,7 +173,6 @@ export default function AdminPage() {
 
               <div className="section-heading inline admin-subheading">
                 <div>
-                  <p>Members</p>
                   <h2>승인된 회원</h2>
                 </div>
                 <strong>{approvedUsers.length}명</strong>

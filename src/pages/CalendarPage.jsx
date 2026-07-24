@@ -243,7 +243,6 @@ export default function CalendarPage({ records, basePath = '' }) {
         <section className="calendar-detail-panel" aria-label={`${dateLabel(selectedDate)} 여행 기록`}>
           <div className="calendar-detail-heading">
             <div>
-              <p>Selected Day</p>
               <h2>{dateLabel(selectedDate)}</h2>
             </div>
             <strong>{selectedDateRecords.length}개 기록</strong>

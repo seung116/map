@@ -118,7 +118,6 @@
 }
 
 .date-hero p,
-.date-record-card span,
 .date-summary-grid span {
   margin: 0 0 10px;
   color: #b96d62;
@@ -171,13 +170,12 @@
 
 .date-timeline {
   display: grid;
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .date-record-card {
-  display: grid;
-  grid-template-columns: minmax(160px, 240px) 1fr;
-  gap: 18px;
+  display: block;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -187,36 +185,19 @@
 
 .date-record-card img {
   width: 100%;
-  height: 100%;
-  min-height: 190px;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
 }
 
-.date-record-card div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 18px 18px 18px 0;
+.date-record-card-title {
+  padding: 14px 16px 16px;
 }
 
 .date-record-card h3 {
-  margin: 0 0 8px;
-  font-size: 1.7rem;
-}
-
-.date-record-card p {
-  margin: 0 0 14px;
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.date-record-card a {
-  width: fit-content;
-  border-radius: 999px;
-  background: rgba(245, 159, 133, 0.24);
-  padding: 8px 12px;
-  color: #8b463d;
-  font-weight: 900;
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.45rem;
+  line-height: 1.12;
 }
 
 @media (max-width: 760px) {
@@ -226,7 +207,7 @@
 
   .mode-select-grid,
   .date-summary-grid,
-  .date-record-card {
+  .date-timeline {
     grid-template-columns: 1fr;
   }
 
@@ -239,8 +220,8 @@
     flex-direction: column;
   }
 
-  .date-record-card div {
-    padding: 0 16px 16px;
+  .date-record-card-title {
+    padding: 12px 14px 14px;
   }
 }
 

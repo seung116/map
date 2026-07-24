@@ -9,7 +9,6 @@ export default function ModeSelectPage() {
     <AppShell hideHeaderOnMobile>
       <main className="page mode-select-page">
         <section className="section-heading">
-          <p>Choose Archive</p>
           <h1>어떤 추억을 기록할까요?</h1>
           <span>여행과 데이트를 따로 모아볼 수 있어요.</span>
         </section>

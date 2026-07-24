@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import heroImage from '../assets/korea-travel-memories.png';
-import { recordDateRange } from '../utils/travelUtils';
 
 function parseDate(value) {
   const time = value ? new Date(`${value}T00:00:00`).getTime() : 0;
@@ -37,7 +36,6 @@ export default function DateDashboard({ records }) {
       <main className="page date-dashboard-page">
         <section className="date-hero">
           <div>
-            <p>Date Archive</p>
             <h1>우리의 데이트 기록</h1>
             <span>함께 간 장소와 사진, 그날의 감정을 시간순으로 모아봅니다.</span>
           </div>
@@ -69,7 +67,6 @@ export default function DateDashboard({ records }) {
         <section className="date-timeline-section">
           <div className="section-heading inline">
             <div>
-              <p>Timeline</p>
               <h2>최근 데이트</h2>
             </div>
             <div className="date-section-actions">
@@ -81,15 +78,12 @@ export default function DateDashboard({ records }) {
           {latestRecords.length > 0 ? (
             <div className="date-timeline">
               {latestRecords.map((record) => (
-                <article className="date-record-card" key={record.id}>
+                <Link className="date-record-card" key={record.id} to={`/date/write/${record.id}`}>
                   <img src={record.photos?.[0]?.src || heroImage} alt={record.photos?.[0]?.caption || record.title} />
-                  <div>
-                    <span>{recordDateRange(record)}</span>
+                  <div className="date-record-card-title">
                     <h3>{record.title}</h3>
-                    <p>{record.memo || '저장된 메모가 없습니다.'}</p>
-                    <Link to={`/date/write/${record.id}`}>기록 수정</Link>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           ) : (

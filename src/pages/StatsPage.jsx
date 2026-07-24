@@ -35,7 +35,6 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
             <span>{isDateArchive ? '데이트' : '완성률'}</span>
           </div>
           <div>
-            <p>{isDateArchive ? 'Date Archive' : 'Map Completion'}</p>
             <h2>{isDateArchive ? `총 ${records.length}번의 데이트 기록` : `전국 ${regions.length}개 시도 중 ${visitedCount}곳 방문`}</h2>
             <span>{isDateArchive ? `올해 ${thisYearTripCount}번의 데이트를 기록했습니다.` : `달성률 ${completion}% · 아직 ${unvisitedCount}곳의 여행 발자국이 남아 있습니다.`}</span>
           </div>
