@@ -10,6 +10,7 @@ import CalendarPage from './pages/CalendarPage';
 import Dashboard from './pages/Dashboard';
 import DateDashboard from './pages/DateDashboard';
 import ModeSelectPage from './pages/ModeSelectPage';
+import MyPage from './pages/MyPage';
 import PendingApprovalPage from './pages/PendingApprovalPage';
 import RecordFormPage from './pages/RecordFormPage';
 import RegionPage from './pages/RegionPage';
@@ -78,6 +79,7 @@ export default function App() {
           <Route path="/date/album" element={<AlbumPage records={dateRecords} basePath="/date" archiveType="date" />} />
           <Route path="/date/calendar" element={<CalendarPage records={dateRecords} basePath="/date" archiveType="date" />} />
           <Route path="/date/stats" element={<StatsPage records={dateRecords} archiveType="date" />} />
+          <Route path="/date/mypage" element={<MyPage />} />
 
           <Route path="/region/:regionId" element={<LegacyRegionRedirect />} />
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />

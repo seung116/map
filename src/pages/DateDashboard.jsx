@@ -1,47 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import heroImage from '../assets/korea-travel-memories.png';
 import { useAuth } from '../contexts/AuthContext';
+import { daysSince, formatDateLabel, loadDateStartDate } from '../utils/dateProfile';
 
 function parseDate(value) {
   const time = value ? new Date(`${value}T00:00:00`).getTime() : 0;
   return Number.isNaN(time) ? 0 : time;
 }
 
-function formatDateLabel(value) {
-  if (!value) return '아직 입력 전';
-  return value.replaceAll('-', '.');
-}
-
-function daysSince(value) {
-  if (!value) return null;
-  const start = new Date(`${value}T00:00:00`);
-  const today = new Date();
-  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  if (Number.isNaN(start.getTime())) return null;
-
-  const diff = todayDate.getTime() - start.getTime();
-  return Math.max(1, Math.floor(diff / 86400000) + 1);
-}
-
 export default function DateDashboard({ records }) {
   const auth = useAuth();
-  const relationshipStorageKey = `date-start-date-${auth?.user?.uid || 'local'}`;
-  const [dateStartDate, setDateStartDate] = useState(() => localStorage.getItem(relationshipStorageKey) || '');
+  const dateStartDate = loadDateStartDate(auth?.user?.uid);
   const sortedRecords = [...records].sort((a, b) => parseDate(b.startDate) - parseDate(a.startDate));
   const latestRecords = sortedRecords.slice(0, 6);
   const dateDayCount = useMemo(() => daysSince(dateStartDate), [dateStartDate]);
-
-  const updateDateStartDate = (value) => {
-    setDateStartDate(value);
-    if (value) {
-      localStorage.setItem(relationshipStorageKey, value);
-      return;
-    }
-
-    localStorage.removeItem(relationshipStorageKey);
-  };
 
   return (
     <AppShell>
@@ -67,10 +41,6 @@ export default function DateDashboard({ records }) {
             <span>함께한 시간</span>
             <strong>{dateDayCount ? `${dateDayCount}일째` : '날짜를 입력해주세요'}</strong>
           </div>
-          <label>
-            언제 만나기 시작했나요?
-            <input type="date" value={dateStartDate} onChange={(event) => updateDateStartDate(event.target.value)} />
-          </label>
         </section>
 
         <section className="date-timeline-section">

@@ -1,0 +1,33 @@
+export function dateStartStorageKey(userId) {
+  return `date-start-date-${userId || 'local'}`;
+}
+
+export function loadDateStartDate(userId) {
+  return localStorage.getItem(dateStartStorageKey(userId)) || '';
+}
+
+export function saveDateStartDate(userId, value) {
+  const storageKey = dateStartStorageKey(userId);
+  if (value) {
+    localStorage.setItem(storageKey, value);
+    return;
+  }
+
+  localStorage.removeItem(storageKey);
+}
+
+export function formatDateLabel(value) {
+  if (!value) return '아직 입력 전';
+  return value.replaceAll('-', '.');
+}
+
+export function daysSince(value) {
+  if (!value) return null;
+  const start = new Date(`${value}T00:00:00`);
+  const today = new Date();
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (Number.isNaN(start.getTime())) return null;
+
+  const diff = todayDate.getTime() - start.getTime();
+  return Math.max(1, Math.floor(diff / 86400000) + 1);
+}

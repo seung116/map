@@ -143,7 +143,7 @@
 
 .date-start-panel {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -181,6 +181,15 @@
   background: #fffdf8;
   color: var(--ink);
   padding: 10px 12px;
+}
+
+.my-page {
+  display: grid;
+  gap: 24px;
+}
+
+.my-date-panel {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .date-timeline-section {
