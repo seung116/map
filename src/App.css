@@ -185,7 +185,7 @@
 
 .date-record-card img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
@@ -1506,7 +1506,7 @@ main {
 
 .travel-photo {
   display: block;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--sand);
 }
@@ -2213,7 +2213,7 @@ main {
 }
 
 .photo-edit-card img {
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   width: 100%;
   border-radius: 16px;
   object-fit: cover;
@@ -2391,7 +2391,7 @@ main {
 
 .album-photo {
   display: block;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #ece6dc;
 }
@@ -2481,9 +2481,10 @@ main {
 
 .lightbox-card img {
   width: 100%;
+  aspect-ratio: 16 / 9;
   max-height: 70vh;
   border-radius: 6px;
-  object-fit: contain;
+  object-fit: cover;
   background: #ece6dc;
 }
 
@@ -2591,7 +2592,7 @@ main {
 
 .trip-photo-frame {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #ece6dc;
 }
@@ -3162,10 +3163,6 @@ main {
   .trip-lightbox-header {
     flex-direction: column;
     padding-right: 56px;
-  }
-
-  .trip-photo-frame {
-    aspect-ratio: 1 / 1;
   }
 
   .trip-photo-details dl div {
