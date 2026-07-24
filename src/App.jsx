@@ -79,7 +79,9 @@ export default function App() {
           <Route path="/date/album" element={<AlbumPage records={dateRecords} basePath="/date" archiveType="date" />} />
           <Route path="/date/calendar" element={<CalendarPage records={dateRecords} basePath="/date" archiveType="date" />} />
           <Route path="/date/stats" element={<StatsPage records={dateRecords} archiveType="date" />} />
-          <Route path="/date/mypage" element={<MyPage />} />
+          <Route path="/date/mypage" element={<Navigate to="/mypage" replace />} />
+          <Route path="/travel/mypage" element={<Navigate to="/mypage" replace />} />
+          <Route path="/mypage" element={<MyPage />} />
 
           <Route path="/region/:regionId" element={<LegacyRegionRedirect />} />
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />

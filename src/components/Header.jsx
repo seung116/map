@@ -24,6 +24,7 @@ export default function Header() {
             <Link to="/travel/album">앨범</Link>
             <Link to="/travel/calendar">달력</Link>
             <Link to="/travel/stats">통계</Link>
+            <Link to="/mypage">마이페이지</Link>
           </>
         )}
         {isDateMode && (
@@ -32,7 +33,7 @@ export default function Header() {
             <Link to="/date/album">앨범</Link>
             <Link to="/date/calendar">달력</Link>
             <Link to="/date/stats">통계</Link>
-            <Link to="/date/mypage">마이페이지</Link>
+            <Link to="/mypage">마이페이지</Link>
           </>
         )}
         <button className="nav-button" type="button" onClick={logoutUser}>로그아웃</button>

@@ -81,13 +81,15 @@
   font-weight: 700;
 }
 
-.mode-admin-link {
+.mode-page-links {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
   padding-top: 8px;
 }
 
-.mode-admin-link a {
+.mode-page-links a {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255, 250, 242, 0.72);
@@ -96,7 +98,7 @@
   font-weight: 900;
 }
 
-.mode-admin-link a:hover {
+.mode-page-links a:hover {
   background: rgba(184, 217, 194, 0.36);
   color: var(--ink);
 }
