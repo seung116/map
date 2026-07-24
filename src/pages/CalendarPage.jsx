@@ -214,7 +214,7 @@ function buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile) {
       addSpecialEvent(groups, {
         id: `boyfriend-birthday-${year}`,
         dateKey: boyfriendBirthdayKey,
-        title: `${coupleProfile.boyfriendName || '남자친구'} 생일`,
+        title: `${coupleProfile.boyfriendNickname || coupleProfile.boyfriendName || '남자친구'} 생일`,
         detail: '생일',
       });
     }
@@ -224,7 +224,7 @@ function buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile) {
       addSpecialEvent(groups, {
         id: `girlfriend-birthday-${year}`,
         dateKey: girlfriendBirthdayKey,
-        title: `${coupleProfile.girlfriendName || '여자친구'} 생일`,
+        title: `${coupleProfile.girlfriendNickname || coupleProfile.girlfriendName || '여자친구'} 생일`,
         detail: '생일',
       });
     }
