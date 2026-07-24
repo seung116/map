@@ -2,6 +2,10 @@ export function dateStartStorageKey(userId) {
   return `date-start-date-${userId || 'local'}`;
 }
 
+export function coupleProfileStorageKey(userId) {
+  return `couple-profile-${userId || 'local'}`;
+}
+
 export function loadDateStartDate(userId) {
   return localStorage.getItem(dateStartStorageKey(userId)) || '';
 }
@@ -14,6 +18,39 @@ export function saveDateStartDate(userId, value) {
   }
 
   localStorage.removeItem(storageKey);
+}
+
+export function loadCoupleProfile(userId) {
+  const saved = localStorage.getItem(coupleProfileStorageKey(userId));
+  if (!saved) {
+    return {
+      boyfriendName: '',
+      boyfriendNickname: '',
+      girlfriendName: '',
+      girlfriendNickname: '',
+    };
+  }
+
+  try {
+    return {
+      boyfriendName: '',
+      boyfriendNickname: '',
+      girlfriendName: '',
+      girlfriendNickname: '',
+      ...JSON.parse(saved),
+    };
+  } catch {
+    return {
+      boyfriendName: '',
+      boyfriendNickname: '',
+      girlfriendName: '',
+      girlfriendNickname: '',
+    };
+  }
+}
+
+export function saveCoupleProfile(userId, profile) {
+  localStorage.setItem(coupleProfileStorageKey(userId), JSON.stringify(profile));
 }
 
 export function formatDateLabel(value) {

@@ -194,6 +194,66 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.couple-profile-section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.couple-profile-card {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.78);
+  padding: 18px;
+  box-shadow: 0 14px 34px rgba(62, 72, 58, 0.08);
+}
+
+.couple-profile-avatar {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fffaf2;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.boyfriend-profile .couple-profile-avatar {
+  background: #6f9fba;
+}
+
+.girlfriend-profile .couple-profile-avatar {
+  background: #d9827a;
+}
+
+.couple-profile-card h2 {
+  margin: 0 0 14px;
+  font-size: 1.8rem;
+}
+
+.couple-profile-card label {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.couple-profile-card input {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffdf8;
+  color: var(--ink);
+  padding: 10px 12px;
+}
+
 .date-timeline-section {
   display: grid;
   gap: 18px;
@@ -371,7 +431,8 @@
   }
 
   .date-detail-hero,
-  .date-detail-gallery {
+  .date-detail-gallery,
+  .couple-profile-section {
     grid-template-columns: 1fr;
   }
 
