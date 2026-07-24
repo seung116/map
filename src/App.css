@@ -2136,6 +2136,27 @@ main {
   filter: saturate(1.04);
 }
 
+.calendar-special-block {
+  appearance: none;
+  display: grid;
+  align-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--calendar-trip-block-height);
+  border: 1px solid rgba(185, 109, 98, 0.18);
+  border-radius: 8px;
+  background: #f8d7df;
+  color: inherit;
+  padding: 8px;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(62, 72, 58, 0.08);
+}
+
+.calendar-special-block:hover {
+  border-color: rgba(185, 109, 98, 0.42);
+  filter: saturate(1.04);
+}
+
 .calendar-trip-label strong,
 .calendar-trip-label small {
   overflow: hidden;
@@ -2225,26 +2246,46 @@ main {
   filter: saturate(1.04);
 }
 
+.calendar-anniversary-card {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid rgba(185, 109, 98, 0.18);
+  border-radius: 8px;
+  background: #f8d7df;
+  padding: 14px;
+}
+
 .calendar-detail-record span,
 .calendar-detail-record strong,
-.calendar-detail-record small {
+.calendar-detail-record small,
+.calendar-anniversary-card span,
+.calendar-anniversary-card strong,
+.calendar-anniversary-card small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.calendar-detail-record span {
+.calendar-detail-record span,
+.calendar-anniversary-card span {
   color: #5f8c75;
   font-size: 0.76rem;
   font-weight: 900;
 }
 
-.calendar-detail-record strong {
+.calendar-anniversary-card span {
+  color: #8b463d;
+}
+
+.calendar-detail-record strong,
+.calendar-anniversary-card strong {
   color: var(--ink);
   font-size: 1rem;
 }
 
 .calendar-detail-record small,
+.calendar-anniversary-card small,
 .calendar-detail-empty {
   color: var(--muted);
   font-weight: 800;

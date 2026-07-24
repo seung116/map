@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import { useAuth } from '../contexts/AuthContext';
+import { loadCoupleProfile, loadDateStartDate, normalizeCoupleProfile } from '../utils/dateProfile';
 import {
   recordRegionId,
   recordStartDate,
@@ -13,6 +15,7 @@ import {
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 const calendarColorOptions = ['#fde5dc', '#dcebd9', '#dcecf4', '#f3e8cf', '#eadff1', '#f8d7df', '#d8eadf', '#e7e1d3'];
+const coupleDayMilestones = [100, 200, 300];
 
 function formatMonthKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -68,6 +71,21 @@ function dateLabel(dateKey) {
   if (!date) return '날짜 미정';
 
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${weekdays[date.getDay()]}요일`;
+}
+
+function eventDateKeyForYear(dateValue, year) {
+  if (!dateValue) return '';
+  const [, month, day] = dateValue.split('-');
+  if (!month || !day) return '';
+  return `${year}-${month}-${day}`;
+}
+
+function anniversaryDateKey(startDateValue, years) {
+  const startDate = parseLocalDate(startDateValue);
+  if (!startDate) return '';
+  const nextDate = new Date(startDate);
+  nextDate.setFullYear(startDate.getFullYear() + years);
+  return formatDateKey(nextDate);
 }
 
 function dateKeysBetween(startKey, endKey) {
@@ -150,10 +168,78 @@ function buildTripBlocksByDate(records) {
     }, {});
 }
 
+function addSpecialEvent(groups, event) {
+  if (!event.dateKey) return;
+  if (!groups[event.dateKey]) groups[event.dateKey] = [];
+  groups[event.dateKey].push(event);
+}
+
+function buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile) {
+  const visibleDateKeys = new Set(calendarDays.map((day) => day.key));
+  const visibleYears = [...new Set(calendarDays.map((day) => Number(day.key.slice(0, 4))))];
+  const groups = {};
+  const startDate = parseLocalDate(dateStartDate);
+
+  if (startDate) {
+    coupleDayMilestones.forEach((milestone) => {
+      const dateKey = formatDateKey(addDays(startDate, milestone - 1));
+      if (visibleDateKeys.has(dateKey)) {
+        addSpecialEvent(groups, {
+          id: `couple-${milestone}`,
+          dateKey,
+          title: `${milestone}일`,
+          detail: '커플 기념일',
+        });
+      }
+    });
+
+    visibleYears.forEach((year) => {
+      const yearsTogether = year - startDate.getFullYear();
+      if (yearsTogether <= 0) return;
+      const dateKey = anniversaryDateKey(dateStartDate, yearsTogether);
+      if (visibleDateKeys.has(dateKey)) {
+        addSpecialEvent(groups, {
+          id: `anniversary-${yearsTogether}`,
+          dateKey,
+          title: `${yearsTogether}주년`,
+          detail: '커플 기념일',
+        });
+      }
+    });
+  }
+
+  visibleYears.forEach((year) => {
+    const boyfriendBirthdayKey = eventDateKeyForYear(coupleProfile.boyfriendBirthday, year);
+    if (visibleDateKeys.has(boyfriendBirthdayKey)) {
+      addSpecialEvent(groups, {
+        id: `boyfriend-birthday-${year}`,
+        dateKey: boyfriendBirthdayKey,
+        title: `${coupleProfile.boyfriendName || '남자친구'} 생일`,
+        detail: '생일',
+      });
+    }
+
+    const girlfriendBirthdayKey = eventDateKeyForYear(coupleProfile.girlfriendBirthday, year);
+    if (visibleDateKeys.has(girlfriendBirthdayKey)) {
+      addSpecialEvent(groups, {
+        id: `girlfriend-birthday-${year}`,
+        dateKey: girlfriendBirthdayKey,
+        title: `${coupleProfile.girlfriendName || '여자친구'} 생일`,
+        detail: '생일',
+      });
+    }
+  });
+
+  return groups;
+}
+
 export default function CalendarPage({ records, setRecords, basePath = '', archiveType = 'travel' }) {
+  const auth = useAuth();
   const isDateArchive = archiveType === 'date';
   const isAllArchive = archiveType === 'all';
   const archiveLabel = isAllArchive ? '전체' : isDateArchive ? '데이트' : '여행';
+  const dateStartDate = auth?.profile?.dateStartDate || loadDateStartDate(auth?.user?.uid);
+  const coupleProfile = normalizeCoupleProfile(auth?.profile?.coupleProfile || loadCoupleProfile(auth?.user?.uid));
   const initialMonth = useMemo(() => {
     const latestRecord = records.reduce((latest, record) => {
       const currentDate = recordStartDate(record);
@@ -178,10 +264,18 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
   }, {}), [records]);
   const tripBlocksByDate = useMemo(() => buildTripBlocksByDate(records), [records]);
   const calendarDays = useMemo(() => buildCalendarDays(currentMonth), [currentMonth]);
+  const specialEventsByDate = useMemo(
+    () => buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile),
+    [calendarDays, dateStartDate, coupleProfile],
+  );
   const currentMonthRecordCount = calendarDays
     .filter((day) => day.isCurrentMonth)
     .reduce((total, day) => total + (recordsByDate[day.key]?.length || 0), 0);
+  const currentMonthSpecialCount = calendarDays
+    .filter((day) => day.isCurrentMonth)
+    .reduce((total, day) => total + (specialEventsByDate[day.key]?.length || 0), 0);
   const selectedDateRecords = recordsByDate[selectedDate] || [];
+  const selectedDateEvents = specialEventsByDate[selectedDate] || [];
   const updateCalendarColor = async (targetRecord, color) => {
     if (!setRecords) return;
     const targetTripId = recordTripId(targetRecord);
@@ -215,8 +309,8 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
 
         <section className="calendar-panel" aria-label={`${monthLabel(currentMonth)} ${archiveLabel} 기록 달력`}>
           <div className="calendar-month-meta">
-            <strong>{currentMonthRecordCount}개 기록</strong>
-            <span>{monthLabel(currentMonth)}에 저장된 {isAllArchive ? '여행과 데이트 기록' : `${archiveLabel} 기록`}</span>
+            <strong>{currentMonthRecordCount + currentMonthSpecialCount}개 일정</strong>
+            <span>{monthLabel(currentMonth)}에 저장된 기록과 기념일</span>
           </div>
           <div className="calendar-weekdays">
             {weekdays.map((weekday) => (
@@ -226,6 +320,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
           <div className="calendar-grid">
             {calendarDays.map((day) => {
               const tripBlocks = tripBlocksByDate[day.key] || [];
+              const specialEvents = specialEventsByDate[day.key] || [];
               return (
                 <article
                   className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''}`}
@@ -256,6 +351,21 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
                         </span>
                       </button>
                     ))}
+                    {specialEvents.map((event) => (
+                      <button
+                        key={event.id}
+                        className="calendar-special-block"
+                        type="button"
+                        onClick={() => setSelectedDate(day.key)}
+                        aria-label={`${event.title} · ${event.detail}`}
+                        title={`${event.title} · ${event.detail}`}
+                      >
+                        <span className="calendar-trip-label">
+                          <strong>{event.title}</strong>
+                          <small>{event.detail}</small>
+                        </span>
+                      </button>
+                    ))}
                   </div>
                 </article>
               );
@@ -268,10 +378,17 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
             <div>
               <h2>{dateLabel(selectedDate)}</h2>
             </div>
-            <strong>{selectedDateRecords.length}개 기록</strong>
+            <strong>{selectedDateRecords.length + selectedDateEvents.length}개 일정</strong>
           </div>
-          {selectedDateRecords.length > 0 ? (
+          {selectedDateRecords.length > 0 || selectedDateEvents.length > 0 ? (
             <div className="calendar-detail-list">
+              {selectedDateEvents.map((event) => (
+                <article key={event.id} className="calendar-anniversary-card">
+                  <span>{event.detail}</span>
+                  <strong>{event.title}</strong>
+                  <small>{dateLabel(event.dateKey)}</small>
+                </article>
+              ))}
               {selectedDateRecords.map((record) => (
                 <article key={record.id} className="calendar-detail-record-card">
                   <Link
@@ -299,7 +416,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
               ))}
             </div>
           ) : (
-            <p className="calendar-detail-empty">선택한 날짜에 저장된 {isAllArchive ? '여행이나 데이트' : archiveLabel} 기록이 없습니다.</p>
+            <p className="calendar-detail-empty">선택한 날짜에 저장된 {isAllArchive ? '기록이나 기념일' : `${archiveLabel} 기록`}이 없습니다.</p>
           )}
         </section>
       </main>

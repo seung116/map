@@ -136,6 +136,10 @@ export default function MyPage() {
                 <input readOnly={!isEditingProfile} value={profile.boyfriendNickname} onChange={(event) => updateProfile('boyfriendNickname', event.target.value)} placeholder="예: 곰돌이" />
               </label>
               <label>
+                생일
+                <input readOnly={!isEditingProfile} type="date" value={profile.boyfriendBirthday} onChange={(event) => updateProfile('boyfriendBirthday', event.target.value)} />
+              </label>
+              <label>
                 특징
                 <textarea readOnly={!isEditingProfile} value={profile.boyfriendTraits} onChange={(event) => updateProfile('boyfriendTraits', event.target.value)} placeholder="좋아하는 것, 성격, 기억하고 싶은 특징" />
               </label>
@@ -156,6 +160,10 @@ export default function MyPage() {
               <label>
                 애칭
                 <input readOnly={!isEditingProfile} value={profile.girlfriendNickname} onChange={(event) => updateProfile('girlfriendNickname', event.target.value)} placeholder="예: 토끼" />
+              </label>
+              <label>
+                생일
+                <input readOnly={!isEditingProfile} type="date" value={profile.girlfriendBirthday} onChange={(event) => updateProfile('girlfriendBirthday', event.target.value)} />
               </label>
               <label>
                 특징

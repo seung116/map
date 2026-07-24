@@ -10,10 +10,12 @@ export function defaultCoupleProfile() {
   return {
     boyfriendName: '',
     boyfriendNickname: '',
+    boyfriendBirthday: '',
     boyfriendTraits: '',
     boyfriendPhoto: '',
     girlfriendName: '',
     girlfriendNickname: '',
+    girlfriendBirthday: '',
     girlfriendTraits: '',
     girlfriendPhoto: '',
   };
