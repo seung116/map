@@ -10,6 +10,13 @@ function parseDate(value) {
   return Number.isNaN(time) ? 0 : time;
 }
 
+function shortDateLabel(value) {
+  if (!value) return '날짜 미정';
+  const [year, month, day] = value.split('-');
+  if (!year || !month || !day) return value;
+  return `${year.slice(-2)}.${month}.${day}`;
+}
+
 export default function DateDashboard({ records }) {
   const auth = useAuth();
   const dateStartDate = loadDateStartDate(auth?.user?.uid);
@@ -28,7 +35,7 @@ export default function DateDashboard({ records }) {
           <div className="date-hero-actions">
             <Link className="primary-button" to="/date/write">데이트 기록하기</Link>
             <Link className="secondary-button" to="/date/album">데이트 앨범 보기</Link>
-            <Link className="secondary-button" to="/date/calendar">데이트 달력 보기</Link>
+            <Link className="secondary-button" to="/calendar">달력 보기</Link>
           </div>
         </section>
 
@@ -50,7 +57,7 @@ export default function DateDashboard({ records }) {
             </div>
             <div className="date-section-actions">
               <Link className="secondary-button" to="/date/album">앨범 보기</Link>
-              <Link className="secondary-button" to="/date/calendar">달력 보기</Link>
+              <Link className="secondary-button" to="/calendar">달력 보기</Link>
               <Link className="secondary-button" to="/date/write">추가하기</Link>
             </div>
           </div>
@@ -62,6 +69,8 @@ export default function DateDashboard({ records }) {
                   <img src={record.photos?.[0]?.src || heroImage} alt={record.photos?.[0]?.caption || record.title} />
                   <div className="date-record-card-title">
                     <h3>{record.title}</h3>
+                    <p>{record.memo || '기분 기록 없음'}</p>
+                    <time dateTime={record.startDate || ''}>{shortDateLabel(record.startDate)}</time>
                   </div>
                 </Link>
               ))}

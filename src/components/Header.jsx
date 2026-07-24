@@ -22,7 +22,7 @@ export default function Header() {
           <>
             <Link to="/travel/write">기록</Link>
             <Link to="/travel/album">앨범</Link>
-            <Link to="/travel/calendar">달력</Link>
+            <Link to="/calendar">달력</Link>
             <Link to="/travel/stats">통계</Link>
             <Link to="/mypage">마이페이지</Link>
           </>
@@ -31,7 +31,7 @@ export default function Header() {
           <>
             <Link to="/date/write">기록</Link>
             <Link to="/date/album">앨범</Link>
-            <Link to="/date/calendar">달력</Link>
+            <Link to="/calendar">달력</Link>
             <Link to="/date/stats">통계</Link>
             <Link to="/mypage">마이페이지</Link>
           </>

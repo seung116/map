@@ -231,6 +231,21 @@
   line-height: 1.12;
 }
 
+.date-record-card p {
+  margin: 8px 0 4px;
+  color: #8b463d;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.date-record-card time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
 @media (max-width: 760px) {
   .mobile-hidden-header {
     display: none;
@@ -256,6 +271,15 @@
 
   .date-record-card h3 {
     font-size: 1.18rem;
+  }
+
+  .date-record-card p {
+    margin-top: 6px;
+    font-size: 0.9rem;
+  }
+
+  .date-record-card time {
+    font-size: 0.78rem;
   }
 }
 

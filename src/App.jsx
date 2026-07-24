@@ -70,14 +70,14 @@ export default function App() {
           <Route path="/travel/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="travel" />} />
           <Route path="/travel/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="travel" />} />
           <Route path="/travel/album" element={<AlbumPage records={travelRecords} basePath="/travel" />} />
-          <Route path="/travel/calendar" element={<CalendarPage records={travelRecords} basePath="/travel" />} />
+          <Route path="/travel/calendar" element={<Navigate to="/calendar" replace />} />
           <Route path="/travel/stats" element={<StatsPage records={travelRecords} />} />
 
           <Route path="/date" element={<DateDashboard records={dateRecords} />} />
           <Route path="/date/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
           <Route path="/date/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
           <Route path="/date/album" element={<AlbumPage records={dateRecords} basePath="/date" archiveType="date" />} />
-          <Route path="/date/calendar" element={<CalendarPage records={dateRecords} basePath="/date" archiveType="date" />} />
+          <Route path="/date/calendar" element={<Navigate to="/calendar" replace />} />
           <Route path="/date/stats" element={<StatsPage records={dateRecords} archiveType="date" />} />
           <Route path="/date/mypage" element={<Navigate to="/mypage" replace />} />
           <Route path="/travel/mypage" element={<Navigate to="/mypage" replace />} />
@@ -87,7 +87,7 @@ export default function App() {
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />
           <Route path="/write/:recordId" element={<LegacyWriteRedirect />} />
           <Route path="/album" element={<Navigate to="/travel/album" replace />} />
-          <Route path="/calendar" element={<Navigate to="/travel/calendar" replace />} />
+          <Route path="/calendar" element={<CalendarPage records={records} archiveType="all" />} />
           <Route path="/stats" element={<Navigate to="/travel/stats" replace />} />
 
           <Route path="/boards" element={<BoardsPage records={records} />} />
