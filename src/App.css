@@ -226,8 +226,7 @@
   }
 
   .mode-select-grid,
-  .date-start-panel,
-  .date-timeline {
+  .date-start-panel {
     grid-template-columns: 1fr;
   }
 
@@ -241,7 +240,11 @@
   }
 
   .date-record-card-title {
-    padding: 12px 14px 14px;
+    padding: 10px 10px 12px;
+  }
+
+  .date-record-card h3 {
+    font-size: 1.18rem;
   }
 }
 
