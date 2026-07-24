@@ -143,7 +143,9 @@ function buildTripBlocksByDate(records) {
     }, {});
 }
 
-export default function CalendarPage({ records, basePath = '' }) {
+export default function CalendarPage({ records, basePath = '', archiveType = 'travel' }) {
+  const isDateArchive = archiveType === 'date';
+  const archiveLabel = isDateArchive ? '데이트' : '여행';
   const initialMonth = useMemo(() => {
     const latestRecord = records.reduce((latest, record) => {
       const currentDate = recordStartDate(record);
@@ -178,9 +180,9 @@ export default function CalendarPage({ records, basePath = '' }) {
       <main className="page calendar-page">
         <section className="section-heading inline calendar-heading">
           <div>
-            <h1>여행 달력</h1>
+            <h1>{archiveLabel} 달력</h1>
             <span className="calendar-summary">
-              여행 기록을 저장한 날짜에 맞춰 한 달 단위로 모아봅니다.
+              {archiveLabel} 기록을 저장한 날짜에 맞춰 한 달 단위로 모아봅니다.
             </span>
           </div>
           <div className="calendar-controls" aria-label="달력 월 이동">
@@ -191,10 +193,10 @@ export default function CalendarPage({ records, basePath = '' }) {
           </div>
         </section>
 
-        <section className="calendar-panel" aria-label={`${monthLabel(currentMonth)} 여행 기록 달력`}>
+        <section className="calendar-panel" aria-label={`${monthLabel(currentMonth)} ${archiveLabel} 기록 달력`}>
           <div className="calendar-month-meta">
             <strong>{currentMonthRecordCount}개 기록</strong>
-            <span>{monthLabel(currentMonth)}에 저장된 여행 기록</span>
+            <span>{monthLabel(currentMonth)}에 저장된 {archiveLabel} 기록</span>
           </div>
           <div className="calendar-weekdays">
             {weekdays.map((weekday) => (
@@ -224,12 +226,12 @@ export default function CalendarPage({ records, basePath = '' }) {
                         className={`calendar-trip-block trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
                         type="button"
                         onClick={() => setSelectedDate(day.key)}
-                        aria-label={`${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
-                        title={`${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
+                        aria-label={isDateArchive ? trip.name : `${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
+                        title={isDateArchive ? trip.name : `${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
                       >
                         <span className={`calendar-trip-label ${trip.showLabel ? '' : 'is-hidden'}`} aria-hidden={!trip.showLabel}>
                           <strong>{trip.name}</strong>
-                          <small>{regionName(trip.regionId)}{trip.cityName ? ` ${trip.cityName}` : ''}</small>
+                          {!isDateArchive && <small>{regionName(trip.regionId)}{trip.cityName ? ` ${trip.cityName}` : ''}</small>}
                         </span>
                       </button>
                     ))}
@@ -240,7 +242,7 @@ export default function CalendarPage({ records, basePath = '' }) {
           </div>
         </section>
 
-        <section className="calendar-detail-panel" aria-label={`${dateLabel(selectedDate)} 여행 기록`}>
+        <section className="calendar-detail-panel" aria-label={`${dateLabel(selectedDate)} ${archiveLabel} 기록`}>
           <div className="calendar-detail-heading">
             <div>
               <h2>{dateLabel(selectedDate)}</h2>
@@ -253,12 +255,12 @@ export default function CalendarPage({ records, basePath = '' }) {
                 <Link key={record.id} className="calendar-detail-record" to={`${basePath}/write/${record.id}`}>
                   <span>{recordTripName(record)}</span>
                   <strong>{record.title}</strong>
-                  <small>{regionName(recordRegionId(record))}{record.cityName ? ` ${record.cityName}` : ''}</small>
+                  <small>{isDateArchive ? record.cityName || '장소 미정' : `${regionName(recordRegionId(record))}${record.cityName ? ` ${record.cityName}` : ''}`}</small>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="calendar-detail-empty">선택한 날짜에 저장된 여행 기록이 없습니다.</p>
+            <p className="calendar-detail-empty">선택한 날짜에 저장된 {archiveLabel} 기록이 없습니다.</p>
           )}
         </section>
       </main>

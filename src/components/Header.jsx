@@ -30,6 +30,7 @@ export default function Header() {
           <>
             <Link to="/date/write">기록</Link>
             <Link to="/date/album">앨범</Link>
+            <Link to="/date/calendar">달력</Link>
             <Link to="/date/stats">통계</Link>
           </>
         )}

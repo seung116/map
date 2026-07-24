@@ -1,35 +1,47 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import heroImage from '../assets/korea-travel-memories.png';
+import { useAuth } from '../contexts/AuthContext';
 
 function parseDate(value) {
   const time = value ? new Date(`${value}T00:00:00`).getTime() : 0;
   return Number.isNaN(time) ? 0 : time;
 }
 
-function firstDateLabel(records) {
-  const first = [...records]
-    .filter((record) => record.startDate)
-    .sort((a, b) => parseDate(a.startDate) - parseDate(b.startDate))[0];
-
-  if (!first) return '아직 없음';
-  return first.startDate.replaceAll('-', '.');
+function formatDateLabel(value) {
+  if (!value) return '아직 입력 전';
+  return value.replaceAll('-', '.');
 }
 
-function favoritePlace(records) {
-  const ranked = [...records.reduce((places, record) => {
-    const key = record.cityName || record.tripName || '미지정';
-    places.set(key, (places.get(key) || 0) + 1);
-    return places;
-  }, new Map()).entries()].sort((a, b) => b[1] - a[1]);
+function daysSince(value) {
+  if (!value) return null;
+  const start = new Date(`${value}T00:00:00`);
+  const today = new Date();
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (Number.isNaN(start.getTime())) return null;
 
-  return ranked[0]?.[0] || '아직 없음';
+  const diff = todayDate.getTime() - start.getTime();
+  return Math.max(1, Math.floor(diff / 86400000) + 1);
 }
 
 export default function DateDashboard({ records }) {
+  const auth = useAuth();
+  const relationshipStorageKey = `date-start-date-${auth?.user?.uid || 'local'}`;
+  const [dateStartDate, setDateStartDate] = useState(() => localStorage.getItem(relationshipStorageKey) || '');
   const sortedRecords = [...records].sort((a, b) => parseDate(b.startDate) - parseDate(a.startDate));
-  const photoCount = records.reduce((total, record) => total + (record.photos?.length || 0), 0);
   const latestRecords = sortedRecords.slice(0, 6);
+  const dateDayCount = useMemo(() => daysSince(dateStartDate), [dateStartDate]);
+
+  const updateDateStartDate = (value) => {
+    setDateStartDate(value);
+    if (value) {
+      localStorage.setItem(relationshipStorageKey, value);
+      return;
+    }
+
+    localStorage.removeItem(relationshipStorageKey);
+  };
 
   return (
     <AppShell>
@@ -42,26 +54,23 @@ export default function DateDashboard({ records }) {
           <div className="date-hero-actions">
             <Link className="primary-button" to="/date/write">데이트 기록하기</Link>
             <Link className="secondary-button" to="/date/album">데이트 앨범 보기</Link>
+            <Link className="secondary-button" to="/date/calendar">데이트 달력 보기</Link>
           </div>
         </section>
 
-        <section className="date-summary-grid" aria-label="데이트 기록 요약">
-          <article>
-            <span>함께한 데이트</span>
-            <strong>{records.length}번</strong>
-          </article>
-          <article>
-            <span>가장 자주 간 곳</span>
-            <strong>{favoritePlace(records)}</strong>
-          </article>
-          <article>
-            <span>첫 데이트</span>
-            <strong>{firstDateLabel(records)}</strong>
-          </article>
-          <article>
-            <span>데이트 사진</span>
-            <strong>{photoCount}장</strong>
-          </article>
+        <section className="date-start-panel" aria-label="만난 날짜">
+          <div>
+            <span>처음 만난 날</span>
+            <strong>{formatDateLabel(dateStartDate)}</strong>
+          </div>
+          <div>
+            <span>함께한 시간</span>
+            <strong>{dateDayCount ? `${dateDayCount}일째` : '날짜를 입력해주세요'}</strong>
+          </div>
+          <label>
+            언제 만나기 시작했나요?
+            <input type="date" value={dateStartDate} onChange={(event) => updateDateStartDate(event.target.value)} />
+          </label>
         </section>
 
         <section className="date-timeline-section">
@@ -71,6 +80,7 @@ export default function DateDashboard({ records }) {
             </div>
             <div className="date-section-actions">
               <Link className="secondary-button" to="/date/album">앨범 보기</Link>
+              <Link className="secondary-button" to="/date/calendar">달력 보기</Link>
               <Link className="secondary-button" to="/date/write">추가하기</Link>
             </div>
           </div>
