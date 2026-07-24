@@ -65,7 +65,7 @@ export default function DateDashboard({ records }) {
           {latestRecords.length > 0 ? (
             <div className="date-timeline">
               {latestRecords.map((record) => (
-                <Link className="date-record-card" key={record.id} to={`/date/write/${record.id}`}>
+                <Link className="date-record-card" key={record.id} to={`/date/record/${record.id}`}>
                   <img src={record.photos?.[0]?.src || heroImage} alt={record.photos?.[0]?.caption || record.title} />
                   <div className="date-record-card-title">
                     <h3>{record.title}</h3>

@@ -12,6 +12,7 @@ import {
 } from '../utils/travelUtils';
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+const calendarColorOptions = ['#fde5dc', '#dcebd9', '#dcecf4', '#f3e8cf', '#eadff1', '#f8d7df', '#d8eadf', '#e7e1d3'];
 
 function formatMonthKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -135,6 +136,7 @@ function buildTripBlocksByDate(records) {
         groups[dateKey].push({
           ...trip,
           name: displayName,
+          calendarColor: displayRecord.calendarColor || firstRecord.calendarColor || '',
           colorIndex: tripIndex % 5,
           dayRecords,
           isStart,
@@ -148,7 +150,7 @@ function buildTripBlocksByDate(records) {
     }, {});
 }
 
-export default function CalendarPage({ records, basePath = '', archiveType = 'travel' }) {
+export default function CalendarPage({ records, setRecords, basePath = '', archiveType = 'travel' }) {
   const isDateArchive = archiveType === 'date';
   const isAllArchive = archiveType === 'all';
   const archiveLabel = isAllArchive ? '전체' : isDateArchive ? '데이트' : '여행';
@@ -180,6 +182,18 @@ export default function CalendarPage({ records, basePath = '', archiveType = 'tr
     .filter((day) => day.isCurrentMonth)
     .reduce((total, day) => total + (recordsByDate[day.key]?.length || 0), 0);
   const selectedDateRecords = recordsByDate[selectedDate] || [];
+  const updateCalendarColor = async (targetRecord, color) => {
+    if (!setRecords) return;
+    const targetTripId = recordTripId(targetRecord);
+    const nextRecords = records.map((record) => {
+      const isSameDateRecord = String(record.id) === String(targetRecord.id);
+      const isSameTravelTrip = targetRecord.type !== 'date' && record.type !== 'date' && recordTripId(record) === targetTripId;
+      if (!isSameDateRecord && !isSameTravelTrip) return record;
+      return { ...record, calendarColor: color };
+    });
+
+    await setRecords(nextRecords);
+  };
 
   return (
     <AppShell>
@@ -230,6 +244,7 @@ export default function CalendarPage({ records, basePath = '', archiveType = 'tr
                       <button
                         key={trip.id}
                         className={`calendar-trip-block trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
+                        style={trip.calendarColor ? { '--calendar-block-bg': trip.calendarColor } : undefined}
                         type="button"
                         onClick={() => setSelectedDate(day.key)}
                         aria-label={trip.records[0]?.type === 'date' ? `데이트 · ${trip.name}` : `여행 · ${trip.name} · ${regionName(trip.regionId)}${trip.cityName ? ` ${trip.cityName}` : ''}`}
@@ -258,11 +273,25 @@ export default function CalendarPage({ records, basePath = '', archiveType = 'tr
           {selectedDateRecords.length > 0 ? (
             <div className="calendar-detail-list">
               {selectedDateRecords.map((record) => (
-                <Link key={record.id} className="calendar-detail-record" to={`${basePath || (record.type === 'date' ? '/date' : '/travel')}/write/${record.id}`}>
-                  <span>{recordTripName(record)}</span>
-                  <strong>{record.title}</strong>
-                  <small>{record.type === 'date' ? `데이트 · ${record.cityName || '장소 미정'}` : `${isAllArchive ? '여행 · ' : ''}${regionName(recordRegionId(record))}${record.cityName ? ` ${record.cityName}` : ''}`}</small>
-                </Link>
+                <article key={record.id} className="calendar-detail-record-card">
+                  <Link className="calendar-detail-record" to={`${basePath || (record.type === 'date' ? '/date' : '/travel')}/write/${record.id}`}>
+                    <span>{recordTripName(record)}</span>
+                    <strong>{record.title}</strong>
+                    <small>{record.type === 'date' ? `데이트 · ${record.cityName || '장소 미정'}` : `${isAllArchive ? '여행 · ' : ''}${regionName(recordRegionId(record))}${record.cityName ? ` ${record.cityName}` : ''}`}</small>
+                  </Link>
+                  <div className="calendar-color-picker" aria-label={`${record.title} 달력 색상 선택`}>
+                    {calendarColorOptions.map((color) => (
+                      <button
+                        key={color}
+                        className={record.calendarColor === color ? 'is-selected' : ''}
+                        type="button"
+                        style={{ '--swatch-color': color }}
+                        onClick={() => updateCalendarColor(record, color)}
+                        aria-label={`${record.title} 색상 변경`}
+                      />
+                    ))}
+                  </div>
+                </article>
               ))}
             </div>
           ) : (

@@ -9,6 +9,7 @@ import BoardsPage from './pages/BoardsPage';
 import CalendarPage from './pages/CalendarPage';
 import Dashboard from './pages/Dashboard';
 import DateDashboard from './pages/DateDashboard';
+import DateRecordPage from './pages/DateRecordPage';
 import ModeSelectPage from './pages/ModeSelectPage';
 import MyPage from './pages/MyPage';
 import PendingApprovalPage from './pages/PendingApprovalPage';
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="/travel/stats" element={<StatsPage records={travelRecords} />} />
 
           <Route path="/date" element={<DateDashboard records={dateRecords} />} />
+          <Route path="/date/record/:recordId" element={<DateRecordPage records={dateRecords} />} />
           <Route path="/date/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
           <Route path="/date/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
           <Route path="/date/album" element={<AlbumPage records={dateRecords} basePath="/date" archiveType="date" />} />
@@ -87,7 +89,7 @@ export default function App() {
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />
           <Route path="/write/:recordId" element={<LegacyWriteRedirect />} />
           <Route path="/album" element={<Navigate to="/travel/album" replace />} />
-          <Route path="/calendar" element={<CalendarPage records={records} archiveType="all" />} />
+          <Route path="/calendar" element={<CalendarPage records={records} setRecords={setRecords} archiveType="all" />} />
           <Route path="/stats" element={<Navigate to="/travel/stats" replace />} />
 
           <Route path="/boards" element={<BoardsPage records={records} />} />

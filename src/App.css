@@ -246,6 +246,94 @@
   font-weight: 800;
 }
 
+.date-detail-page {
+  display: grid;
+  gap: 24px;
+}
+
+.date-detail-hero {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.date-detail-hero > img,
+.date-detail-gallery img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #ece6dc;
+}
+
+.date-detail-hero > div {
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.78);
+  padding: clamp(18px, 4vw, 34px);
+  box-shadow: 0 14px 34px rgba(62, 72, 58, 0.08);
+}
+
+.date-detail-hero span {
+  color: #b96d62;
+  font-weight: 900;
+}
+
+.date-detail-hero h1 {
+  margin: 0;
+  font-size: clamp(2.3rem, 5vw, 4.8rem);
+  line-height: 1;
+}
+
+.date-detail-hero p {
+  margin: 0;
+  color: #8b463d;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.date-detail-hero dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.date-detail-hero dl div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.date-detail-hero dt {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.date-detail-hero dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.date-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.date-detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
 @media (max-width: 760px) {
   .mobile-hidden-header {
     display: none;
@@ -280,6 +368,15 @@
 
   .date-record-card time {
     font-size: 0.78rem;
+  }
+
+  .date-detail-hero,
+  .date-detail-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .date-detail-hero dl div {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1825,6 +1922,7 @@ main {
   padding: 8px;
   color: inherit;
   text-align: left;
+  background: var(--calendar-block-bg);
   box-shadow: 0 8px 18px rgba(62, 72, 58, 0.08);
 }
 
@@ -1891,23 +1989,23 @@ main {
 }
 
 .calendar-trip-block.trip-color-0 {
-  background: #fde5dc;
+  --calendar-block-bg: #fde5dc;
 }
 
 .calendar-trip-block.trip-color-1 {
-  background: #dcebd9;
+  --calendar-block-bg: #dcebd9;
 }
 
 .calendar-trip-block.trip-color-2 {
-  background: #dcecf4;
+  --calendar-block-bg: #dcecf4;
 }
 
 .calendar-trip-block.trip-color-3 {
-  background: #f3e8cf;
+  --calendar-block-bg: #f3e8cf;
 }
 
 .calendar-trip-block.trip-color-4 {
-  background: #eadff1;
+  --calendar-block-bg: #eadff1;
 }
 
 .calendar-trip-block:hover {
@@ -1993,6 +2091,12 @@ main {
   padding: 14px;
 }
 
+.calendar-detail-record-card {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
 .calendar-detail-record:hover {
   border-color: rgba(95, 140, 117, 0.34);
   background: #f3faef;
@@ -2021,6 +2125,27 @@ main {
 .calendar-detail-empty {
   color: var(--muted);
   font-weight: 800;
+}
+
+.calendar-color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 2px 4px;
+}
+
+.calendar-color-picker button {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(47, 53, 47, 0.08);
+  border-radius: 999px;
+  background: var(--swatch-color);
+  padding: 0;
+}
+
+.calendar-color-picker button.is-selected {
+  border-color: #2f352f;
+  box-shadow: 0 0 0 2px rgba(47, 53, 47, 0.12);
 }
 
 .calendar-detail-empty {
