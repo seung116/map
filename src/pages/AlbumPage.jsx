@@ -112,7 +112,10 @@ function photosForTripRecords(records) {
   })));
 }
 
-export default function AlbumPage({ records, basePath = '' }) {
+export default function AlbumPage({ records, basePath = '', archiveType = 'travel' }) {
+  const isDateArchive = archiveType === 'date';
+  const archiveLabel = isDateArchive ? '데이트' : '여행';
+  const placeLabel = isDateArchive ? '장소' : '지역';
   const [selected, setSelected] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedTripPhotoIndex, setSelectedTripPhotoIndex] = useState(0);
@@ -170,7 +173,7 @@ export default function AlbumPage({ records, basePath = '' }) {
     <AppShell>
       <main className="page">
         <section className="section-heading">
-          <h1>전체 여행 사진</h1>
+          <h1>전체 {archiveLabel} 사진</h1>
         </section>
         {albumGroups.length > 0 ? (
           <div className="album-timeline">
@@ -183,7 +186,7 @@ export default function AlbumPage({ records, basePath = '' }) {
                     </button>
                     <span>{formatShortDateRange(yearGroup.startDate, yearGroup.endDate)}</span>
                   </div>
-                  <Link className="album-trip-edit" to={`${basePath}/write/${yearGroup.days[0]?.items[0]?.recordId || ''}`}>여행 수정</Link>
+                  <Link className="album-trip-edit" to={`${basePath}/write/${yearGroup.days[0]?.items[0]?.recordId || ''}`}>{archiveLabel} 수정</Link>
                 </div>
 
                 {yearGroup.days.map((dayGroup) => (
@@ -219,7 +222,7 @@ export default function AlbumPage({ records, basePath = '' }) {
         ) : (
           <section className="empty-state">
             <h2>아직 앨범 사진이 없습니다</h2>
-            <p>여행 기록에 사진을 추가하면 최신 날짜순으로 정리됩니다.</p>
+            <p>{archiveLabel} 기록에 사진을 추가하면 최신 날짜순으로 정리됩니다.</p>
             <Link className="primary-button" to={`${basePath}/write`}>기록 작성</Link>
           </section>
         )}
@@ -240,7 +243,7 @@ export default function AlbumPage({ records, basePath = '' }) {
                 <p>{selected.memo || '저장된 메모가 없습니다.'}</p>
                 <dl>
                   <div>
-                    <dt>지역</dt>
+                    <dt>{placeLabel}</dt>
                     <dd>{regionName(selected.regionId)}</dd>
                   </div>
                   <div>
@@ -258,7 +261,7 @@ export default function AlbumPage({ records, basePath = '' }) {
                 </dl>
                 <div className="card-actions">
                   <Link to={`${basePath}/write/${selected.recordId}`}>기록 수정</Link>
-                  <Link to={`${basePath}/region/${selected.regionId}`}>지역 기록 보기</Link>
+                  {!isDateArchive && <Link to={`${basePath}/region/${selected.regionId}`}>지역 기록 보기</Link>}
                 </div>
               </div>
             </div>
@@ -274,7 +277,7 @@ export default function AlbumPage({ records, basePath = '' }) {
                 <span>{formatShortDateRange(selectedTrip.startDate, selectedTrip.endDate)}</span>
                 <h2>{selectedTrip.label}</h2>
               </div>
-              <Link to={`${basePath}/write/${selectedTripRecords[0]?.id || ''}`}>여행 수정</Link>
+              <Link to={`${basePath}/write/${selectedTripRecords[0]?.id || ''}`}>{archiveLabel} 수정</Link>
             </div>
             {selectedTripPhoto && (
               <article className="trip-photo-card">
@@ -311,7 +314,7 @@ export default function AlbumPage({ records, basePath = '' }) {
                     <span>{selectedTripPhotoIndex + 1} / {selectedTripPhotos.length}</span>
                     <div className="card-actions">
                       <Link to={`${basePath}/write/${selectedTripPhoto.recordId}`}>기록 수정</Link>
-                      <Link to={`${basePath}/region/${selectedTripPhoto.regionId}`}>지역 기록 보기</Link>
+                      {!isDateArchive && <Link to={`${basePath}/region/${selectedTripPhoto.regionId}`}>지역 기록 보기</Link>}
                     </div>
                   </div>
                 </div>

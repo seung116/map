@@ -75,6 +75,7 @@ export default function App() {
           <Route path="/date" element={<DateDashboard records={dateRecords} />} />
           <Route path="/date/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
           <Route path="/date/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
+          <Route path="/date/album" element={<AlbumPage records={dateRecords} basePath="/date" archiveType="date" />} />
 
           <Route path="/region/:regionId" element={<LegacyRegionRedirect />} />
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />

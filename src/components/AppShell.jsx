@@ -1,10 +1,12 @@
 import Footer from './Footer';
 import Header from './Header';
 
-export default function AppShell({ children }) {
+export default function AppShell({ children, hideHeaderOnMobile = false }) {
   return (
     <>
-      <Header />
+      <div className={hideHeaderOnMobile ? 'mobile-hidden-header' : ''}>
+        <Header />
+      </div>
       {children}
       <Footer />
     </>

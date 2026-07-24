@@ -83,7 +83,7 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
       tripEndDate: editing ? recordTripEndDate(editing) : baseForm.tripEndDate,
     };
   });
-  const [tripMode, setTripMode] = useState(() => (editing?.tripId ? 'existing' : ''));
+  const [tripMode, setTripMode] = useState(() => (isDateMode ? 'new' : editing?.tripId ? 'existing' : ''));
   const [companionsTouched, setCompanionsTouched] = useState(() => Boolean(editing));
   const [stepTouched, setStepTouched] = useState(() => ({
     recordDate: Boolean(editing),
@@ -99,18 +99,18 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
   const activeTripEndDate = tripMode === 'existing' ? selectedTrip?.endDate || form.tripEndDate : form.tripEndDate;
   const activeTripDayNumber = tripDayNumberFromDates(activeTripStartDate, form.startDate);
   const isEditing = Boolean(editing);
-  const hasTripMode = Boolean(tripMode);
+  const hasTripMode = isDateMode || Boolean(tripMode);
   const hasSelectedTrip = tripMode === 'existing' && Boolean(form.tripId);
-  const hasTripName = Boolean(form.tripName.trim());
+  const hasTripName = isDateMode || Boolean(form.tripName.trim());
   const hasTripPeriod = Boolean(activeTripStartDate && activeTripEndDate);
   const hasRecordDate = Boolean(form.startDate);
   const hasRegion = Boolean(form.regionId);
   const hasCity = Boolean(form.cityName);
   const hasTitle = Boolean(form.title.trim());
   const hasMemo = Boolean(form.memo.trim());
-  const canShowTripName = isEditing || hasTripMode;
-  const canShowTripDates = isEditing || hasSelectedTrip || (tripMode === 'new' && hasTripName);
-  const canShowRecordDate = isEditing || (tripMode === 'existing' ? hasSelectedTrip : hasTripName && hasTripPeriod);
+  const canShowTripName = !isDateMode && (isEditing || hasTripMode);
+  const canShowTripDates = !isDateMode && (isEditing || hasSelectedTrip || (tripMode === 'new' && hasTripName));
+  const canShowRecordDate = isDateMode || isEditing || (tripMode === 'existing' ? hasSelectedTrip : hasTripName && hasTripPeriod);
   const canShowRegion = isEditing || (canShowRecordDate && stepTouched.recordDate && hasRecordDate);
   const canShowCity = isEditing || (canShowRegion && stepTouched.region && hasRegion);
   const canShowTitle = isEditing || (canShowCity && stepTouched.city && hasCity);
@@ -218,14 +218,18 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
   const saveRecord = async (event) => {
     event.preventDefault();
     const normalizedForm = normalizeRecordDates(form);
-    const tripName = (normalizedForm.tripName || normalizedForm.title || recordDateRange(normalizedForm)).trim();
-    const tripId = tripMode === 'existing' && normalizedForm.tripId
+    const tripName = (isDateMode ? normalizedForm.title || recordDateRange(normalizedForm) : normalizedForm.tripName || normalizedForm.title || recordDateRange(normalizedForm)).trim();
+    const tripId = !isDateMode && tripMode === 'existing' && normalizedForm.tripId
       ? normalizedForm.tripId
       : `trip-${Date.now()}`;
-    const tripStartDate = tripMode === 'existing'
+    const tripStartDate = isDateMode
+      ? normalizedForm.startDate
+      : tripMode === 'existing'
       ? activeTripStartDate
       : normalizedForm.tripStartDate;
-    const tripEndDate = tripMode === 'existing'
+    const tripEndDate = isDateMode
+      ? normalizedForm.startDate
+      : tripMode === 'existing'
       ? activeTripEndDate
       : normalizedForm.tripEndDate;
     const tripDayNumber = tripDayNumberFromDates(tripStartDate, normalizedForm.startDate);
@@ -245,7 +249,7 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
     const recordsWithCurrentSave = editing
       ? records.map((record) => (record.id === editing.id ? nextRecord : record))
       : [nextRecord, ...records];
-    const nextRecords = tripMode === 'existing'
+    const nextRecords = !isDateMode && tripMode === 'existing'
       ? recordsWithCurrentSave.map((record) => (
         recordTripId(record) === tripId
           ? {
@@ -285,13 +289,15 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
         </section>
 
         <form className="record-form" onSubmit={saveRecord}>
+          {!isDateMode && (
           <div className="form-field span-2 trip-field">
-            <span>{isDateMode ? '데이트 묶음 만들기' : '여행 만들기'}</span>
+            <span>여행 만들기</span>
             <div className="segmented-control">
-              <button className={tripMode === 'new' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('new')}>{isDateMode ? '새 데이트' : '새 여행'}</button>
-              <button className={tripMode === 'existing' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('existing')} disabled={tripGroups.length === 0}>{isDateMode ? '기존 데이트' : '기존 여행'}</button>
+              <button className={tripMode === 'new' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('new')}>새 여행</button>
+              <button className={tripMode === 'existing' ? 'is-active' : ''} type="button" onClick={() => selectTripMode('existing')} disabled={tripGroups.length === 0}>기존 여행</button>
             </div>
           </div>
+          )}
 
           {canShowTripName && tripMode === 'existing' && tripGroups.length > 0 && (
             <div className="form-field span-2 trip-field step-field">
@@ -338,8 +344,8 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
             <input
               required
               type="date"
-              min={activeTripStartDate || undefined}
-              max={activeTripEndDate || undefined}
+              min={isDateMode ? undefined : activeTripStartDate || undefined}
+              max={isDateMode ? undefined : activeTripEndDate || undefined}
               value={form.startDate}
               onChange={(event) => {
                 markStepTouched('recordDate');
@@ -347,9 +353,11 @@ export default function RecordFormPage({ records, setRecords, mode = 'travel' })
               }}
               onBlur={() => markStepTouched('recordDate')}
             />
+            {!isDateMode && (
             <span className="trip-day-summary">
               {activeTripDayNumber ? `${activeTripDayNumber}일차` : `${isDateMode ? '데이트 날짜' : '여행 기간'}을 먼저 정하면 일차가 표시돼요`}
             </span>
+            )}
           </label>
           )}
 

@@ -41,7 +41,10 @@ export default function DateDashboard({ records }) {
             <h1>우리의 데이트 기록</h1>
             <span>함께 간 장소와 사진, 그날의 감정을 시간순으로 모아봅니다.</span>
           </div>
-          <Link className="primary-button" to="/date/write">데이트 기록하기</Link>
+          <div className="date-hero-actions">
+            <Link className="primary-button" to="/date/write">데이트 기록하기</Link>
+            <Link className="secondary-button" to="/date/album">데이트 앨범 보기</Link>
+          </div>
         </section>
 
         <section className="date-summary-grid" aria-label="데이트 기록 요약">
@@ -69,7 +72,10 @@ export default function DateDashboard({ records }) {
               <p>Timeline</p>
               <h2>최근 데이트</h2>
             </div>
-            <Link className="secondary-button" to="/date/write">추가하기</Link>
+            <div className="date-section-actions">
+              <Link className="secondary-button" to="/date/album">앨범 보기</Link>
+              <Link className="secondary-button" to="/date/write">추가하기</Link>
+            </div>
           </div>
 
           {latestRecords.length > 0 ? (

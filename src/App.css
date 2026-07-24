@@ -90,6 +90,13 @@
   padding-bottom: 22px;
 }
 
+.date-hero-actions,
+.date-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .date-hero p,
 .date-record-card span,
 .date-summary-grid span {
@@ -193,6 +200,10 @@
 }
 
 @media (max-width: 760px) {
+  .mobile-hidden-header {
+    display: none;
+  }
+
   .mode-select-grid,
   .date-summary-grid,
   .date-record-card {
@@ -297,6 +308,10 @@ img {
   border-bottom: 1px solid var(--line);
   background: rgba(255, 250, 242, 0.88);
   backdrop-filter: blur(16px);
+}
+
+.mobile-hidden-header {
+  display: contents;
 }
 
 .brand {

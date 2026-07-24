@@ -3,7 +3,7 @@ import AppShell from '../components/AppShell';
 
 export default function ModeSelectPage() {
   return (
-    <AppShell>
+    <AppShell hideHeaderOnMobile>
       <main className="page mode-select-page">
         <section className="section-heading">
           <p>Choose Archive</p>
