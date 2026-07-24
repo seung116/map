@@ -216,7 +216,7 @@
 
 .date-record-card img {
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
 }
 
@@ -1564,7 +1564,7 @@ main {
 
 .travel-photo {
   display: block;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   background: var(--sand);
 }
@@ -2271,7 +2271,7 @@ main {
 }
 
 .photo-edit-card img {
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 4;
   width: 100%;
   border-radius: 16px;
   object-fit: cover;
@@ -2449,7 +2449,7 @@ main {
 
 .album-photo {
   display: block;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   background: #ece6dc;
 }
@@ -2539,7 +2539,7 @@ main {
 
 .lightbox-card img {
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 4;
   max-height: 70vh;
   border-radius: 6px;
   object-fit: cover;
@@ -2650,7 +2650,7 @@ main {
 
 .trip-photo-frame {
   position: relative;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   background: #ece6dc;
 }
