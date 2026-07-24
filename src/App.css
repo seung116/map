@@ -152,6 +152,7 @@
 .date-start-panel > div,
 .date-start-panel label {
   display: flex;
+  min-width: 0;
   min-height: 126px;
   flex-direction: column;
   justify-content: center;
@@ -177,9 +178,12 @@
 
 .date-start-panel input {
   min-height: 46px;
+  min-width: 0;
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
+  -webkit-appearance: none;
+  appearance: none;
   background: #fffdf8;
   color: var(--ink);
   padding: 10px 12px;
@@ -192,6 +196,31 @@
 
 .my-date-panel {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.couple-profile-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.couple-profile-header h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.couple-profile-header span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.profile-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .couple-profile-section {
@@ -212,22 +241,35 @@
   box-shadow: 0 14px 34px rgba(62, 72, 58, 0.08);
 }
 
-.couple-profile-avatar {
+.couple-profile-photo {
   display: grid;
   width: 72px;
   height: 72px;
   place-items: center;
+  overflow: hidden;
+  border: 0;
   border-radius: 50%;
   color: #fffaf2;
   font-size: 1.35rem;
   font-weight: 900;
+  cursor: pointer;
 }
 
-.boyfriend-profile .couple-profile-avatar {
+.couple-profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.couple-profile-photo input {
+  display: none;
+}
+
+.boyfriend-profile .couple-profile-photo {
   background: #6f9fba;
 }
 
-.girlfriend-profile .couple-profile-avatar {
+.girlfriend-profile .couple-profile-photo {
   background: #d9827a;
 }
 
@@ -244,14 +286,28 @@
   font-weight: 900;
 }
 
-.couple-profile-card input {
+.couple-profile-card input,
+.couple-profile-card textarea {
   min-height: 44px;
+  min-width: 0;
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fffdf8;
   color: var(--ink);
   padding: 10px 12px;
+}
+
+.couple-profile-card textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.couple-profile-card input[readonly],
+.couple-profile-card textarea[readonly] {
+  border-color: rgba(91, 105, 81, 0.08);
+  background: rgba(255, 253, 248, 0.48);
+  color: var(--ink);
 }
 
 .date-timeline-section {
@@ -432,8 +488,14 @@
 
   .date-detail-hero,
   .date-detail-gallery,
+  .couple-profile-header,
   .couple-profile-section {
     grid-template-columns: 1fr;
+  }
+
+  .couple-profile-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .date-detail-hero dl div {

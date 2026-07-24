@@ -26,8 +26,12 @@ export function loadCoupleProfile(userId) {
     return {
       boyfriendName: '',
       boyfriendNickname: '',
+      boyfriendTraits: '',
+      boyfriendPhoto: '',
       girlfriendName: '',
       girlfriendNickname: '',
+      girlfriendTraits: '',
+      girlfriendPhoto: '',
     };
   }
 
@@ -35,16 +39,24 @@ export function loadCoupleProfile(userId) {
     return {
       boyfriendName: '',
       boyfriendNickname: '',
+      boyfriendTraits: '',
+      boyfriendPhoto: '',
       girlfriendName: '',
       girlfriendNickname: '',
+      girlfriendTraits: '',
+      girlfriendPhoto: '',
       ...JSON.parse(saved),
     };
   } catch {
     return {
       boyfriendName: '',
       boyfriendNickname: '',
+      boyfriendTraits: '',
+      boyfriendPhoto: '',
       girlfriendName: '',
       girlfriendNickname: '',
+      girlfriendTraits: '',
+      girlfriendPhoto: '',
     };
   }
 }
