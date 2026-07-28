@@ -13,6 +13,33 @@ import {
   saveDateStartDate,
 } from '../utils/dateProfile';
 
+function compressProfilePhoto(file, maxWidth = 480, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const image = new Image();
+
+    reader.onerror = reject;
+    image.onerror = reject;
+
+    image.onload = () => {
+      const scale = Math.min(1, maxWidth / image.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+
+    reader.onload = () => {
+      image.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function MyPage() {
   const auth = useAuth();
   const userId = auth?.user?.uid;
@@ -23,6 +50,7 @@ export default function MyPage() {
   const [coupleProfile, setCoupleProfile] = useState(() => initialCoupleProfile);
   const [draftProfile, setDraftProfile] = useState(() => initialCoupleProfile);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const dateDayCount = useMemo(() => daysSince(dateStartDate), [dateStartDate]);
   const draftDateDayCount = useMemo(() => daysSince(draftDateStartDate), [draftDateStartDate]);
   const displayDateStartDate = isEditingProfile ? draftDateStartDate : dateStartDate;
@@ -36,11 +64,15 @@ export default function MyPage() {
     setDraftProfile((current) => ({ ...current, [key]: value }));
   };
 
-  const updateProfilePhoto = (key, file) => {
+  const updateProfilePhoto = async (key, file) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => updateProfile(key, reader.result || '');
-    reader.readAsDataURL(file);
+    try {
+      const compressedPhoto = await compressProfilePhoto(file);
+      updateProfile(key, compressedPhoto);
+    } catch (error) {
+      console.error('Profile photo load failed:', error);
+      window.alert('프로필 사진을 불러오지 못했습니다. 다른 사진을 선택해주세요.');
+    }
   };
 
   const editProfile = () => {
@@ -51,6 +83,7 @@ export default function MyPage() {
 
   const saveProfile = async () => {
     try {
+      setIsSavingProfile(true);
       let savedProfile = draftProfile;
       if (firebaseEnabled && userId) {
         savedProfile = await saveUserDateProfile(userId, {
@@ -68,10 +101,13 @@ export default function MyPage() {
     } catch (error) {
       console.error('Date profile save failed:', error);
       window.alert('프로필 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
   const cancelProfileEdit = () => {
+    if (isSavingProfile) return;
     setDraftProfile(coupleProfile);
     setDraftDateStartDate(dateStartDate);
     setIsEditingProfile(false);
@@ -110,8 +146,8 @@ export default function MyPage() {
           <div className="profile-edit-actions">
             {isEditingProfile ? (
               <>
-                <button className="secondary-button" type="button" onClick={cancelProfileEdit}>취소</button>
-                <button className="primary-button" type="button" onClick={saveProfile}>저장</button>
+                <button className="secondary-button" type="button" onClick={cancelProfileEdit} disabled={isSavingProfile}>취소</button>
+                <button className="primary-button" type="button" onClick={saveProfile} disabled={isSavingProfile}>{isSavingProfile ? '저장 중' : '저장'}</button>
               </>
             ) : (
               <button className="primary-button" type="button" onClick={editProfile}>수정</button>
@@ -123,7 +159,7 @@ export default function MyPage() {
           <article className="couple-profile-card boyfriend-profile">
             <label className="couple-profile-photo">
               {profile.boyfriendPhoto ? <img src={profile.boyfriendPhoto} alt="남자친구 프로필" /> : <span>남</span>}
-              {isEditingProfile && <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('boyfriendPhoto', event.target.files?.[0])} />}
+              {isEditingProfile && <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('boyfriendPhoto', event.target.files?.[0])} disabled={isSavingProfile} />}
             </label>
             <div>
               <h2>남자친구 프로필</h2>
@@ -149,7 +185,7 @@ export default function MyPage() {
           <article className="couple-profile-card girlfriend-profile">
             <label className="couple-profile-photo">
               {profile.girlfriendPhoto ? <img src={profile.girlfriendPhoto} alt="여자친구 프로필" /> : <span>여</span>}
-              {isEditingProfile && <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('girlfriendPhoto', event.target.files?.[0])} />}
+              {isEditingProfile && <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('girlfriendPhoto', event.target.files?.[0])} disabled={isSavingProfile} />}
             </label>
             <div>
               <h2>여자친구 프로필</h2>

@@ -214,8 +214,13 @@ async function uploadProfilePhoto(uid, key, src) {
 
   const blob = await dataUrlToBlob(src);
   const photoRef = ref(storage, `users/${uid}/profile/${key}.jpg`);
-  await uploadBytes(photoRef, blob, { contentType: blob.type || 'image/jpeg' });
-  return getDownloadURL(photoRef);
+  try {
+    await uploadBytes(photoRef, blob, { contentType: blob.type || 'image/jpeg' });
+    return getDownloadURL(photoRef);
+  } catch (error) {
+    console.warn('Profile photo upload failed; saving compressed profile photo inline:', error);
+    return src || '';
+  }
 }
 
 export async function saveUserDateProfile(uid, { dateStartDate, coupleProfile }) {
