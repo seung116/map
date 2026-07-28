@@ -51,6 +51,7 @@ export default function MyPage() {
   const [draftProfile, setDraftProfile] = useState(() => initialCoupleProfile);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState(null);
   const dateDayCount = useMemo(() => daysSince(dateStartDate), [dateStartDate]);
   const draftDateDayCount = useMemo(() => daysSince(draftDateStartDate), [draftDateStartDate]);
   const displayDateStartDate = isEditingProfile ? draftDateStartDate : dateStartDate;
@@ -157,10 +158,22 @@ export default function MyPage() {
 
         <section className="couple-profile-section" aria-label="커플 프로필">
           <article className="couple-profile-card boyfriend-profile">
-            <label className="couple-profile-photo">
-              {profile.boyfriendPhoto ? <img src={profile.boyfriendPhoto} alt="남자친구 프로필" /> : <span>남</span>}
-              {isEditingProfile && <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('boyfriendPhoto', event.target.files?.[0])} disabled={isSavingProfile} />}
-            </label>
+            {isEditingProfile ? (
+              <label className="couple-profile-photo">
+                {profile.boyfriendPhoto ? <img src={profile.boyfriendPhoto} alt="남자친구 프로필" /> : <span>남</span>}
+                <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('boyfriendPhoto', event.target.files?.[0])} disabled={isSavingProfile} />
+              </label>
+            ) : (
+              <button
+                className="couple-profile-photo"
+                type="button"
+                onClick={() => profile.boyfriendPhoto && setSelectedProfilePhoto({ src: profile.boyfriendPhoto, alt: '남자친구 프로필' })}
+                disabled={!profile.boyfriendPhoto}
+                aria-label="남자친구 프로필 사진 확대"
+              >
+                {profile.boyfriendPhoto ? <img src={profile.boyfriendPhoto} alt="남자친구 프로필" /> : <span>남</span>}
+              </button>
+            )}
             <div>
               <h2>남자친구 프로필</h2>
               <label>
@@ -183,10 +196,22 @@ export default function MyPage() {
           </article>
 
           <article className="couple-profile-card girlfriend-profile">
-            <label className="couple-profile-photo">
-              {profile.girlfriendPhoto ? <img src={profile.girlfriendPhoto} alt="여자친구 프로필" /> : <span>여</span>}
-              {isEditingProfile && <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('girlfriendPhoto', event.target.files?.[0])} disabled={isSavingProfile} />}
-            </label>
+            {isEditingProfile ? (
+              <label className="couple-profile-photo">
+                {profile.girlfriendPhoto ? <img src={profile.girlfriendPhoto} alt="여자친구 프로필" /> : <span>여</span>}
+                <input type="file" accept="image/*" onChange={(event) => updateProfilePhoto('girlfriendPhoto', event.target.files?.[0])} disabled={isSavingProfile} />
+              </label>
+            ) : (
+              <button
+                className="couple-profile-photo"
+                type="button"
+                onClick={() => profile.girlfriendPhoto && setSelectedProfilePhoto({ src: profile.girlfriendPhoto, alt: '여자친구 프로필' })}
+                disabled={!profile.girlfriendPhoto}
+                aria-label="여자친구 프로필 사진 확대"
+              >
+                {profile.girlfriendPhoto ? <img src={profile.girlfriendPhoto} alt="여자친구 프로필" /> : <span>여</span>}
+              </button>
+            )}
             <div>
               <h2>여자친구 프로필</h2>
               <label>
@@ -209,6 +234,14 @@ export default function MyPage() {
           </article>
         </section>
       </main>
+      {selectedProfilePhoto && (
+        <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setSelectedProfilePhoto(null)}>
+          <div className="lightbox-card profile-photo-lightbox-card" onClick={(event) => event.stopPropagation()}>
+            <button className="lightbox-close-button" type="button" onClick={() => setSelectedProfilePhoto(null)} aria-label="닫기">×</button>
+            <img src={selectedProfilePhoto.src} alt={selectedProfilePhoto.alt} />
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
