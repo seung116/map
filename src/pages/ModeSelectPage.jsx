@@ -30,7 +30,6 @@ export default function ModeSelectPage() {
         <div className="mode-page-links">
           <Link to="/mypage">마이페이지</Link>
           {auth?.isAdmin && <Link to="/admin">관리 페이지</Link>}
-          <Link to="/devlog">개발기록</Link>
         </div>
       </main>
     </AppShell>

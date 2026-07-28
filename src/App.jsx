@@ -10,7 +10,6 @@ import CalendarPage from './pages/CalendarPage';
 import Dashboard from './pages/Dashboard';
 import DateDashboard from './pages/DateDashboard';
 import DateRecordPage from './pages/DateRecordPage';
-import DevLogPage from './pages/DevLogPage';
 import ModeSelectPage from './pages/ModeSelectPage';
 import MyPage from './pages/MyPage';
 import PendingApprovalPage from './pages/PendingApprovalPage';
@@ -85,7 +84,6 @@ export default function App() {
           <Route path="/date/mypage" element={<Navigate to="/mypage" replace />} />
           <Route path="/travel/mypage" element={<Navigate to="/mypage" replace />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/devlog" element={<DevLogPage />} />
 
           <Route path="/region/:regionId" element={<LegacyRegionRedirect />} />
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />
