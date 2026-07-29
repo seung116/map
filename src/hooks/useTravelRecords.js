@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { starterRecords } from '../data/travelData';
 import { firebaseEnabled } from '../lib/firebase';
+import { createRecordNotification } from '../services/notificationStore';
 import { saveRemoteRecords, subscribeRemoteRecords } from '../services/recordStore';
+
+function addedRecords(nextRecords, previousRecords) {
+  const previousIds = new Set(previousRecords.map((record) => String(record.id)));
+  return nextRecords.filter((record) => !previousIds.has(String(record.id)));
+}
 
 export function useTravelRecords(enabled = true, userId = null) {
   const [records, setRecordsState] = useState(() => {
@@ -56,6 +62,13 @@ export function useTravelRecords(enabled = true, userId = null) {
     if (firebaseEnabled) {
       try {
         await saveRemoteRecords(nextRecords, previousRecords, userId);
+        try {
+          await Promise.all(
+            addedRecords(nextRecords, previousRecords).map((record) => createRecordNotification(userId, record)),
+          );
+        } catch (notificationError) {
+          console.warn('Record notification create failed:', notificationError);
+        }
         return true;
       } catch (error) {
         console.error('Firebase records save failed:', error);

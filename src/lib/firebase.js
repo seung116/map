@@ -9,9 +9,20 @@ const firebaseConfig = {
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
 };
 
-export const firebaseEnabled = Object.values(firebaseConfig).every(Boolean);
+const requiredFirebaseConfig = [
+  firebaseConfig.apiKey,
+  firebaseConfig.authDomain,
+  firebaseConfig.projectId,
+  firebaseConfig.storageBucket,
+  firebaseConfig.appId,
+];
+
+export const firebaseEnabled = requiredFirebaseConfig.every(Boolean);
+export const firebaseMessagingEnabled = firebaseEnabled && Boolean(firebaseConfig.messagingSenderId && import.meta.env.VITE_FIREBASE_VAPID_KEY);
+export const firebaseMessagingVapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY || '';
 
 export const firebaseApp = firebaseEnabled
   ? getApps().length

@@ -669,6 +669,74 @@ img {
   padding: 8px 12px;
 }
 
+.notification-center {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: grid;
+  width: min(340px, calc(100vw - 36px));
+  gap: 10px;
+}
+
+.notification-permission-button,
+.notification-toast {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 250, 242, 0.96);
+  box-shadow: 0 16px 36px rgba(62, 72, 58, 0.16);
+}
+
+.notification-permission-button {
+  justify-self: end;
+  color: #365668;
+  padding: 10px 14px;
+  font-weight: 900;
+}
+
+.notification-toast {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}
+
+.notification-toast strong {
+  color: var(--ink);
+  padding-right: 28px;
+  line-height: 1.25;
+}
+
+.notification-toast span {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.notification-toast button:not(.notification-close-button) {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(184, 217, 194, 0.48);
+  color: #365668;
+  padding: 8px 12px;
+  font-weight: 900;
+}
+
+.notification-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
 main {
   width: 100%;
 }

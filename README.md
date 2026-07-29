@@ -32,7 +32,15 @@ For GitHub Pages deployment, add the same values as repository secrets:
 - `VITE_FIREBASE_PROJECT_ID`
 - `VITE_FIREBASE_STORAGE_BUCKET`
 - `VITE_FIREBASE_APP_ID`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID` if you want device notification tokens to be registered
+- `VITE_FIREBASE_VAPID_KEY` if you want device notification tokens to be registered
 - `VITE_BOOTSTRAP_ADMIN_UID` if you need one first admin account to be auto-promoted
+
+## Notifications
+
+When a travel or date record is created, the app writes a notification document under the current user's Firestore profile. Other open browser sessions signed into the same account receive that notification in real time.
+
+If `VITE_FIREBASE_MESSAGING_SENDER_ID` and `VITE_FIREBASE_VAPID_KEY` are configured, users can also allow browser notifications and the app will save that device's FCM token under `users/{uid}/notificationDevices`. A trusted backend such as Firebase Cloud Functions must read those device tokens and send FCM messages if you want notifications to appear while the app is fully closed. Do not put an FCM server key in the frontend.
 
 ## Firebase limits and access control
 
@@ -97,6 +105,18 @@ service cloud.firestore {
         allow create, update: if isApproved()
           && request.auth.uid == userId
           && request.resource.data.userId == request.auth.uid;
+      }
+
+      match /notifications/{notificationId} {
+        allow read: if isAdmin() || (isApproved() && request.auth.uid == userId);
+        allow create: if isApproved()
+          && request.auth.uid == userId
+          && request.resource.data.type == "record-created";
+        allow update, delete: if isApproved() && request.auth.uid == userId;
+      }
+
+      match /notificationDevices/{deviceId} {
+        allow read, write: if isApproved() && request.auth.uid == userId;
       }
     }
   }
