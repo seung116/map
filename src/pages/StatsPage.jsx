@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import StatCard from '../components/StatCard';
 import { regions } from '../data/travelData';
@@ -22,13 +23,28 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
   const currentYear = String(new Date().getFullYear());
   const thisYearTripCount = tripGroups.filter((trip) => (trip.startDate || '').startsWith(currentYear)).length;
   const archiveLabel = isDateArchive ? '데이트' : '여행';
+  const activeStatsClass = isDateArchive ? 'date-stats-page' : 'travel-stats-page';
+  const archiveDayCount = new Set(records.map((record) => recordStartDate(record)).filter(Boolean)).size;
+  const regionStats = Object.entries(regionCounts)
+    .sort(([, countA], [, countB]) => countB - countA)
+    .slice(0, 4);
+  const maxRegionCount = Math.max(1, ...regionStats.map(([, count]) => count));
 
   return (
     <AppShell>
-      <main className="page">
+      <main className={`page mobile-screen stats-page ${activeStatsClass}`}>
         <section className="section-heading">
-          <h1>내 {archiveLabel} 통계</h1>
+          <span>{isDateArchive ? 'DATE JOURNEY' : 'MY JOURNEY'}</span>
+          <h1>
+            <span className="desktop-title">내 {archiveLabel} 통계</span>
+            <span className="mobile-title">통계</span>
+          </h1>
+          <p>기록이 쌓일수록 우리의 지도가 완성돼요.</p>
         </section>
+        <nav className="stats-mode-tabs" aria-label="통계 종류">
+          <Link to="/travel/stats">여행통계</Link>
+          <Link to="/date/stats">데이트통계</Link>
+        </nav>
         <section className="stats-progress-panel">
           <div className="progress-ring" style={{ '--progress': `${completion}%` }}>
             <strong>{isDateArchive ? records.length : `${completion}%`}</strong>
@@ -39,13 +55,31 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
             <span>{isDateArchive ? `올해 ${thisYearTripCount}번의 데이트를 기록했습니다.` : `달성률 ${completion}% · 아직 ${unvisitedCount}곳의 여행 발자국이 남아 있습니다.`}</span>
           </div>
         </section>
-        <div className="stats-grid">
+        <div className="stats-grid desktop-stats-grid">
           <StatCard label={isDateArchive ? '데이트한 지역 수' : '방문한 지역 수'} value={`${visitedCount}곳`} />
           {!isDateArchive && <StatCard label="안 가본 지역 수" value={`${unvisitedCount}곳`} />}
           <StatCard label={isDateArchive ? '가장 자주 간 곳' : '가장 많이 간 지역'} value={mostRegion || '-'} />
           <StatCard label={isDateArchive ? '최근 데이트 장소' : '최근 방문 지역'} value={recentRegion} />
           <StatCard label={`올해 ${archiveLabel} 횟수`} value={`${thisYearTripCount}회`} />
         </div>
+        <div className="stats-grid mobile-stats-grid" aria-label={`${archiveLabel} 요약`}>
+          <StatCard label={`총 ${archiveLabel}`} value={tripGroups.length} />
+          <StatCard label={`${archiveLabel}일`} value={archiveDayCount} />
+          <StatCard label={`최근 ${archiveLabel}`} value={recentRegion} />
+        </div>
+        <section className="region-record-panel" aria-label="지역별 기록">
+          <h2>지역별 기록</h2>
+          <div className="region-record-list">
+            {(regionStats.length ? regionStats : [['제주', 0], ['서울', 0], ['부산', 0], ['강원', 0]]).map(([name, count]) => (
+              <div className="region-record-row" key={name}>
+                <span>{name}</span>
+                <div>
+                  <i style={{ width: `${Math.max(32, (count / maxRegionCount) * 198)}px` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
         <section className="chart-panel">
           <h2>월별 {archiveLabel} 횟수</h2>
           <div className="bar-chart">

@@ -43,6 +43,11 @@ function monthLabel(monthKey) {
   return `${year}년 ${Number(month)}월`;
 }
 
+function shortMonthLabel(monthKey) {
+  const [year, month] = monthKey.split('-');
+  return `${year.slice(-2)}.${Number(month)}`;
+}
+
 function buildCalendarDays(monthKey) {
   const [year, month] = monthKey.split('-').map(Number);
   const firstDate = new Date(year, month - 1, 1);
@@ -345,7 +350,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
 
   return (
     <AppShell>
-      <main className="page calendar-page">
+      <main className="page mobile-screen calendar-page">
         <section className="section-heading inline calendar-heading">
           <div>
             <h1>{isAllArchive ? '달력' : `${archiveLabel} 달력`}</h1>
@@ -354,10 +359,12 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
             </span>
           </div>
           <div className="calendar-controls" aria-label="달력 월 이동">
-            <button type="button" onClick={() => setCurrentMonth(moveMonth(currentMonth, -1))}>이전</button>
-            <strong>{monthLabel(currentMonth)}</strong>
-            <button type="button" onClick={() => setCurrentMonth(moveMonth(currentMonth, 1))}>다음</button>
-            <button type="button" onClick={() => setCurrentMonth(formatMonthKey(new Date()))}>오늘</button>
+            <button className="calendar-prev-button" type="button" onClick={() => setCurrentMonth(moveMonth(currentMonth, -1))} aria-label="이전 달">&lt;</button>
+            <strong>
+              <span className="calendar-month-label-desktop">{monthLabel(currentMonth)}</span>
+              <span className="calendar-month-label-mobile">{shortMonthLabel(currentMonth)}</span>
+            </strong>
+            <button className="calendar-next-button" type="button" onClick={() => setCurrentMonth(moveMonth(currentMonth, 1))} aria-label="다음 달">&gt;</button>
           </div>
         </section>
 
@@ -376,9 +383,11 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
               const tripBlocks = tripBlocksByDate[day.key] || [];
               const specialEvents = specialEventsByDate[day.key] || [];
               const holiday = holidaysByDate[day.key];
+              const hasDateRecord = tripBlocks.some((trip) => trip.records[0]?.type === 'date') || specialEvents.length > 0;
+              const hasTravelRecord = tripBlocks.some((trip) => trip.records[0]?.type !== 'date');
               return (
                 <article
-                  className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''} ${day.dayOfWeek === 0 ? 'is-sunday' : ''} ${day.dayOfWeek === 6 ? 'is-saturday' : ''} ${holiday ? 'is-holiday' : ''}`}
+                  className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''} ${day.dayOfWeek === 0 ? 'is-sunday' : ''} ${day.dayOfWeek === 6 ? 'is-saturday' : ''} ${holiday ? 'is-holiday' : ''} ${hasTravelRecord ? 'has-travel-record' : ''} ${hasDateRecord ? 'has-date-record' : ''}`}
                   key={day.key}
                 >
                   <button
@@ -394,7 +403,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
                     {tripBlocks.map((trip) => (
                       <button
                         key={trip.id}
-                        className={`calendar-trip-block trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
+                        className={`calendar-trip-block ${trip.records[0]?.type === 'date' ? 'is-date-event' : 'is-travel-event'} trip-color-${trip.colorIndex} ${trip.isStart ? 'is-start' : 'is-middle'} ${trip.isEnd ? 'is-end' : ''}`}
                         style={trip.calendarColor ? { '--calendar-block-bg': trip.calendarColor } : undefined}
                         type="button"
                         onClick={() => setSelectedDate(day.key)}
@@ -428,6 +437,11 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
             })}
           </div>
         </section>
+
+        <div className="calendar-type-legend" aria-hidden="true">
+          <span className="calendar-type-travel">● 여행</span>
+          <span className="calendar-type-date">● 데이트</span>
+        </div>
 
         <section className="calendar-detail-panel" aria-label={`${dateLabel(selectedDate)} ${archiveLabel} 기록`}>
           <div className="calendar-detail-heading">

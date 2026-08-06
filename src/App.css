@@ -627,6 +627,18 @@ img {
   border-radius: 16px;
 }
 
+.brand-logo-image {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.brand-logo-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .brand strong,
 .brand small {
   display: block;
@@ -3715,5 +3727,1832 @@ main {
 
   .bar-column {
     min-width: 30px;
+  }
+}
+
+/* Figma mobile design overrides */
+:root {
+  --figma-bg: #f6f2e6;
+  --figma-card: #fffcf4;
+  --figma-line: #c7c7b0;
+  --figma-ink: #262e24;
+  --figma-muted: #616e5c;
+  --figma-green: #619c73;
+  --figma-map: #b0d1b8;
+  --figma-red: #c76359;
+  --figma-pink: #e6868c;
+  --figma-gray: #c0c0c0;
+}
+
+.mobile-brand-image,
+.mobile-figma-nav,
+.bottom-nav,
+.mobile-title,
+.stats-mode-tabs,
+.mobile-stats-grid,
+.region-record-panel,
+.mobile-love-summary,
+.date-figma-screen,
+.travel-figma-screen,
+.calendar-month-label-mobile,
+.calendar-type-legend {
+  display: none;
+}
+
+.stats-page .section-heading > span,
+.stats-page .section-heading p {
+  display: none;
+}
+
+@media (max-width: 430px) {
+body,
+#root {
+  background: var(--figma-bg);
+}
+
+.app-header,
+.mobile-screen,
+.bottom-nav {
+  width: min(100%, 390px);
+  margin-inline: auto;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 57px;
+  padding: 0 13px;
+  border-right: 1px solid var(--figma-line);
+  border-bottom: 1px solid rgba(199, 199, 176, 0.45);
+  border-left: 1px solid var(--figma-line);
+  background: var(--figma-bg);
+  box-shadow: 2px 0 2px rgba(0, 0, 0, 0.25), 0 4px 2px rgba(0, 0, 0, 0.04);
+  backdrop-filter: none;
+}
+
+.brand {
+  width: 57px;
+  height: 57px;
+}
+
+.brand {
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.mobile-brand-image {
+  width: 28px;
+  height: 34px;
+  margin: 11px 0 0 3px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.brand .brand-mark,
+.desktop-nav {
+  display: none;
+}
+
+.mobile-brand-image {
+  display: block;
+}
+
+.mobile-figma-nav {
+  display: flex;
+}
+
+.top-nav {
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 22px;
+  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--figma-muted);
+}
+
+.top-nav a {
+  padding: 0;
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+.profile-nav-link {
+  display: block;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  margin-left: -1px;
+}
+
+.profile-nav-link img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.page.mobile-screen,
+.travel-map-page {
+  max-width: 390px;
+  min-height: calc(100vh - 57px);
+  padding: 19px 15px 96px;
+  border-right: 1px solid var(--figma-line);
+  border-left: 1px solid var(--figma-line);
+  background: var(--figma-bg);
+  color: var(--figma-ink);
+}
+
+.section-heading {
+  display: block;
+  margin: 0;
+}
+
+.section-heading > span,
+.date-hero p,
+.home-map-heading::before {
+  margin: 0 0 5px;
+  color: var(--figma-green);
+  font-family: "Gaegu", system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+.section-heading h1,
+.date-hero h1,
+.home-map-heading h1 {
+  margin: 0;
+  color: var(--figma-ink);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.section-heading p,
+.date-hero span,
+.home-map-heading span {
+  display: block;
+  margin-top: 10px;
+  color: var(--figma-muted);
+  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.mode-select-page {
+  display: block;
+  padding-top: 60px;
+}
+
+.mode-select-page .section-heading,
+.mode-page-links,
+.mode-card p {
+  display: none;
+}
+
+.mode-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 165px);
+  gap: 28px;
+}
+
+.mode-card {
+  min-height: 177px;
+  border-color: var(--figma-line);
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: none;
+}
+
+.mode-card::before {
+  background: var(--mode-bg);
+}
+
+.mode-card span {
+  position: absolute;
+  left: 15px;
+  top: 64px;
+  color: #fffcf5;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.travel-mode span {
+  top: 92px;
+}
+
+.mode-card h2 {
+  position: absolute;
+  left: 15px;
+  top: 87px;
+  width: 135px;
+  margin: 0;
+  color: #fffcf5;
+  font-size: 36px;
+  line-height: normal;
+  white-space: normal;
+}
+
+.mode-card h2 span {
+  position: static;
+  display: block;
+  width: auto;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.travel-mode h2 {
+  top: 115px;
+}
+
+.travel-mode {
+  --mode-bg: linear-gradient(90deg, #619c73, #6ea3b8);
+}
+
+.date-mode {
+  --mode-bg: linear-gradient(90deg, #c76359, #e8b2a1);
+}
+
+.primary-button,
+.secondary-button,
+.submit-button {
+  min-height: 36px;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.primary-button,
+.submit-button {
+  border: 1px solid var(--figma-green);
+  background: var(--figma-green);
+  color: #fffcf5;
+}
+
+.secondary-button {
+  border: 1px solid var(--figma-line);
+  background: var(--figma-card);
+  color: var(--figma-muted);
+}
+
+.home-map-section,
+.content-grid.map-section,
+.home-map-layout {
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+.travel-legacy-content {
+  display: block;
+}
+
+.travel-map-page {
+  position: relative;
+}
+
+.travel-map-page .travel-legacy-content {
+  display: none;
+}
+
+.travel-map-page {
+  min-height: 787px;
+  padding: 0;
+}
+
+.travel-figma-screen {
+  position: relative;
+  display: block;
+  width: 390px;
+  min-height: 787px;
+  background: var(--figma-bg);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.travel-figma-screen h1 {
+  position: absolute;
+  top: 19px;
+  left: 16px;
+  width: 230px;
+  height: 38px;
+  margin: 0;
+  color: var(--figma-ink);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 38px;
+}
+
+.travel-figma-screen > p {
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  width: 250px;
+  margin: 0;
+  color: var(--figma-muted);
+  font-size: 13px;
+  line-height: 17px;
+}
+
+.figma-travel-actions {
+  position: absolute;
+  top: 109px;
+  left: 15px;
+  display: flex;
+  gap: 8px;
+}
+
+.figma-travel-actions a {
+  display: grid;
+  height: 36px;
+  min-height: 36px;
+  place-items: center;
+  border: 1px solid var(--figma-line);
+  border-radius: 999px;
+  background: var(--figma-card);
+  padding: 0 14px;
+  color: var(--figma-muted);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.figma-travel-actions a:first-child {
+  border-color: var(--figma-green);
+  background: var(--figma-green);
+  color: #fffcf5;
+}
+
+.figma-travel-map-slot {
+  position: absolute;
+  top: 161px;
+  left: 0;
+  width: 390px;
+  height: calc(100vh - 218px);
+  min-height: 626px;
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+  background: var(--figma-bg);
+  padding: 0 10px 24px;
+}
+
+.figma-travel-map-slot .map-shell {
+  display: grid;
+  min-height: 100%;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.figma-travel-map-slot .map-toolbar {
+  padding: 0 5px;
+}
+
+.figma-travel-map-slot .map-toolbar span {
+  min-height: 32px;
+  background: var(--figma-card);
+  color: var(--figma-green);
+  font-size: 13px;
+}
+
+.figma-travel-map-slot .staged-map {
+  min-height: 390px;
+  border-color: var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+}
+
+.figma-travel-map-slot .province-image-map {
+  width: 100%;
+  padding: 8px;
+}
+
+.figma-travel-map-slot .province-click-layer {
+  inset: 8px;
+}
+
+.figma-travel-map-slot .national-map-overlay {
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+}
+
+.figma-travel-map-slot .province-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 5px;
+}
+
+.figma-travel-map-slot .province-list button {
+  min-height: 62px;
+  border-color: var(--figma-line);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.figma-travel-map-slot .province-list strong {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.figma-travel-map-slot .province-list span {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.figma-travel-map-slot .map-legend {
+  gap: 8px 12px;
+  padding: 0 5px 8px;
+  font-size: 12px;
+}
+
+.home-map-heading {
+  position: relative;
+  display: block;
+  height: 165px;
+  margin-bottom: 0;
+}
+
+.home-map-heading::before {
+  display: none;
+  content: "";
+}
+
+.home-map-heading h1 {
+  position: absolute;
+  top: 19px;
+  left: 1px;
+  width: 230px;
+  height: 38px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 30px;
+  line-height: 38px;
+}
+
+.home-map-heading span {
+  position: absolute;
+  top: 60px;
+  left: 1px;
+  width: 250px;
+  margin: 0;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  line-height: 17px;
+}
+
+.home-map-actions {
+  position: absolute;
+  top: 109px;
+  left: 0;
+  display: flex;
+  gap: 8px;
+  margin: 0;
+}
+
+.home-map-actions a {
+  display: grid;
+  height: 36px;
+  min-height: 36px;
+  place-items: center;
+  padding: 0 14px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  line-height: 1;
+}
+
+.date-dashboard-page,
+.date-hero {
+  display: block;
+}
+
+.date-dashboard-page {
+  position: relative;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.date-legacy-content {
+  display: block;
+}
+
+.date-hero {
+  border: 0;
+  padding: 0;
+}
+
+.date-hero p {
+  display: none;
+  color: var(--figma-pink);
+}
+
+.date-hero-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 29px;
+}
+
+.date-dashboard-page .date-hero h1 {
+  height: 38px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.date-dashboard-page .date-hero h1 .desktop-title,
+.date-dashboard-page .date-hero h1 .mobile-title {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.date-dashboard-page .date-hero span {
+  margin-top: 3px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  line-height: 1.25;
+}
+
+.date-dashboard-page .date-hero > div > span .desktop-title,
+.date-dashboard-page .date-hero > div > span .mobile-title {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.date-dashboard-page .primary-button,
+.date-dashboard-page .secondary-button {
+  height: 36px;
+  min-height: 36px;
+  padding: 8px 14px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.date-dashboard-page .primary-button {
+  border-color: var(--figma-pink);
+  background: var(--figma-pink);
+}
+
+.date-start-panel {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.date-start-panel > div,
+.date-start-panel label {
+  min-height: 104px;
+  height: 104px;
+  border-color: var(--figma-line);
+  background: var(--figma-card);
+  padding: 16px;
+  box-shadow: none;
+}
+
+.date-start-panel span,
+.date-start-panel label {
+  display: block;
+  color: var(--figma-red);
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.date-start-panel strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.date-start-panel strong .desktop-title,
+.date-start-panel strong .mobile-title {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.date-timeline-section {
+  min-height: 361px;
+  margin-top: 16px;
+  border: 1px solid var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 17px;
+}
+
+.page.mobile-screen.date-dashboard-page {
+  min-height: 787px;
+  padding: 0;
+}
+
+.date-dashboard-page .date-legacy-content {
+  display: none;
+}
+
+.date-figma-screen {
+  position: relative;
+  display: block;
+  width: 390px;
+  height: 787px;
+  background: var(--figma-bg);
+}
+
+.date-figma-screen h1 {
+  position: absolute;
+  top: 19px;
+  left: 16px;
+  width: 180px;
+  margin: 0;
+  color: var(--figma-ink);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 38px;
+}
+
+.date-figma-screen > p {
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  width: 250px;
+  margin: 0;
+  color: var(--figma-muted);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 17px;
+}
+
+.figma-date-actions {
+  position: absolute;
+  top: 109px;
+  left: 15px;
+  display: flex;
+  width: 360px;
+  gap: 8px;
+}
+
+.figma-date-actions a {
+  display: grid;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--figma-line);
+  border-radius: 999px;
+  background: var(--figma-card);
+  padding: 0 13px;
+  color: var(--figma-muted);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.figma-date-actions a:first-child {
+  border-color: var(--figma-pink);
+  background: var(--figma-pink);
+  color: #fffcf5;
+}
+
+.figma-date-stats {
+  position: absolute;
+  top: 161px;
+  left: 15px;
+  display: grid;
+  width: 360px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.figma-date-stats article {
+  height: 104px;
+  border: 1px solid var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 16px;
+}
+
+.figma-date-stats span {
+  display: block;
+  color: var(--figma-red);
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.figma-date-stats strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--figma-ink);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 38px;
+  white-space: nowrap;
+}
+
+.figma-recent-dates {
+  position: absolute;
+  top: 281px;
+  left: 15px;
+  width: 360px;
+  min-height: 361px;
+  border: 1px solid var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 17px;
+}
+
+.figma-recent-dates h2 {
+  margin: 0 0 29px;
+  color: var(--figma-ink);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.figma-recent-dates > div {
+  display: grid;
+  gap: 29px;
+}
+
+.figma-date-row {
+  display: grid;
+  min-height: 20px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  color: var(--figma-ink);
+}
+
+.figma-date-row time {
+  color: var(--figma-red);
+  font-size: 14px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.figma-date-row span {
+  overflow: hidden;
+  color: var(--figma-ink);
+  font-size: 17px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-timeline-section .section-heading.inline {
+  display: block;
+}
+
+.date-timeline-section h2 {
+  margin: 0 0 29px;
+  font-size: 24px;
+  line-height: 1.17;
+}
+
+.date-section-actions,
+.date-record-card img,
+.date-record-card-title p {
+  display: none;
+}
+
+.date-timeline {
+  display: grid;
+  gap: 29px;
+}
+
+.date-record-card {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 13px;
+  min-height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.date-record-card-title {
+  display: contents;
+}
+
+.date-record-card-title h3 {
+  margin: 0;
+  grid-column: 2;
+  color: var(--figma-ink);
+  font-size: 17px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-record-card-title time {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--figma-red);
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.album-page .section-heading {
+  margin-bottom: 18px;
+}
+
+.album-page .section-heading > span {
+  display: none;
+}
+
+.album-mode-tabs {
+  display: flex;
+  gap: 15px;
+  margin: 0 0 10px -5px;
+}
+
+.album-mode-tabs a {
+  display: grid;
+  height: 36px;
+  min-width: 81px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--figma-gray);
+  color: #fffcf5;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.travel-album-page .album-mode-tabs a:first-child {
+  background: var(--figma-green);
+}
+
+.date-album-page .album-mode-tabs a:last-child {
+  background: var(--figma-pink);
+}
+
+.album-timeline {
+  display: grid;
+  gap: 30px;
+}
+
+.album-year {
+  position: relative;
+  border: 0;
+  border-radius: 10px;
+  background: var(--figma-card);
+  padding: 20px 11px 20px 20px;
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.35);
+}
+
+.album-year::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 11px;
+  border-radius: 10px 0 0 10px;
+  background: var(--figma-green);
+  content: "";
+}
+
+.date-album-page .album-year::before {
+  background: var(--figma-pink);
+}
+
+.album-year-heading {
+  align-items: start;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  padding-bottom: 12px;
+}
+
+.album-trip-title h2 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.album-year-heading span {
+  color: rgba(38, 46, 36, 0.8);
+  font-size: 12px;
+}
+
+.album-trip-edit,
+.album-month-heading span,
+.album-caption small {
+  display: none;
+}
+
+.album-month {
+  margin-top: 10px;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.album-month-heading {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.album-month-heading h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.album-grid {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0 10px;
+}
+
+.album-item,
+.album-photo {
+  width: 79px;
+}
+
+.album-item {
+  min-width: 79px;
+  border: 0;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.album-photo {
+  height: 105px;
+  border-radius: 5px 5px 0 0;
+  background: #d9d9d9;
+}
+
+.album-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.album-caption {
+  min-height: 37px;
+  padding: 5px;
+  color: rgba(38, 46, 36, 0.8);
+  font-size: 10px;
+  text-align: left;
+}
+
+.album-caption strong {
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.calendar-page {
+  position: relative;
+  min-height: 787px;
+  padding: 19px 3px 112px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.calendar-heading {
+  position: relative;
+  display: block;
+  height: 95px;
+  padding: 0 12px;
+}
+
+.calendar-heading h1::before {
+  display: none;
+  content: "";
+}
+
+.calendar-summary,
+.calendar-month-meta,
+.calendar-month-label-desktop {
+  display: none;
+}
+
+.calendar-heading h1 {
+  position: absolute;
+  top: 0;
+  left: 1px;
+  margin: 0;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 30px;
+  line-height: 38px;
+}
+
+.calendar-controls {
+  position: absolute;
+  top: 51px;
+  left: 109px;
+  display: grid;
+  width: 150px;
+  height: 33px;
+  grid-template-columns: 40px 70px 40px;
+  align-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--figma-ink);
+  overflow: visible;
+}
+
+.calendar-controls strong {
+  display: grid;
+  z-index: 1;
+  min-width: 0;
+  height: 100%;
+  place-items: center;
+  color: #000;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.calendar-month-label-mobile {
+  display: inline;
+}
+
+.calendar-controls button {
+  position: static;
+  z-index: 3;
+  display: grid;
+  width: 40px;
+  height: 31px;
+  min-height: 31px;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  padding: 0;
+  color: var(--figma-ink);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.calendar-controls button:hover,
+.calendar-controls button:focus-visible {
+  background: transparent !important;
+  box-shadow: none;
+}
+
+.calendar-panel {
+  width: 384px;
+  height: 562px;
+  min-height: 562px;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0 2px;
+  box-shadow: none;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  grid-template-columns: repeat(7, 51px);
+  gap: 0;
+  justify-content: start;
+  overflow: hidden;
+}
+
+.calendar-weekdays {
+  height: 18px;
+  margin-bottom: 10px;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.calendar-weekdays span {
+  display: grid;
+  height: 18px;
+  place-items: center;
+  padding: 0;
+  color: var(--figma-muted);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.calendar-grid {
+  grid-auto-rows: 89px;
+  height: 534px;
+}
+
+.calendar-day {
+  --calendar-day-padding: 0;
+  position: relative;
+  display: block;
+  width: 51px;
+  height: 89px;
+  min-height: 89px;
+  max-height: 89px;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 8px;
+  background: transparent !important;
+  padding: 0;
+  box-shadow: none;
+}
+
+.calendar-day.has-travel-record {
+  background: rgba(176, 209, 184, 0.8) !important;
+}
+
+.calendar-day.has-date-record {
+  background: rgba(199, 99, 89, 0.65) !important;
+}
+
+.calendar-day.is-muted.has-travel-record,
+.calendar-day.is-muted.has-date-record {
+  opacity: 1;
+}
+
+.calendar-day.has-travel-record .calendar-day-top,
+.calendar-day.has-travel-record.is-today .calendar-day-top,
+.calendar-day.has-travel-record.is-sunday .calendar-day-top,
+.calendar-day.has-travel-record.is-holiday .calendar-day-top,
+.calendar-day.has-travel-record.is-saturday .calendar-day-top {
+  color: var(--figma-ink);
+}
+
+.calendar-day.has-date-record .calendar-day-top,
+.calendar-day.has-date-record.is-today .calendar-day-top,
+.calendar-day.has-date-record.is-sunday .calendar-day-top,
+.calendar-day.has-date-record.is-holiday .calendar-day-top,
+.calendar-day.has-date-record.is-saturday .calendar-day-top {
+  color: var(--figma-ink);
+}
+
+.calendar-day.is-selected {
+  outline: 1px solid rgba(38, 46, 36, 0.28);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.calendar-day.is-muted {
+  opacity: 0.45;
+}
+
+.calendar-day-top {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 100%;
+  height: 16px;
+  min-height: 16px;
+  place-items: start;
+  padding: 3px 0 0 5px;
+  text-align: left;
+  color: var(--figma-ink);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.calendar-day.is-today .calendar-day-top {
+  color: var(--figma-red);
+  font-weight: 700;
+}
+
+.calendar-day.is-today,
+.calendar-day.is-today.is-sunday,
+.calendar-day.is-today.is-holiday,
+.calendar-day.is-today.is-saturday {
+  box-shadow: none;
+}
+
+.calendar-day-top time,
+.calendar-day.is-today .calendar-day-top time,
+.calendar-day.is-today.is-sunday .calendar-day-top time,
+.calendar-day.is-today.is-holiday .calendar-day-top time,
+.calendar-day.is-today.is-saturday .calendar-day-top time {
+  position: relative;
+  z-index: 3;
+  width: auto;
+  height: auto;
+  place-items: start;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+}
+
+.calendar-trip-blocks {
+  position: absolute;
+  inset: 0;
+  display: block;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  margin-top: 0;
+  pointer-events: none;
+}
+
+.calendar-trip-block,
+.calendar-special-block {
+  display: none;
+}
+
+.calendar-trip-block::before,
+.calendar-trip-block::after {
+  display: none;
+  content: none;
+}
+
+.calendar-trip-block:hover,
+.calendar-special-block:hover {
+  border-color: transparent;
+  filter: none;
+  transform: none;
+}
+
+.calendar-trip-block small,
+.calendar-special-block small {
+  display: none;
+}
+
+.calendar-trip-block.is-travel-event {
+  background: var(--figma-map) !important;
+  color: var(--figma-ink);
+}
+
+.calendar-trip-block.is-date-event,
+.calendar-special-block {
+  background: var(--figma-red) !important;
+  color: #fff;
+}
+
+.calendar-trip-block strong,
+.calendar-special-block strong {
+  display: block;
+  max-height: 32px;
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.calendar-type-legend {
+  display: flex;
+  gap: 31px;
+  margin: 12px 0 0 10px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.calendar-type-travel {
+  color: var(--figma-green);
+}
+
+.calendar-type-date {
+  color: var(--figma-red);
+}
+
+.calendar-detail-panel {
+  display: block;
+  margin: 18px 12px 0;
+  border-color: var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 14px;
+  box-shadow: none;
+}
+
+.calendar-detail-heading h2 {
+  font-size: 18px;
+}
+
+.calendar-detail-heading strong {
+  background: rgba(199, 199, 176, 0.2);
+  color: var(--figma-muted);
+}
+
+.desktop-title,
+.stats-mode-tabs,
+.mobile-stats-grid {
+  display: none;
+}
+
+.mobile-title {
+  display: inline;
+}
+
+.stats-page .section-heading > span,
+.stats-page .section-heading p,
+.stats-page .desktop-title {
+  display: none;
+}
+
+.stats-page .mobile-title {
+  display: inline;
+}
+
+.stats-mode-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 11px;
+}
+
+.stats-mode-tabs a {
+  display: grid;
+  width: 81px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--figma-gray);
+  color: #fffcf5;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.travel-stats-page .stats-mode-tabs a:first-child {
+  background: var(--figma-green);
+}
+
+.date-stats-page .stats-mode-tabs a:last-child {
+  background: var(--figma-pink);
+}
+
+.stats-progress-panel {
+  display: block;
+  margin-top: 21px;
+  border-color: var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 16px;
+  text-align: center;
+  box-shadow: none;
+}
+
+.progress-ring {
+  width: auto;
+  height: auto;
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+
+.progress-ring::before {
+  display: none;
+}
+
+.progress-ring strong {
+  font-size: 54px;
+}
+
+.progress-ring span {
+  color: var(--figma-green);
+  font-size: 14px;
+}
+
+.date-stats-page .progress-ring span {
+  color: var(--figma-pink);
+}
+
+.stats-progress-panel h2 {
+  margin: 8px 0 0;
+  color: var(--figma-muted);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.stats-progress-panel h2 + span {
+  display: none;
+}
+
+.desktop-stats-grid {
+  display: none;
+}
+
+.mobile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.stat-card {
+  min-height: 92px;
+  border-color: var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 16px;
+  box-shadow: none;
+}
+
+.stat-card span {
+  color: var(--figma-muted);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 12px;
+}
+
+.stat-card strong {
+  font-size: 30px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.region-record-panel {
+  display: block;
+  margin-top: 27px;
+  padding: 0 17px;
+}
+
+.region-record-panel h2 {
+  margin: 0 0 15px;
+  color: var(--figma-ink);
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.region-record-list {
+  display: grid;
+  gap: 12px;
+}
+
+.region-record-row {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: center;
+  gap: 3px;
+}
+
+.region-record-row span {
+  color: var(--figma-ink);
+  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.region-record-row div {
+  height: 16px;
+}
+
+.region-record-row i {
+  display: block;
+  max-width: 198px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--figma-green);
+}
+
+.date-stats-page .region-record-row i {
+  background: var(--figma-pink);
+}
+
+.chart-panel {
+  margin-top: 9px;
+  border: 0;
+  background: transparent;
+  padding: 0 10px;
+  box-shadow: none;
+}
+
+.chart-panel h2 {
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+.bar-chart {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  height: 170px;
+  gap: 0;
+  border: 1px solid var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 39px 10px 15px;
+}
+
+.bar-column {
+  display: grid;
+  min-width: 0;
+  height: 116px;
+  grid-template-rows: 20px 1fr 20px;
+  justify-items: center;
+  gap: 4px;
+  align-items: end;
+}
+
+.bar-column strong {
+  display: block;
+  color: var(--figma-ink);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.bar-column span {
+  width: 12px;
+  min-height: 16px;
+  border-radius: 999px 999px 0 0;
+  background: var(--figma-green);
+}
+
+.date-stats-page .bar-column span {
+  background: var(--figma-pink);
+}
+
+.bar-column small {
+  color: var(--figma-ink);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.bottom-nav {
+  position: fixed;
+  right: 0;
+  bottom: 8px;
+  left: 0;
+  z-index: 40;
+  display: none;
+  height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--figma-line);
+  border-radius: 18px;
+  background: var(--figma-card);
+  padding: 0 18px;
+  color: var(--figma-muted);
+  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.bottom-nav-write {
+  color: var(--figma-green);
+  font-family: "Gaegu", system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.my-page {
+  display: flex;
+  min-height: calc(100vh - 57px);
+  flex-direction: column;
+  gap: 0;
+  padding-inline: 10px;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.my-page .section-heading {
+  order: 1;
+  margin-left: 0;
+}
+
+.my-page .section-heading > span {
+  display: none;
+}
+
+.my-page .date-start-panel {
+  order: 5;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.my-page .date-start-panel > div,
+.my-page .date-start-panel label {
+  min-height: auto;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.my-page .date-start-panel span,
+.my-page .date-start-panel label {
+  color: var(--figma-ink);
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.my-page .date-start-panel strong {
+  display: inline;
+  font-size: 30px;
+}
+
+.my-page .date-start-panel > div {
+  display: none;
+}
+
+.my-page:not(.is-editing) .date-start-panel label {
+  display: none;
+}
+
+.my-page .date-start-panel input {
+  margin-top: 8px;
+  border-color: var(--figma-line);
+  background: var(--figma-card);
+}
+
+.couple-profile-header {
+  order: 4;
+  display: flex;
+  align-items: center;
+  margin-top: 137px;
+}
+
+.couple-profile-header h2,
+.couple-profile-header span {
+  display: none;
+}
+
+.profile-edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: 144px;
+}
+
+.profile-edit-actions .primary-button,
+.profile-edit-actions .secondary-button {
+  height: 36px;
+  min-width: 81px;
+  padding: 8px 14px;
+  background: var(--figma-gray);
+  border-color: var(--figma-gray);
+  color: #fffcf5;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.couple-profile-section {
+  order: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  height: auto;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  overflow: visible;
+}
+
+.couple-profile-card {
+  position: relative;
+  grid-template-columns: 1fr;
+  gap: 7px;
+  min-height: 0;
+  border: 1px solid var(--figma-line);
+  border-radius: 12px;
+  background: var(--figma-card);
+  padding: 8px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.couple-profile-card::before {
+  display: block;
+  width: calc(100% + 16px);
+  height: 10px;
+  margin: -8px -8px 0;
+  content: "";
+}
+
+.boyfriend-profile::before {
+  background: var(--figma-green);
+}
+
+.girlfriend-profile::before {
+  background: var(--figma-pink);
+}
+
+.couple-profile-photo {
+  width: 100%;
+  height: 116px;
+  border: 1px solid rgba(199, 199, 176, 0.65);
+  border-radius: 8px;
+  background: #dcebd9;
+}
+
+.girlfriend-profile .couple-profile-photo {
+  background: #f8d7df;
+}
+
+.couple-profile-card h2 {
+  margin: 1px 0 0;
+  color: var(--figma-ink);
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.couple-profile-card label {
+  display: grid;
+  gap: 2px;
+  min-height: 35px;
+  margin-top: 4px;
+  border: 1px solid rgba(199, 199, 176, 0.7);
+  border-radius: 8px;
+  background: #fffdf8;
+  padding: 5px 7px;
+  color: var(--figma-muted);
+  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.boyfriend-profile label {
+  border-color: rgba(97, 156, 115, 0.42);
+}
+
+.girlfriend-profile label {
+  border-color: rgba(230, 134, 140, 0.42);
+}
+
+.couple-profile-card input,
+.couple-profile-card textarea {
+  min-height: 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--figma-ink);
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.couple-profile-card input[readonly],
+.couple-profile-card textarea[readonly] {
+  border-color: transparent;
+  background: transparent;
+  padding: 0;
+}
+
+.my-page.is-editing .couple-profile-card input,
+.my-page.is-editing .couple-profile-card textarea {
+  border-bottom: 1px solid rgba(199, 199, 176, 0.7);
+  background: transparent;
+}
+
+.my-page.is-editing .couple-profile-card label {
+  background: #fffcf4;
+}
+
+.my-page.is-editing .boyfriend-profile label {
+  color: var(--figma-green);
+}
+
+.my-page.is-editing .girlfriend-profile label {
+  color: var(--figma-pink);
+}
+
+.couple-profile-card textarea {
+  min-height: 31px;
+  resize: none;
+}
+
+.mobile-love-summary {
+  order: 3;
+  display: block;
+  margin-top: 39px;
+  color: var(--figma-ink);
+}
+
+.mobile-love-summary p {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin: 0;
+}
+
+.mobile-love-summary strong {
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.mobile-love-summary span {
+  font-size: 25px;
+  line-height: 1.25;
+}
+}
+
+@media (max-width: 420px) {
+  .app-header,
+  .mobile-screen {
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .bottom-nav {
+    width: calc(100% - 32px);
   }
 }

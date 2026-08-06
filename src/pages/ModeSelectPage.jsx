@@ -7,7 +7,7 @@ export default function ModeSelectPage() {
 
   return (
     <AppShell hideHeaderOnMobile>
-      <main className="page mode-select-page">
+      <main className="page mobile-screen mode-select-page">
         <section className="section-heading">
           <h1>어떤 추억을 기록할까요?</h1>
           <span>여행과 데이트를 따로 모아볼 수 있어요.</span>
@@ -22,7 +22,10 @@ export default function ModeSelectPage() {
 
           <Link className="mode-card date-mode" to="/date">
             <span>Date Archive</span>
-            <h2>데이트 기록</h2>
+            <h2>
+              <span>데이트</span>
+              <span>기록</span>
+            </h2>
             <p>우리의 데이트 장소, 사진, 기념일을 따로 기록하기</p>
           </Link>
         </div>

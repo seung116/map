@@ -171,10 +171,15 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
 
   return (
     <AppShell>
-      <main className="page">
+      <main className={`page mobile-screen album-page ${isDateArchive ? 'date-album-page' : 'travel-album-page'}`}>
         <section className="section-heading">
-          <h1>전체 {archiveLabel} 사진</h1>
+          <span>PHOTO ALBUM</span>
+          <h1>앨범</h1>
         </section>
+        <nav className="album-mode-tabs" aria-label="앨범 종류">
+          <Link className={!isDateArchive ? 'is-active' : ''} to="/travel/album">여행앨범</Link>
+          <Link className={isDateArchive ? 'is-active' : ''} to="/date/album">데이트앨범</Link>
+        </nav>
         {albumGroups.length > 0 ? (
           <div className="album-timeline">
             {albumGroups.map((yearGroup) => (

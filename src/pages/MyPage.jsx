@@ -40,9 +40,15 @@ function compressProfilePhoto(file, maxWidth = 480, quality = 0.82) {
   });
 }
 
+function dotDateLabel(value) {
+  if (!value) return '날짜 미정';
+  return value.replaceAll('-', '.');
+}
+
 export default function MyPage() {
   const auth = useAuth();
   const userId = auth?.user?.uid;
+  const isDesignPreview = auth?.user?.uid === 'design-preview-user';
   const initialDateStartDate = auth?.profile?.dateStartDate || loadDateStartDate(userId);
   const initialCoupleProfile = normalizeCoupleProfile(auth?.profile?.coupleProfile || loadCoupleProfile(userId));
   const [dateStartDate, setDateStartDate] = useState(() => initialDateStartDate);
@@ -86,7 +92,7 @@ export default function MyPage() {
     try {
       setIsSavingProfile(true);
       let savedProfile = draftProfile;
-      if (firebaseEnabled && userId) {
+      if (firebaseEnabled && userId && !isDesignPreview) {
         savedProfile = await saveUserDateProfile(userId, {
           dateStartDate: draftDateStartDate,
           coupleProfile: draftProfile,
@@ -118,7 +124,7 @@ export default function MyPage() {
 
   return (
     <AppShell>
-      <main className="page my-page">
+      <main className={`page mobile-screen my-page ${isEditingProfile ? 'is-editing' : ''}`}>
         <section className="section-heading">
           <h1>마이페이지</h1>
           <span>데이트 기록에 표시할 처음 만난 날을 관리합니다.</span>
@@ -151,7 +157,7 @@ export default function MyPage() {
                 <button className="primary-button" type="button" onClick={saveProfile} disabled={isSavingProfile}>{isSavingProfile ? '저장 중' : '저장'}</button>
               </>
             ) : (
-              <button className="primary-button" type="button" onClick={editProfile}>수정</button>
+              <button className="primary-button" type="button" onClick={editProfile}>수정하기</button>
             )}
           </div>
         </section>
@@ -232,6 +238,17 @@ export default function MyPage() {
               </label>
             </div>
           </article>
+        </section>
+
+        <section className="mobile-love-summary" aria-label="함께한 시간">
+          <p>
+            <strong>{dotDateLabel(displayDateStartDate)}</strong>
+            <span>부터</span>
+          </p>
+          <p>
+            <strong>{displayDateDayCount ? `${displayDateDayCount}일` : '0일'}</strong>
+            <span>동안 사랑하는 중..💗</span>
+          </p>
         </section>
       </main>
       {selectedProfilePhoto && (

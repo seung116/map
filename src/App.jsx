@@ -1,5 +1,6 @@
 import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { AuthContext } from './contexts/AuthContext';
+import { designPreviewAuth, designPreviewRecords } from './data/designPreviewData';
 import { useAuthState } from './hooks/useAuthState';
 import { useTravelRecords } from './hooks/useTravelRecords';
 import AdminPage from './pages/AdminPage';
@@ -28,14 +29,23 @@ function LegacyWriteRedirect() {
   return <Navigate to={`/travel/write/${recordId}`} replace />;
 }
 
+function isDesignPreview() {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('preview') === 'design';
+}
+
 export default function App() {
   const auth = useAuthState();
+  const designPreview = isDesignPreview();
   const canUseRecords = Boolean(auth.user && auth.isApproved);
   const { records, setRecords, ready } = useTravelRecords(canUseRecords, auth.user?.uid);
-  const travelRecords = records.filter((record) => record.type !== 'date');
-  const dateRecords = records.filter((record) => record.type === 'date');
+  const activeAuth = designPreview ? designPreviewAuth : auth;
+  const activeRecords = designPreview ? designPreviewRecords : records;
+  const activeSetRecords = designPreview ? async () => {} : setRecords;
+  const travelRecords = activeRecords.filter((record) => record.type !== 'date');
+  const dateRecords = activeRecords.filter((record) => record.type === 'date');
 
-  if (auth.loading) {
+  if (!designPreview && auth.loading) {
     return (
       <div className="page" style={{ paddingTop: '20vh', textAlign: 'center' }}>
         계정을 확인하는 중...
@@ -43,15 +53,15 @@ export default function App() {
     );
   }
 
-  if (!auth.user) {
+  if (!designPreview && !auth.user) {
     return <AuthPage />;
   }
 
-  if (!auth.isApproved) {
+  if (!designPreview && !auth.isApproved) {
     return <PendingApprovalPage profile={auth.profile} user={auth.user} />;
   }
 
-  if (!ready) {
+  if (!designPreview && !ready) {
     return (
       <div className="page" style={{ paddingTop: '20vh', textAlign: 'center' }}>
         기록을 불러오는 중...
@@ -60,24 +70,24 @@ export default function App() {
   }
 
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={activeAuth}>
       <HashRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/select" replace />} />
           <Route path="/select" element={<ModeSelectPage />} />
 
           <Route path="/travel" element={<Dashboard records={travelRecords} />} />
-          <Route path="/travel/region/:regionId" element={<RegionPage records={travelRecords} setRecords={setRecords} basePath="/travel" />} />
-          <Route path="/travel/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="travel" />} />
-          <Route path="/travel/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="travel" />} />
+          <Route path="/travel/region/:regionId" element={<RegionPage records={travelRecords} setRecords={activeSetRecords} basePath="/travel" />} />
+          <Route path="/travel/write" element={<RecordFormPage records={activeRecords} setRecords={activeSetRecords} mode="travel" />} />
+          <Route path="/travel/write/:recordId" element={<RecordFormPage records={activeRecords} setRecords={activeSetRecords} mode="travel" />} />
           <Route path="/travel/album" element={<AlbumPage records={travelRecords} basePath="/travel" />} />
           <Route path="/travel/calendar" element={<Navigate to="/calendar" replace />} />
           <Route path="/travel/stats" element={<StatsPage records={travelRecords} />} />
 
           <Route path="/date" element={<DateDashboard records={dateRecords} />} />
           <Route path="/date/record/:recordId" element={<DateRecordPage records={dateRecords} />} />
-          <Route path="/date/write" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
-          <Route path="/date/write/:recordId" element={<RecordFormPage records={records} setRecords={setRecords} mode="date" />} />
+          <Route path="/date/write" element={<RecordFormPage records={activeRecords} setRecords={activeSetRecords} mode="date" />} />
+          <Route path="/date/write/:recordId" element={<RecordFormPage records={activeRecords} setRecords={activeSetRecords} mode="date" />} />
           <Route path="/date/album" element={<AlbumPage records={dateRecords} basePath="/date" archiveType="date" />} />
           <Route path="/date/calendar" element={<Navigate to="/calendar" replace />} />
           <Route path="/date/stats" element={<StatsPage records={dateRecords} archiveType="date" />} />
@@ -89,11 +99,11 @@ export default function App() {
           <Route path="/write" element={<Navigate to="/travel/write" replace />} />
           <Route path="/write/:recordId" element={<LegacyWriteRedirect />} />
           <Route path="/album" element={<Navigate to="/travel/album" replace />} />
-          <Route path="/calendar" element={<CalendarPage records={records} setRecords={setRecords} archiveType="all" />} />
+          <Route path="/calendar" element={<CalendarPage records={activeRecords} setRecords={activeSetRecords} archiveType="all" />} />
           <Route path="/stats" element={<Navigate to="/travel/stats" replace />} />
 
-          <Route path="/boards" element={<BoardsPage records={records} />} />
-          <Route path="/admin" element={auth.isAdmin ? <AdminPage /> : <Navigate to="/" replace />} />
+          <Route path="/boards" element={<BoardsPage records={activeRecords} />} />
+          <Route path="/admin" element={activeAuth.isAdmin ? <AdminPage /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/select" replace />} />
         </Routes>
       </HashRouter>
