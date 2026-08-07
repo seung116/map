@@ -137,10 +137,6 @@ export default function MapExplorer({ records, basePath = '' }) {
 
   return (
     <div className="map-shell staged-map-shell" aria-label="단계별 한국 여행 지도">
-      <div className="map-toolbar">
-        <span>전국 도 단위</span>
-      </div>
-
       <div className="staged-map">
         <div className="province-image-map" role="img" aria-label="전국 도 단위로 나뉜 한국 행정 지도">
           <img src={adminMapImage} alt="" aria-hidden="true" />
@@ -153,6 +149,19 @@ export default function MapExplorer({ records, basePath = '' }) {
             aria-label={hoveredNationalArea ? `${hoveredNationalArea.name} 지도 영역` : '전국 지도 영역'}
           />
         </div>
+      </div>
+
+      <div className="province-list">
+        {nationalMapAreas.map((area) => {
+          const visitCount = area.regionIds.reduce((total, id) => total + (regionVisitCounts.get(id) || 0), 0);
+          const visitLevel = visitLevelForCount(visitCount);
+          return (
+            <button key={area.id} type="button" className={`visit-level-${visitLevel}`} onClick={() => selectNationalArea(area)}>
+              <strong>{area.name}</strong>
+              <span>{visitCount ? `${visitCount}회 · 여행 기록` : '0회 · 여행 기록'}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="map-legend">
