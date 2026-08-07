@@ -259,10 +259,16 @@ function buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile) {
   return groups;
 }
 
-function calendarDayTitle(tripBlocks, specialEvents) {
+function calendarDayPhoto(tripBlocks) {
   const firstTrip = tripBlocks[0];
-  if (firstTrip?.name) return firstTrip.name;
-  return specialEvents[0]?.title || '';
+  const photoRecord = firstTrip?.dayRecords?.find((record) => record.photos?.[0]?.src)
+    || firstTrip?.records?.find((record) => record.photos?.[0]?.src);
+  const photo = photoRecord?.photos?.[0];
+  if (!photo?.src) return null;
+  return {
+    src: photo.src,
+    alt: photo.caption || photoRecord.title || firstTrip.name,
+  };
 }
 
 export default function CalendarPage({ records, setRecords, basePath = '', archiveType = 'travel' }) {
@@ -391,7 +397,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
               const holiday = holidaysByDate[day.key];
               const hasDateRecord = tripBlocks.some((trip) => trip.records[0]?.type === 'date') || specialEvents.length > 0;
               const hasTravelRecord = tripBlocks.some((trip) => trip.records[0]?.type !== 'date');
-              const dayTitle = calendarDayTitle(tripBlocks, specialEvents);
+              const dayPhoto = calendarDayPhoto(tripBlocks);
               return (
                 <article
                   className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''} ${day.dayOfWeek === 0 ? 'is-sunday' : ''} ${day.dayOfWeek === 6 ? 'is-saturday' : ''} ${holiday ? 'is-holiday' : ''} ${hasTravelRecord ? 'has-travel-record' : ''} ${hasDateRecord ? 'has-date-record' : ''}`}
@@ -405,7 +411,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
                     title={holiday?.title}
                   >
                     <time dateTime={day.key}>{day.day}</time>
-                    {dayTitle && <span className="calendar-day-title">{dayTitle}</span>}
+                    {dayPhoto && <img className="calendar-day-photo" src={dayPhoto.src} alt={dayPhoto.alt} />}
                   </button>
                   <div className="calendar-trip-blocks">
                     {tripBlocks.map((trip) => (

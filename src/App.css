@@ -2098,15 +2098,14 @@ main {
   font-weight: 900;
 }
 
-.calendar-day-title {
-  min-width: 0;
+.calendar-day-photo {
+  display: block;
+  width: 38px;
+  height: 30px;
   overflow: hidden;
-  color: #384636;
-  font-size: 0.72rem;
-  font-weight: 800;
-  line-height: 1.1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  border: 1px solid rgba(56, 70, 54, 0.16);
+  border-radius: 6px;
+  object-fit: cover;
 }
 
 .calendar-day.is-today .calendar-day-top time {
@@ -2130,7 +2129,7 @@ main {
   box-shadow: inset 0 0 0 2px currentColor;
 }
 
-.calendar-day-top span:not(.calendar-day-title) {
+.calendar-day-top span {
   display: grid;
   min-width: 24px;
   height: 24px;
@@ -3565,7 +3564,7 @@ main {
     font-size: 0.78rem;
   }
 
-  .calendar-day-top span:not(.calendar-day-title) {
+  .calendar-day-top span {
     min-width: 18px;
     height: 18px;
     font-size: 0.64rem;
@@ -4961,14 +4960,14 @@ body,
   color: inherit;
 }
 
-.calendar-day-title {
+.calendar-day-photo {
   display: block;
-  width: 100%;
-  max-width: 42px;
-  color: var(--figma-ink);
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1.05;
+  width: 42px;
+  height: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(38, 46, 36, 0.16);
+  border-radius: 6px;
+  object-fit: cover;
 }
 
 .calendar-trip-blocks {
