@@ -8,9 +8,9 @@ import { countTripsByRegion } from '../utils/travelUtils';
 const nationalMapAreaByMaskValue = new Map(nationalMapAreas.map((area, index) => [index + 1, area]));
 const visitLevelColors = {
   none: { r: 210, g: 214, b: 211, alpha: 104 },
-  low: { r: 248, g: 203, b: 185, alpha: 122 },
-  medium: { r: 239, g: 143, b: 104, alpha: 140 },
-  high: { r: 194, g: 78, b: 52, alpha: 158 },
+  low: { r: 185, g: 218, b: 193, alpha: 126 },
+  medium: { r: 111, g: 170, b: 130, alpha: 146 },
+  high: { r: 53, g: 122, b: 82, alpha: 166 },
 };
 
 function visitLevelForCount(count) {
@@ -153,19 +153,6 @@ export default function MapExplorer({ records, basePath = '' }) {
             aria-label={hoveredNationalArea ? `${hoveredNationalArea.name} 지도 영역` : '전국 지도 영역'}
           />
         </div>
-      </div>
-
-      <div className="province-list">
-        {nationalMapAreas.map((area) => {
-          const visitCount = area.regionIds.reduce((total, id) => total + (regionVisitCounts.get(id) || 0), 0);
-          const visitLevel = visitLevelForCount(visitCount);
-          return (
-            <button key={area.id} type="button" className={`visit-level-${visitLevel}`} onClick={() => selectNationalArea(area)}>
-              <strong>{area.name}</strong>
-              <span>{visitCount ? `${visitCount}회 · 여행 기록` : '0회 · 여행 기록'}</span>
-            </button>
-          );
-        })}
       </div>
 
       <div className="map-legend">

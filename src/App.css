@@ -1510,19 +1510,19 @@ main {
 }
 
 .province-list button.visit-level-low {
-  border-color: rgba(239, 143, 104, 0.38);
-  background: #fbd9cb;
+  border-color: rgba(111, 170, 130, 0.38);
+  background: #d7eadb;
 }
 
 .province-list button.visit-level-medium {
-  border-color: rgba(223, 111, 67, 0.58);
-  background: #ef9368;
+  border-color: rgba(76, 146, 99, 0.58);
+  background: #6faa82;
   color: #fffaf2;
 }
 
 .province-list button.visit-level-high {
-  border-color: rgba(156, 73, 57, 0.72);
-  background: #c24e34;
+  border-color: rgba(48, 105, 70, 0.72);
+  background: #357a52;
   color: #fffaf2;
 }
 
@@ -1715,15 +1715,15 @@ main {
 }
 
 .visit-dot-low {
-  background: #f8cbb9;
+  background: #b9dac1;
 }
 
 .visit-dot-medium {
-  background: #ef8f68;
+  background: #6faa82;
 }
 
 .visit-dot-high {
-  background: #c24e34;
+  background: #357a52;
 }
 
 .summary-panel {
