@@ -259,6 +259,12 @@ function buildSpecialEventsByDate(calendarDays, dateStartDate, coupleProfile) {
   return groups;
 }
 
+function calendarDayTitle(tripBlocks, specialEvents) {
+  const firstTrip = tripBlocks[0];
+  if (firstTrip?.name) return firstTrip.name;
+  return specialEvents[0]?.title || '';
+}
+
 export default function CalendarPage({ records, setRecords, basePath = '', archiveType = 'travel' }) {
   const auth = useAuth();
   const isDateArchive = archiveType === 'date';
@@ -385,6 +391,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
               const holiday = holidaysByDate[day.key];
               const hasDateRecord = tripBlocks.some((trip) => trip.records[0]?.type === 'date') || specialEvents.length > 0;
               const hasTravelRecord = tripBlocks.some((trip) => trip.records[0]?.type !== 'date');
+              const dayTitle = calendarDayTitle(tripBlocks, specialEvents);
               return (
                 <article
                   className={`calendar-day ${day.isCurrentMonth ? '' : 'is-muted'} ${day.isToday ? 'is-today' : ''} ${selectedDate === day.key ? 'is-selected' : ''} ${day.dayOfWeek === 0 ? 'is-sunday' : ''} ${day.dayOfWeek === 6 ? 'is-saturday' : ''} ${holiday ? 'is-holiday' : ''} ${hasTravelRecord ? 'has-travel-record' : ''} ${hasDateRecord ? 'has-date-record' : ''}`}
@@ -398,6 +405,7 @@ export default function CalendarPage({ records, setRecords, basePath = '', archi
                     title={holiday?.title}
                   >
                     <time dateTime={day.key}>{day.day}</time>
+                    {dayTitle && <span className="calendar-day-title">{dayTitle}</span>}
                   </button>
                   <div className="calendar-trip-blocks">
                     {tripBlocks.map((trip) => (
