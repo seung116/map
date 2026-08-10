@@ -3280,6 +3280,13 @@ main {
   background: linear-gradient(180deg, var(--coral), #f4c37a);
 }
 
+.bar-slot {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: center;
+}
+
 .bar-column small {
   color: var(--muted);
   font-size: 0.78rem;
@@ -3743,12 +3750,11 @@ main {
 
   .bar-chart {
     gap: 5px;
-    overflow-x: auto;
     padding-bottom: 8px;
   }
 
   .bar-column {
-    min-width: 30px;
+    min-width: 0;
   }
 }
 
@@ -5302,20 +5308,20 @@ body,
 .bar-chart {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  align-items: end;
+  align-items: stretch;
   height: 170px;
   gap: 0;
   border: 1px solid var(--figma-line);
   border-radius: 12px;
   background: var(--figma-card);
-  padding: 39px 10px 15px;
+  padding: 12px 10px 10px;
 }
 
 .bar-column {
   display: grid;
   min-width: 0;
-  height: 116px;
-  grid-template-rows: 20px 68px 20px;
+  height: 100%;
+  grid-template-rows: 20px 1fr 20px;
   justify-items: center;
   gap: 4px;
   align-items: stretch;
@@ -5336,6 +5342,13 @@ body,
   max-height: 64px;
   border-radius: 999px 999px 0 0;
   background: var(--figma-green);
+}
+
+.bar-slot {
+  display: flex;
+  min-height: 0;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .date-stats-page .bar-column span {

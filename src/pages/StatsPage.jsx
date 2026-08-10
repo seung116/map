@@ -94,7 +94,9 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
               return (
                 <div key={month} className="bar-column">
                   <strong>{value}회</strong>
-                  {value > 0 && <span style={{ height: `${barHeight}px` }} />}
+                  <div className="bar-slot">
+                    {value > 0 && <span style={{ height: `${barHeight}px` }} />}
+                  </div>
                   <small>{Number(month)}월</small>
                 </div>
               );
