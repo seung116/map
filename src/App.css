@@ -5301,24 +5301,23 @@ body,
 
 .bar-chart {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: end;
-  height: auto;
-  gap: 10px 6px;
-  overflow: hidden;
+  height: 170px;
+  gap: 0;
   border: 1px solid var(--figma-line);
   border-radius: 12px;
   background: var(--figma-card);
-  padding: 14px 10px;
+  padding: 39px 10px 15px;
 }
 
 .bar-column {
   display: grid;
   min-width: 0;
-  min-height: 96px;
-  grid-template-rows: 18px 58px 18px;
+  height: 116px;
+  grid-template-rows: 20px 1fr 20px;
   justify-items: center;
-  gap: 3px;
+  gap: 4px;
   align-items: end;
 }
 
@@ -5333,7 +5332,6 @@ body,
 .bar-column span {
   width: 12px;
   min-height: 16px;
-  max-height: 58px;
   border-radius: 999px 999px 0 0;
   background: var(--figma-green);
 }
@@ -5344,62 +5342,7 @@ body,
 
 .bar-column small {
   color: var(--figma-ink);
-  font-size: 12px;
-  line-height: 1;
-}
-
-.date-stats-page .bar-chart {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: stretch;
-  gap: 6px;
-  padding: 8px;
-}
-
-.date-stats-page .bar-column {
-  position: relative;
-  min-height: 0;
-  aspect-ratio: 1;
-  grid-template-areas:
-    "month count"
-    "bar bar";
-  grid-template-columns: 1fr auto;
-  grid-template-rows: 1fr 7px;
-  align-content: stretch;
-  align-items: center;
-  justify-items: stretch;
-  gap: 5px 3px;
-  overflow: hidden;
-  border: 1px solid rgba(199, 99, 89, 0.18);
-  border-radius: 8px;
-  background: rgba(255, 252, 245, 0.86);
-  padding: 7px;
-}
-
-.date-stats-page .bar-column strong {
-  grid-area: count;
-  align-self: start;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.date-stats-page .bar-column span {
-  grid-area: bar;
-  width: var(--bar-ratio, 100%);
-  max-width: none;
-  min-height: 7px;
-  max-height: 7px;
-  border-radius: 999px;
-  justify-self: start;
-}
-
-.date-stats-page .bar-column small {
-  grid-area: month;
-  align-self: start;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
   line-height: 1;
 }
 
