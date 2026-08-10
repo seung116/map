@@ -3961,7 +3961,7 @@ body,
   background: var(--figma-card);
   padding: 9px 14px;
   color: var(--figma-muted);
-  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
   font-size: 13px;
   font-weight: 700;
   line-height: 18px;
