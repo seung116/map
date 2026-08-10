@@ -104,13 +104,14 @@
 }
 
 .mode-page-links .mode-admin-link {
-  background: var(--ink);
-  color: #fffaf2;
+  background: #e8e8e0;
+  color: var(--muted);
+  font-family: inherit;
 }
 
 .mode-page-links .mode-admin-link:hover {
-  background: #4d654a;
-  color: #fffaf2;
+  background: #ddddd3;
+  color: var(--ink);
 }
 
 .date-hero {
@@ -3935,7 +3936,8 @@ body,
 }
 
 .mode-select-page {
-  display: block;
+  display: flex;
+  flex-direction: column;
   padding-top: 60px;
 }
 
@@ -3948,7 +3950,7 @@ body,
   display: flex;
   gap: 10px;
   justify-content: center;
-  margin-top: 22px;
+  margin-top: auto;
   padding-top: 0;
 }
 
@@ -3959,14 +3961,16 @@ body,
   background: var(--figma-card);
   padding: 9px 14px;
   color: var(--figma-muted);
-  font-family: Inter, "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: "Gaegu", "Apple SD Gothic Neo", system-ui, sans-serif;
   font-size: 13px;
+  font-weight: 700;
   line-height: 18px;
 }
 
 .mode-select-page .mode-page-links .mode-admin-link {
-  background: var(--figma-ink);
-  color: #fffcf5;
+  border-color: #d2d2c6;
+  background: #e7e7dd;
+  color: var(--figma-muted);
 }
 
 .mode-select-grid {

@@ -31,7 +31,6 @@ export default function ModeSelectPage() {
         </div>
 
         <div className="mode-page-links">
-          <Link to="/mypage">마이페이지</Link>
           {auth?.isAdmin && <Link className="mode-admin-link" to="/admin">관리자페이지</Link>}
         </div>
       </main>
