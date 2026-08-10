@@ -5315,13 +5315,14 @@ body,
   display: grid;
   min-width: 0;
   height: 116px;
-  grid-template-rows: 20px 1fr 20px;
+  grid-template-rows: 20px 68px 20px;
   justify-items: center;
   gap: 4px;
-  align-items: end;
+  align-items: stretch;
 }
 
 .bar-column strong {
+  align-self: start;
   display: block;
   color: var(--figma-ink);
   font-size: 13px;
@@ -5330,8 +5331,9 @@ body,
 }
 
 .bar-column span {
+  align-self: end;
   width: 12px;
-  min-height: 16px;
+  max-height: 64px;
   border-radius: 999px 999px 0 0;
   background: var(--figma-green);
 }
@@ -5341,6 +5343,7 @@ body,
 }
 
 .bar-column small {
+  align-self: end;
   color: var(--figma-ink);
   font-size: 13px;
   line-height: 1;

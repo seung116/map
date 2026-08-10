@@ -29,6 +29,8 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
     .sort(([, countA], [, countB]) => countB - countA)
     .slice(0, 4);
   const maxRegionCount = Math.max(1, ...regionStats.map(([, count]) => count));
+  const months = Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0'));
+  const maxMonthCount = Math.max(1, ...months.map((month) => monthCounts[month] || 0));
 
   return (
     <AppShell>
@@ -86,12 +88,13 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
         <section className="chart-panel">
           <h2>월별 {archiveLabel} 횟수</h2>
           <div className="bar-chart">
-            {Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0')).map((month) => {
+            {months.map((month) => {
               const value = monthCounts[month] || 0;
+              const barHeight = Math.max(12, Math.round((value / maxMonthCount) * 64));
               return (
                 <div key={month} className="bar-column">
                   <strong>{value}회</strong>
-                  <span style={{ height: `${Math.max(8, value * 34)}px` }} />
+                  {value > 0 && <span style={{ height: `${barHeight}px` }} />}
                   <small>{Number(month)}월</small>
                 </div>
               );
