@@ -28,7 +28,7 @@ export default function NotificationCenter() {
   const auth = useAuth();
   const navigate = useNavigate();
   const [latestNotification, setLatestNotification] = useState(null);
-  const [permission, setPermission] = useState(() => (canUseBrowserNotifications() ? Notification.permission : 'unsupported'));
+  const permission = canUseBrowserNotifications() ? Notification.permission : 'unsupported';
 
   useEffect(() => {
     if (!auth?.user?.uid) return undefined;
@@ -66,12 +66,6 @@ export default function NotificationCenter() {
     return () => window.clearTimeout(timeoutId);
   }, [latestNotification]);
 
-  const requestBrowserNotifications = async () => {
-    if (!canUseBrowserNotifications()) return;
-    const nextPermission = await Notification.requestPermission();
-    setPermission(nextPermission);
-  };
-
   const openNotification = () => {
     if (latestNotification?.targetPath) {
       navigate(latestNotification.targetPath);
@@ -79,17 +73,10 @@ export default function NotificationCenter() {
     setLatestNotification(null);
   };
 
-  const shouldShowPermissionAction = canUseBrowserNotifications() && permission === 'default';
-
-  if (!latestNotification && !shouldShowPermissionAction) return null;
+  if (!latestNotification) return null;
 
   return (
     <aside className="notification-center" aria-live="polite">
-      {shouldShowPermissionAction && (
-        <button className="notification-permission-button" type="button" onClick={requestBrowserNotifications}>
-          기기 알림 켜기
-        </button>
-      )}
       {latestNotification && (
         <div className="notification-toast">
           <button className="notification-close-button" type="button" onClick={() => setLatestNotification(null)} aria-label="알림 닫기">×</button>

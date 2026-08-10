@@ -29,6 +29,8 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
     .sort(([, countA], [, countB]) => countB - countA)
     .slice(0, 4);
   const maxRegionCount = Math.max(1, ...regionStats.map(([, count]) => count));
+  const months = Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0'));
+  const maxMonthCount = Math.max(1, ...months.map((month) => monthCounts[month] || 0));
 
   return (
     <AppShell>
@@ -62,11 +64,13 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
           <StatCard label={isDateArchive ? '최근 데이트 장소' : '최근 방문 지역'} value={recentRegion} />
           <StatCard label={`올해 ${archiveLabel} 횟수`} value={`${thisYearTripCount}회`} />
         </div>
-        <div className="stats-grid mobile-stats-grid" aria-label={`${archiveLabel} 요약`}>
-          <StatCard label={`총 ${archiveLabel}`} value={tripGroups.length} />
-          <StatCard label={`${archiveLabel}일`} value={archiveDayCount} />
-          <StatCard label={`최근 ${archiveLabel}`} value={recentRegion} />
-        </div>
+        {!isDateArchive && (
+          <div className="stats-grid mobile-stats-grid" aria-label={`${archiveLabel} 요약`}>
+            <StatCard label={`총 ${archiveLabel}`} value={tripGroups.length} />
+            <StatCard label={`${archiveLabel}일`} value={archiveDayCount} />
+            <StatCard label={`최근 ${archiveLabel}`} value={recentRegion} />
+          </div>
+        )}
         <section className="region-record-panel" aria-label="지역별 기록">
           <h2>지역별 기록</h2>
           <div className="region-record-list">
@@ -76,6 +80,7 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
                 <div>
                   <i style={{ width: `${Math.max(32, (count / maxRegionCount) * 198)}px` }} />
                 </div>
+                <strong>{count}회</strong>
               </div>
             ))}
           </div>
@@ -83,12 +88,14 @@ export default function StatsPage({ records, archiveType = 'travel' }) {
         <section className="chart-panel">
           <h2>월별 {archiveLabel} 횟수</h2>
           <div className="bar-chart">
-            {Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0')).map((month) => {
+            {months.map((month) => {
               const value = monthCounts[month] || 0;
+              const barHeight = value ? Math.max(14, Math.round((value / maxMonthCount) * 84)) : 8;
+              const barRatio = value ? Math.max(12, Math.round((value / maxMonthCount) * 100)) : 6;
               return (
                 <div key={month} className="bar-column">
                   <strong>{value}회</strong>
-                  <span style={{ height: `${Math.max(8, value * 34)}px` }} />
+                  <span style={{ height: `${barHeight}px`, '--bar-ratio': `${barRatio}%` }} />
                   <small>{Number(month)}월</small>
                 </div>
               );
