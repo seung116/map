@@ -133,6 +133,7 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
   const archiveLabel = isDateArchive ? '데이트' : '여행';
   const placeLabel = isDateArchive ? '장소' : '지역';
   const photoSwipeStartRef = useRef(null);
+  const [selectedPhotoTripId, setSelectedPhotoTripId] = useState(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedTripPhotoIndex, setSelectedTripPhotoIndex] = useState(0);
@@ -173,19 +174,32 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
   const selectedTripRecords = recordsForTrip(selectedTrip);
   const selectedTripPhotos = photosForTripRecords(selectedTripRecords);
   const selectedTripPhoto = selectedTripPhotos[selectedTripPhotoIndex] || selectedTripPhotos[0];
-  const selected = selectedPhotoIndex === null ? null : photos[selectedPhotoIndex];
-  const hasPhotoNav = photos.length > 1;
+  const selectedPhotoTrip = albumGroups.find((group) => group.key === selectedPhotoTripId);
+  const selectedPhotoGroup = selectedPhotoTrip?.days.flatMap((day) => day.items) || [];
+  const selected = selectedPhotoIndex === null ? null : selectedPhotoGroup[selectedPhotoIndex];
+  const hasPreviousPhoto = selectedPhotoIndex > 0;
+  const hasNextPhoto = selectedPhotoIndex !== null && selectedPhotoIndex < selectedPhotoGroup.length - 1;
   const hasTripPhotoNav = selectedTripPhotos.length > 1;
+  const hasPreviousTripPhoto = selectedTripPhotoIndex > 0;
+  const hasNextTripPhoto = selectedTripPhotoIndex < selectedTripPhotos.length - 1;
   const openPhoto = (photo) => {
-    const photoIndex = photos.findIndex((item) => item.id === photo.id && item.recordId === photo.recordId);
+    const photoTrip = albumGroups.find((group) => group.key === photo.tripId);
+    const photoGroup = photoTrip?.days.flatMap((day) => day.items) || [];
+    const photoIndex = photoGroup.findIndex((item) => item.id === photo.id && item.recordId === photo.recordId);
+    setSelectedPhotoTripId(photo.tripId);
     setSelectedPhotoIndex(photoIndex >= 0 ? photoIndex : 0);
   };
-  const closePhoto = () => setSelectedPhotoIndex(null);
+  const closePhoto = () => {
+    setSelectedPhotoTripId(null);
+    setSelectedPhotoIndex(null);
+  };
   const movePhoto = (direction) => {
     setSelectedPhotoIndex((current) => {
-      if (!photos.length) return null;
+      if (!selectedPhotoGroup.length) return null;
       const currentIndex = current ?? 0;
-      return (currentIndex + direction + photos.length) % photos.length;
+      const nextIndex = currentIndex + direction;
+      if (nextIndex < 0 || nextIndex >= selectedPhotoGroup.length) return currentIndex;
+      return nextIndex;
     });
   };
   const handlePhotoTouchStart = (event) => {
@@ -193,7 +207,7 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
     photoSwipeStartRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
   };
   const handlePhotoTouchEnd = (event) => {
-    if (!hasPhotoNav || !photoSwipeStartRef.current) return;
+    if (!photoSwipeStartRef.current) return;
 
     const touch = event.changedTouches[0];
     if (!touch) return;
@@ -213,7 +227,9 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
   const moveTripPhoto = (direction) => {
     setSelectedTripPhotoIndex((current) => {
       if (!selectedTripPhotos.length) return 0;
-      return (current + direction + selectedTripPhotos.length) % selectedTripPhotos.length;
+      const nextIndex = current + direction;
+      if (nextIndex < 0 || nextIndex >= selectedTripPhotos.length) return current;
+      return nextIndex;
     });
   };
 
@@ -244,10 +260,12 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
 
                 {yearGroup.days.map((dayGroup) => (
                   <section className="album-month" key={dayGroup.key}>
-                    <div className="album-month-heading">
-                      <h3>{isDateArchive ? formatShortDate(dayGroup.dateRange) : dayGroup.label}</h3>
-                      {!isDateArchive && <span>{formatShortDate(dayGroup.dateRange)}</span>}
-                    </div>
+                    {!isDateArchive && (
+                      <div className="album-month-heading">
+                        <h3>{dayGroup.label}</h3>
+                        <span>{formatShortDate(dayGroup.dateRange)}</span>
+                      </div>
+                    )}
                     <div className="album-grid">
                       {dayGroup.items.map((photo, index) => (
                         <button
@@ -287,10 +305,14 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
             <div className="lightbox-layout">
               <div className="lightbox-photo-frame" onTouchStart={handlePhotoTouchStart} onTouchEnd={handlePhotoTouchEnd}>
                 <img src={selected.src || heroImage} alt={selected.caption} />
-                {hasPhotoNav && (
+                {selectedPhotoGroup.length > 1 && (
                   <>
+                    {hasPreviousPhoto && (
                     <button className="trip-slide-button previous" type="button" onClick={() => movePhoto(-1)} aria-label="이전 사진">‹</button>
+                    )}
+                    {hasNextPhoto && (
                     <button className="trip-slide-button next" type="button" onClick={() => movePhoto(1)} aria-label="다음 사진">›</button>
+                    )}
                   </>
                 )}
               </div>
@@ -346,8 +368,12 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
                   <img src={selectedTripPhoto.src || heroImage} alt={selectedTripPhoto.caption} />
                   {hasTripPhotoNav && (
                     <>
+                      {hasPreviousTripPhoto && (
                       <button className="trip-slide-button previous" type="button" onClick={() => moveTripPhoto(-1)} aria-label="이전 사진">‹</button>
+                      )}
+                      {hasNextTripPhoto && (
                       <button className="trip-slide-button next" type="button" onClick={() => moveTripPhoto(1)} aria-label="다음 사진">›</button>
+                      )}
                     </>
                   )}
                 </div>
