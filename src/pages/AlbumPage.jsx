@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import heroImage from '../assets/korea-travel-memories.png';
 import AppShell from '../components/AppShell';
@@ -32,6 +32,22 @@ function formatShortDateRange(startDate, endDate) {
   if (!startDate && !endDate) return '날짜 미정';
   if (!endDate || startDate === endDate) return formatShortDate(startDate || endDate);
   return `${formatShortDate(startDate)} ~ ${formatShortDate(endDate)}`;
+}
+
+function photoLocationLabel(photo) {
+  return photo.cityName ? `${regionName(photo.regionId)} · ${photo.cityName}` : regionName(photo.regionId);
+}
+
+function photoMetaLabel(photo, isDateArchive) {
+  return [photoLocationLabel(photo), photo.dateRange, !isDateArchive && photo.tripDayLabel]
+    .filter(Boolean)
+    .join(' · ');
+}
+
+function photoDateLabel(photo, isDateArchive) {
+  return [photo.dateRange, !isDateArchive && photo.tripDayLabel]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 function groupPhotosByTrip(photos) {
@@ -116,7 +132,8 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
   const isDateArchive = archiveType === 'date';
   const archiveLabel = isDateArchive ? '데이트' : '여행';
   const placeLabel = isDateArchive ? '장소' : '지역';
-  const [selected, setSelected] = useState(null);
+  const photoSwipeStartRef = useRef(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedTripPhotoIndex, setSelectedTripPhotoIndex] = useState(0);
   const photos = records.flatMap((record) =>
@@ -156,7 +173,38 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
   const selectedTripRecords = recordsForTrip(selectedTrip);
   const selectedTripPhotos = photosForTripRecords(selectedTripRecords);
   const selectedTripPhoto = selectedTripPhotos[selectedTripPhotoIndex] || selectedTripPhotos[0];
+  const selected = selectedPhotoIndex === null ? null : photos[selectedPhotoIndex];
+  const hasPhotoNav = photos.length > 1;
   const hasTripPhotoNav = selectedTripPhotos.length > 1;
+  const openPhoto = (photo) => {
+    const photoIndex = photos.findIndex((item) => item.id === photo.id && item.recordId === photo.recordId);
+    setSelectedPhotoIndex(photoIndex >= 0 ? photoIndex : 0);
+  };
+  const closePhoto = () => setSelectedPhotoIndex(null);
+  const movePhoto = (direction) => {
+    setSelectedPhotoIndex((current) => {
+      if (!photos.length) return null;
+      const currentIndex = current ?? 0;
+      return (currentIndex + direction + photos.length) % photos.length;
+    });
+  };
+  const handlePhotoTouchStart = (event) => {
+    const touch = event.touches[0];
+    photoSwipeStartRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
+  };
+  const handlePhotoTouchEnd = (event) => {
+    if (!hasPhotoNav || !photoSwipeStartRef.current) return;
+
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+
+    const deltaX = touch.clientX - photoSwipeStartRef.current.x;
+    const deltaY = touch.clientY - photoSwipeStartRef.current.y;
+    photoSwipeStartRef.current = null;
+
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+    movePhoto(deltaX > 0 ? -1 : 1);
+  };
   const openTrip = (trip) => {
     setSelectedTrip(trip);
     setSelectedTripPhotoIndex(0);
@@ -197,8 +245,8 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
                 {yearGroup.days.map((dayGroup) => (
                   <section className="album-month" key={dayGroup.key}>
                     <div className="album-month-heading">
-                      <h3>{dayGroup.label}</h3>
-                      <span>{formatShortDate(dayGroup.dateRange)}</span>
+                      <h3>{isDateArchive ? formatShortDate(dayGroup.dateRange) : dayGroup.label}</h3>
+                      {!isDateArchive && <span>{formatShortDate(dayGroup.dateRange)}</span>}
                     </div>
                     <div className="album-grid">
                       {dayGroup.items.map((photo, index) => (
@@ -207,14 +255,14 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
                           className="album-item"
                           type="button"
                           style={{ '--delay': `${Math.min(index, 8) * 24}ms` }}
-                          onClick={() => setSelected(photo)}
+                          onClick={() => openPhoto(photo)}
                         >
                           <span className="album-photo">
                             <img src={photo.src || heroImage} alt={photo.caption} />
                           </span>
                           <span className="album-caption">
                             <strong>{photo.caption}</strong>
-                            <small>{photo.cityName ? `${regionName(photo.regionId)} · ${photo.cityName}` : regionName(photo.regionId)} · {photo.dateRange} · {photo.tripDayLabel}</small>
+                            <small>{photoMetaLabel(photo, isDateArchive)}</small>
                           </span>
                         </button>
                       ))}
@@ -233,11 +281,19 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
         )}
       </main>
       {selected && (
-        <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setSelected(null)}>
+        <div className="lightbox" role="dialog" aria-modal="true" onClick={closePhoto}>
           <div className="lightbox-card" onClick={(event) => event.stopPropagation()}>
-            <button className="lightbox-close-button" type="button" onClick={() => setSelected(null)} aria-label="닫기">×</button>
+            <button className="lightbox-close-button" type="button" onClick={closePhoto} aria-label="닫기">×</button>
             <div className="lightbox-layout">
-              <img src={selected.src || heroImage} alt={selected.caption} />
+              <div className="lightbox-photo-frame" onTouchStart={handlePhotoTouchStart} onTouchEnd={handlePhotoTouchEnd}>
+                <img src={selected.src || heroImage} alt={selected.caption} />
+                {hasPhotoNav && (
+                  <>
+                    <button className="trip-slide-button previous" type="button" onClick={() => movePhoto(-1)} aria-label="이전 사진">‹</button>
+                    <button className="trip-slide-button next" type="button" onClick={() => movePhoto(1)} aria-label="다음 사진">›</button>
+                  </>
+                )}
+              </div>
               <div className="lightbox-details">
                 <div className="card-meta">
                   <span>{selected.cityName ? `${regionName(selected.regionId)} · ${selected.cityName}` : regionName(selected.regionId)}</span>
@@ -298,8 +354,8 @@ export default function AlbumPage({ records, basePath = '', archiveType = 'trave
                 <div className="trip-photo-details">
                   <div>
                     <div className="card-meta">
-                      <span>{selectedTripPhoto.cityName ? `${regionName(selectedTripPhoto.regionId)} · ${selectedTripPhoto.cityName}` : regionName(selectedTripPhoto.regionId)}</span>
-                      <span>{selectedTripPhoto.dateRange} · {selectedTripPhoto.tripDayLabel}</span>
+                      <span>{photoLocationLabel(selectedTripPhoto)}</span>
+                      <span>{photoDateLabel(selectedTripPhoto, isDateArchive)}</span>
                     </div>
                     <h3>{selectedTripPhoto.caption}</h3>
                     <h4>{selectedTripPhoto.recordTitle}</h4>

@@ -2968,6 +2968,15 @@ main {
   background: #ece6dc;
 }
 
+.lightbox-photo-frame {
+  position: relative;
+  touch-action: pan-y;
+}
+
+.lightbox-photo-frame img {
+  display: block;
+}
+
 .profile-photo-lightbox-card {
   width: min(520px, 92vw);
 }
